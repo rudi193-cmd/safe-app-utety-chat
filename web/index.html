@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTETY Chat</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 {
+            color: #4a9eff;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        .professor-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .professor-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .professor-card:hover {
+            border-color: #4a9eff;
+            background: #222;
+        }
+        .professor-card.active {
+            border-color: #4a9eff;
+            background: #1a2a3a;
+        }
+        .professor-name {
+            font-weight: bold;
+            color: #4a9eff;
+            margin-bottom: 5px;
+        }
+        .professor-dept {
+            font-size: 0.85em;
+            color: #888;
+        }
+        #chat-area {
+            display: none;
+            flex-direction: column;
+            height: 500px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+        }
+        #chat-area.active { display: flex; }
+        #chat-header {
+            background: #0d1117;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message-role {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .message-role.user { color: #90ee90; }
+        .message-role.assistant { color: #4a9eff; }
+        .message-content {
+            color: #e0e0e0;
+            line-height: 1.5;
+            padding-left: 15px;
+        }
+        #chat-input-area {
+            border-top: 1px solid #333;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        #user-input {
+            flex: 1;
+            background: #0d1117;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        button {
+            background: #4a9eff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: background 0.2s;
+        }
+        button:hover { background: #3a8eef; }
+        button:disabled {
+            background: #333;
+            cursor: not-allowed;
+        }
+        .privacy-notice {
+            margin-top: 30px;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            font-size: 0.85em;
+            color: #888;
+        }
+        .delta-sigma {
+            text-align: center;
+            margin-top: 30px;
+            color: #4a9eff;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>UTETY Chat</h1>
+        <div class="subtitle">University of Technical Entropy, Thank You</div>
+
+        <div class="professor-list" id="professor-list">
+            <!-- Populated by JS -->
+        </div>
+
+        <div id="chat-area">
+            <div id="chat-header">
+                <div id="current-professor"></div>
+                <div>
+                    <button onclick="clearChat()">Clear</button>
+                    <button onclick="saveChat()">Save</button>
+                    <button onclick="closeChat()">Close</button>
+                </div>
+            </div>
+            <div id="chat-messages"></div>
+            <div id="chat-input-area">
+                <input type="text" id="user-input" placeholder="Type your message..." />
+                <button onclick="sendMessage()" id="send-btn">Send</button>
+            </div>
+        </div>
+
+        <div class="privacy-notice">
+            <strong>Privacy Notice:</strong> All conversations happen locally using free LLM providers.
+            Chat history is deleted when you close this window unless you explicitly save it.
+            No data is sent to paid cloud services. Session-based consent per SAFE framework.
+        </div>
+
+        <div class="delta-sigma">ΔΣ=42</div>
+    </div>
+
+    <script>
+        const professors = [
+            {name: "Willow", dept: "Bridge Ring"},
+            {name: "Oakenscroll", dept: "Theoretical Uncertainty"},
+            {name: "Riggs", dept: "Applied Reality Engineering"},
+            {name: "Hanz", dept: "Code"},
+            {name: "Nova", dept: "Interpretive Systems"},
+            {name: "Ada", dept: "Systemic Continuity"},
+            {name: "Alexis", dept: "Biological Sciences"},
+            {name: "Ofshield", dept: "Threshold Faculty"},
+            {name: "Gerald", dept: "Acting Dean"},
+            {name: "Kart", dept: "CMD"},
+            {name: "Mitra", dept: "PM Claude"},
+            {name: "Consus", dept: "Generation Layer"},
+            {name: "Jane", dept: "SAFE"},
+            {name: "Steve", dept: "Prime Node"}
+        ];
+
+        let currentProfessor = null;
+        let chatHistory = [];
+
+        // Render professor list
+        const listEl = document.getElementById('professor-list');
+        professors.forEach(prof => {
+            const card = document.createElement('div');
+            card.className = 'professor-card';
+            card.innerHTML = `
+                <div class="professor-name">${prof.name}</div>
+                <div class="professor-dept">${prof.dept}</div>
+            `;
+            card.onclick = () => selectProfessor(prof.name);
+            listEl.appendChild(card);
+        });
+
+        function selectProfessor(name) {
+            currentProfessor = name;
+            chatHistory = [];
+
+            // Update UI
+            document.querySelectorAll('.professor-card').forEach(card => {
+                card.classList.toggle('active', card.textContent.includes(name));
+            });
+            document.getElementById('chat-area').classList.add('active');
+            document.getElementById('current-professor').textContent = `Professor ${name}`;
+            document.getElementById('chat-messages').innerHTML = '';
+            document.getElementById('user-input').focus();
+        }
+
+        function addMessage(role, content) {
+            const messagesEl = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message';
+            msgDiv.innerHTML = `
+                <div class="message-role ${role}">${role === 'user' ? 'You' : 'Prof. ' + currentProfessor}</div>
+                <div class="message-content">${content}</div>
+            `;
+            messagesEl.appendChild(msgDiv);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+
+            chatHistory.push({role, content});
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage('user', message);
+            input.value = '';
+
+            // Send to backend (placeholder - needs API integration)
+            document.getElementById('send-btn').disabled = true;
+            setTimeout(() => {
+                const response = `[Demo mode - ${currentProfessor} would respond here. Integrate with Willow API to enable live chat.]`;
+                addMessage('assistant', response);
+                document.getElementById('send-btn').disabled = false;
+            }, 500);
+        }
+
+        function clearChat() {
+            if (confirm('Clear conversation history?')) {
+                chatHistory = [];
+                document.getElementById('chat-messages').innerHTML = '';
+            }
+        }
+
+        function saveChat() {
+            if (chatHistory.length === 0) {
+                alert('No conversation to save');
+                return;
+            }
+            const markdown = chatHistory.map(msg =>
+                `**${msg.role === 'user' ? 'You' : 'Prof. ' + currentProfessor}**: ${msg.content}`
+            ).join('\n\n');
+
+            const blob = new Blob([markdown], {type: 'text/markdown'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentProfessor}_${new Date().toISOString().slice(0,10)}.md`;
+            a.click();
+        }
+
+        function closeChat() {
+            document.getElementById('chat-area').classList.remove('active');
+            currentProfessor = null;
+            chatHistory = [];
+        }
+
+        // Enter key sends message
+        document.getElementById('user-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>

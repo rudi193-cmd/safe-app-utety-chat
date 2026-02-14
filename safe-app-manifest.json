@@ -1,0 +1,55 @@
+{
+  "app_id": "utety-chat",
+  "name": "UTETY Chat",
+  "version": "1.0.0",
+  "safe_version": ">=2.0.0",
+  "description": "Chat with UTETY professors - privacy-first conversational AI",
+  "author": "Sean Campbell",
+  "data_streams": [
+    {
+      "id": "chat_history",
+      "purpose": "Maintain conversation context during active session",
+      "retention": "session",
+      "description": "All chat messages deleted when you close the app"
+    },
+    {
+      "id": "saved_conversations",
+      "purpose": "Save favorite conversations for later reference",
+      "retention": "permanent",
+      "description": "Only conversations you explicitly save are kept"
+    },
+    {
+      "id": "persona_preferences",
+      "purpose": "Remember which professors you talk to most, tone settings",
+      "retention": "permanent",
+      "description": "Stores anonymized usage patterns to improve experience"
+    }
+  ],
+  "permissions": [
+    "local_llm",
+    "cloud_llm_free",
+    "conversation_storage",
+    "export_data"
+  ],
+  "privacy_tier": "client_only",
+  "local_processing": 0.96,
+  "entry_point": "utety_chat.app:run",
+  "license": "MIT",
+  "repository": "https://github.com/rudi193-cmd/safe-app-utety-chat",
+  "professors": [
+    "Willow",
+    "Oakenscroll",
+    "Riggs",
+    "Hanz",
+    "Nova",
+    "Ada",
+    "Alexis",
+    "Ofshield",
+    "Gerald",
+    "Kart",
+    "Mitra",
+    "Consus",
+    "Jane",
+    "Steve"
+  ]
+}
