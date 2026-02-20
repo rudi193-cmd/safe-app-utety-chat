@@ -1,0 +1,6 @@
+name = "utety-worker"
+main = "worker/index.js"
+compatibility_date = "2024-01-01"
+
+# Set GEMINI_API_KEY via: wrangler secret put GEMINI_API_KEY
+# Or in the Cloudflare dashboard under Workers > Settings > Variables

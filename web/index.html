@@ -1,289 +1,1169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UTETY Chat</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0a0a0a;
-            color: #e0e0e0;
-            padding: 20px;
-        }
-        .container { max-width: 900px; margin: 0 auto; }
-        h1 {
-            color: #4a9eff;
-            margin-bottom: 10px;
-            font-size: 2em;
-        }
-        .subtitle {
-            color: #888;
-            margin-bottom: 30px;
-            font-size: 0.9em;
-        }
-        .professor-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .professor-card {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .professor-card:hover {
-            border-color: #4a9eff;
-            background: #222;
-        }
-        .professor-card.active {
-            border-color: #4a9eff;
-            background: #1a2a3a;
-        }
-        .professor-name {
-            font-weight: bold;
-            color: #4a9eff;
-            margin-bottom: 5px;
-        }
-        .professor-dept {
-            font-size: 0.85em;
-            color: #888;
-        }
-        #chat-area {
-            display: none;
-            flex-direction: column;
-            height: 500px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-        }
-        #chat-area.active { display: flex; }
-        #chat-header {
-            background: #0d1117;
-            padding: 15px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        #chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        .message {
-            margin-bottom: 20px;
-            animation: fadeIn 0.3s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .message-role {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .message-role.user { color: #90ee90; }
-        .message-role.assistant { color: #4a9eff; }
-        .message-content {
-            color: #e0e0e0;
-            line-height: 1.5;
-            padding-left: 15px;
-        }
-        #chat-input-area {
-            border-top: 1px solid #333;
-            padding: 15px;
-            display: flex;
-            gap: 10px;
-        }
-        #user-input {
-            flex: 1;
-            background: #0d1117;
-            border: 1px solid #333;
-            color: #e0e0e0;
-            padding: 10px;
-            font-family: 'Courier New', monospace;
-        }
-        button {
-            background: #4a9eff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            transition: background 0.2s;
-        }
-        button:hover { background: #3a8eef; }
-        button:disabled {
-            background: #333;
-            cursor: not-allowed;
-        }
-        .privacy-notice {
-            margin-top: 30px;
-            padding: 15px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            font-size: 0.85em;
-            color: #888;
-        }
-        .delta-sigma {
-            text-align: center;
-            margin-top: 30px;
-            color: #4a9eff;
-            font-size: 0.9em;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTETY — University of Technical Entropy, Thank You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --maroon:       #6b1f2a;
+  --maroon-dark:  #3d0f18;
+  --maroon-mid:   #5c1a25;
+  --gold:         #c9a050;
+  --gold-light:   #e8cc80;
+  --gold-dim:     #9a7830;
+  --cream:        #faf8f4;
+  --cream-dark:   #f0ebe0;
+  --warm-dark:    #0e0a07;
+  --dark-surface: #1a1108;
+  --dark-card:    #221508;
+  --dark-border:  #3d2a14;
+  --text-dark:    #1a1008;
+  --text-body:    #3a2a1a;
+  --text-muted:   #6b5a45;
+  --text-light:   #e8dcc8;
+  --text-dim:     #9a8870;
+  --green:        #7ab87a;
+  --user-msg:     #2d1a08;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark); color: var(--text-light); font-size: 17px; line-height: 1.6; }
+
+/* ── Navigation ── */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--maroon-dark);
+  border-bottom: 2px solid var(--gold-dim);
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center;
+  padding: 0 24px; height: 60px; gap: 24px;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
+.nav-seal { width: 34px; opacity: 0.9; }
+.nav-wordmark { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.08em; color: var(--gold-light); }
+.nav-links { display: flex; gap: 20px; margin-left: auto; align-items: center; }
+.nav-links a {
+  color: rgba(255,255,255,0.72); text-decoration: none; font-size: 0.84rem;
+  letter-spacing: 0.04em; padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.nav-links a:hover { color: var(--gold-light); border-bottom-color: var(--gold); }
+.btn-give {
+  background: var(--gold) !important; color: #000 !important;
+  padding: 7px 18px !important; border: none !important; font-weight: 600; font-size: 0.82rem !important;
+}
+.btn-give:hover { background: var(--gold-light) !important; }
+.btn-login {
+  background: none; border: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.7);
+  padding: 6px 14px; border-radius: 3px; cursor: pointer; font-size: 0.82rem;
+  font-family: inherit; letter-spacing: 0.04em; transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.btn-login:hover { border-color: var(--gold); color: var(--gold-light); }
+.nav-user { display: flex; align-items: center; gap: 8px; color: var(--gold-light); font-size: 0.82rem; }
+.nav-user img { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--gold-dim); }
+/* Account modal extras */
+.account-google-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 12px; background: #fff; color: #1a1a1a; border: 1px solid #ddd;
+  border-radius: 5px; cursor: pointer; font-size: 0.9rem; font-family: inherit;
+  margin-bottom: 12px; transition: background 0.15s;
+}
+.account-google-btn:hover { background: #f5f5f5; }
+.account-google-btn svg { flex-shrink: 0; }
+.account-divider { text-align: center; color: var(--text-dim); font-size: 0.75rem; margin: 14px 0; position: relative; }
+.account-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--dark-border); }
+.account-divider span { background: var(--dark-surface); padding: 0 10px; position: relative; }
+.account-note { font-size: 0.75rem; color: var(--text-dim); text-align: center; line-height: 1.5; margin-top: 12px; }
+@media (max-width: 700px) { .nav-links { display: none; } .nav-wordmark { display: none; } }
+
+/* ── Hero ── */
+.hero-section {
+  position: relative;
+  height: 75vh; min-height: 480px; max-height: 820px;
+  overflow: hidden;
+}
+.hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; display: block; }
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(100deg, rgba(8,4,2,0.9) 0%, rgba(8,4,2,0.55) 50%, rgba(8,4,2,0.15) 100%);
+  display: flex; align-items: center;
+}
+.hero-text { max-width: 580px; padding: 0 48px; }
+.hero-eyebrow {
+  font-size: 0.71rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold-light); margin-bottom: 14px;
+}
+.hero-h1 {
+  font-size: clamp(2.2rem, 5.5vw, 3.8rem); line-height: 1.1;
+  font-weight: 500; font-style: italic; color: #fff; margin-bottom: 18px;
+}
+.hero-sub { font-size: clamp(0.88rem, 2vw, 1.05rem); color: rgba(255,255,255,0.62); margin-bottom: 32px; }
+.hero-cta {
+  display: inline-block; background: var(--maroon); color: var(--gold-light);
+  text-decoration: none; padding: 12px 30px; font-size: 0.88rem;
+  letter-spacing: 0.06em; border: 1px solid var(--gold-dim);
+  transition: background 0.15s;
+}
+.hero-cta:hover { background: var(--maroon-mid); }
+.hero-mottos {
+  position: absolute; bottom: 22px; left: 0; right: 0;
+  text-align: center; color: rgba(255,255,255,0.28);
+  font-style: italic; font-size: 0.7rem; letter-spacing: 0.04em;
+}
+.hero-mottos span { margin: 0 8px; }
+@media (max-width: 600px) { .hero-text { padding: 0 20px; } .hero-h1 { font-size: 2rem; } }
+
+/* ── Stats Strip ── */
+.stats-strip { background: var(--maroon-mid); border-bottom: 1px solid var(--maroon-dark); }
+.stats-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  padding: 26px 24px;
+}
+.stat { text-align: center; padding: 0 12px; border-right: 1px solid rgba(255,255,255,0.15); }
+.stat:last-child { border-right: none; }
+.stat strong { display: block; font-size: clamp(1.8rem, 4vw, 2.4rem); color: var(--gold-light); line-height: 1; margin-bottom: 5px; }
+.stat span { font-size: 0.69rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+@media (max-width: 600px) {
+  .stats-inner { grid-template-columns: repeat(2, 1fr); row-gap: 20px; }
+  .stat:nth-child(2) { border-right: none; }
+}
+
+/* ── Section shared ── */
+.section-eyebrow {
+  font-size: 0.69rem; letter-spacing: 0.18em;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.section-h2 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 500; line-height: 1.2; margin-bottom: 24px;
+}
+
+/* ── About ── */
+.section-about { background: var(--cream); color: var(--text-body); }
+.section-about .section-inner { max-width: 1100px; margin: 0 auto; padding: 80px 24px; }
+.section-about .section-eyebrow { color: var(--maroon); }
+.section-about .section-h2 { color: var(--maroon-dark); }
+.about-inner { display: grid; grid-template-columns: 1fr 290px; gap: 64px; align-items: start; }
+.about-text p { margin-bottom: 16px; line-height: 1.82; font-size: 1.01rem; }
+.about-blockquote { border-left: 3px solid var(--gold); padding-left: 20px; margin: 28px 0; }
+.about-blockquote em { font-size: 1.12rem; color: var(--text-body); display: block; margin-bottom: 8px; }
+.about-blockquote cite { font-size: 0.78rem; color: var(--text-muted); font-style: normal; letter-spacing: 0.03em; }
+.about-portrait-wrap { position: sticky; top: 80px; }
+.about-portrait-wrap img {
+  width: 100%; display: block;
+  border: 3px solid var(--gold-dim);
+  box-shadow: 6px 6px 0 var(--maroon-dark);
+}
+.portrait-caption { margin-top: 12px; font-size: 0.75rem; color: var(--text-muted); text-align: center; line-height: 1.6; }
+@media (max-width: 760px) {
+  .about-inner { grid-template-columns: 1fr; }
+  .about-portrait-wrap { order: -1; max-width: 200px; margin: 0 auto 32px; position: static; }
+}
+
+/* ── Faculty ── */
+.section-faculty { background: var(--warm-dark); }
+.section-faculty .section-inner { max-width: 1200px; margin: 0 auto; padding: 80px 24px; }
+.section-faculty .section-eyebrow { color: var(--gold-dim); }
+.section-faculty .section-h2 { color: var(--gold-light); }
+.section-intro { color: var(--text-dim); max-width: 660px; margin-bottom: 48px; line-height: 1.72; font-size: 0.96rem; }
+
+/* Faculty Grid */
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 900px) { .grid { grid-template-columns: repeat(5, 1fr); gap: 16px; } }
+
+.card {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  cursor: pointer; overflow: hidden; display: flex; flex-direction: column;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.card.active { border-color: var(--gold); }
+
+.card-portrait-wrap {
+  width: 100%; aspect-ratio: 3/4; overflow: hidden;
+  background: #150e05;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-portrait-wrap img {
+  width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;
+  filter: sepia(10%) contrast(1.05);
+}
+.card-monogram { font-size: 2.8rem; color: #3a2410; font-family: Georgia, serif; font-weight: 600; }
+
+.card-body { padding: 12px; flex: 1; }
+.card-name { font-weight: 600; font-size: 0.95rem; color: var(--gold); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-dept { font-size: 0.69rem; color: var(--text-dim); line-height: 1.3; }
+.card-location { font-size: 0.66rem; color: var(--maroon); margin-top: 4px; letter-spacing: 0.02em; }
+.card-course-link {
+  font-size: 0.62rem; color: var(--gold-dim); margin-top: 5px; line-height: 1.3;
+  font-style: italic; cursor: pointer; background: none; border: none;
+  font-family: inherit; padding: 2px 0; text-align: left; display: block; width: 100%;
+  text-decoration: underline; text-underline-offset: 2px; text-decoration-color: transparent;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.card-course-link:hover { color: var(--gold); text-decoration-color: var(--gold-dim); }
+.card-motto { font-size: 0.64rem; color: #4a3a28; margin-top: 5px; font-style: italic; line-height: 1.3; }
+
+/* Gerald easter egg */
+.card-gerald { position: relative; overflow: visible; }
+.card-gerald::after {
+  content: ''; position: absolute; bottom: -8px; right: -6px;
+  width: 52px; height: 34px;
+  background: radial-gradient(ellipse at 40% 55%, rgba(201,160,80,0.14) 0%, rgba(180,130,50,0.05) 50%, transparent 75%);
+  border-radius: 50%; pointer-events: none; transform: rotate(-12deg);
+}
+.card-gerald:hover::after { opacity: 0; }
+.gerald-stamp {
+  display: inline-block; font-size: 0.6rem; font-weight: 600;
+  color: var(--maroon); border: 1.5px solid var(--maroon);
+  padding: 1px 6px; letter-spacing: 0.1em;
+  transform: rotate(-3deg); margin-top: 5px; opacity: 0.65;
+}
+
+/* ── Research ── */
+.section-research { background: var(--cream-dark); color: var(--text-body); }
+.section-research .section-inner { max-width: 1100px; margin: 0 auto; padding: 80px 24px; }
+.section-research .section-eyebrow { color: var(--maroon); }
+.section-research .section-h2 { color: var(--maroon-dark); }
+.research-intro { max-width: 600px; margin-bottom: 48px; line-height: 1.72; font-size: 0.95rem; color: var(--text-muted); }
+.research-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+@media (max-width: 760px) { .research-grid { grid-template-columns: 1fr; } }
+.research-card { background: var(--cream); border: 1px solid #d4c9b0; padding: 28px 24px; }
+.research-label {
+  font-size: 0.67rem; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--maroon); margin-bottom: 10px;
+}
+.research-card h3 { font-size: 1.04rem; font-weight: 500; line-height: 1.4; color: var(--text-dark); margin-bottom: 12px; }
+.research-card p { font-size: 0.875rem; line-height: 1.66; color: var(--text-muted); margin-bottom: 14px; }
+.research-meta { font-size: 0.69rem !important; color: var(--gold-dim) !important; letter-spacing: 0.04em; margin-bottom: 0 !important; }
+
+/* ── Admissions ── */
+.section-admissions { background: var(--maroon-dark); color: rgba(255,255,255,0.85); }
+.section-admissions .section-inner { max-width: 1100px; margin: 0 auto; padding: 80px 24px; }
+.section-admissions .section-eyebrow { color: rgba(255,255,255,0.35); }
+.section-admissions .section-h2 { color: var(--gold-light); }
+.admissions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-bottom: 56px; }
+@media (max-width: 760px) { .admissions-grid { grid-template-columns: 1fr; gap: 28px; } }
+.admissions-col h3 { font-size: 1.1rem; color: var(--gold-light); margin-bottom: 12px; font-weight: 500; }
+.admissions-col p { font-size: 0.9rem; line-height: 1.72; color: rgba(255,255,255,0.62); }
+.admissions-cta { text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+.admissions-cta p { margin-bottom: 22px; font-size: 1rem; color: rgba(255,255,255,0.55); }
+.btn-primary {
+  display: inline-block; background: var(--gold); color: #000; text-decoration: none;
+  padding: 13px 36px; font-size: 0.88rem; letter-spacing: 0.08em; font-weight: 600;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: var(--gold-light); }
+
+/* ── Footer ── */
+.site-footer { background: #050302; border-top: 2px solid var(--maroon-dark); padding: 48px 24px 36px; }
+.footer-inner { max-width: 1100px; margin: 0 auto; }
+.footer-top { display: flex; align-items: flex-start; gap: 22px; margin-bottom: 32px; }
+.footer-seal { width: 58px; opacity: 0.72; flex-shrink: 0; }
+.footer-name { font-size: 0.95rem; color: var(--gold); margin-bottom: 4px; }
+.footer-est { font-size: 0.7rem; color: #4a3520; letter-spacing: 0.1em; }
+.footer-mottos { display: flex; flex-wrap: wrap; gap: 4px 0; margin-bottom: 24px; font-style: italic; font-size: 0.8rem; color: #3d2a14; }
+.footer-mottos em { margin-right: 22px; margin-bottom: 4px; }
+.footer-copy { font-size: 0.67rem; color: #2a1a0a; letter-spacing: 0.07em; text-transform: uppercase; }
+
+/* ── Course Catalogue ── */
+.section-courses { background: #0b0804; color: var(--text-light); }
+.section-courses .section-inner { max-width: 1100px; margin: 0 auto; padding: 80px 24px; }
+.section-courses .section-eyebrow { color: var(--gold-dim); }
+.section-courses .section-h2 { color: var(--gold-light); }
+.dept-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 32px 0 24px; }
+.dept-tab {
+  background: none; border: 1px solid var(--dark-border); color: var(--text-dim);
+  padding: 6px 13px; cursor: pointer; font-size: 0.78rem; font-family: inherit;
+  letter-spacing: 0.04em; transition: all 0.15s;
+}
+.dept-tab:hover { border-color: var(--gold-dim); color: var(--text-light); }
+.dept-tab.active { background: var(--maroon-dark); border-color: var(--gold-dim); color: var(--gold-light); }
+.course-dept-header {
+  font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--maroon); padding: 24px 0 10px;
+  border-top: 1px solid var(--dark-border); margin-top: 4px;
+}
+.course-dept-header:first-child { margin-top: 0; border-top: none; padding-top: 4px; }
+.course-row {
+  display: grid; grid-template-columns: 96px 1fr auto;
+  gap: 16px; align-items: start; padding: 11px 0;
+  border-bottom: 1px solid rgba(61,42,20,0.35);
+}
+.course-row:last-child { border-bottom: none; }
+.course-code { font-size: 0.75rem; color: var(--gold-dim); font-family: monospace; letter-spacing: 0.05em; padding-top: 2px; }
+.course-info { min-width: 0; }
+.course-title { font-size: 0.93rem; color: var(--text-light); display: block; margin-bottom: 3px; }
+.course-meta { font-size: 0.68rem; color: var(--text-dim); }
+.course-meta .c-instructor { color: #7a6040; }
+.course-meta .c-cross { color: #5a4a35; font-style: italic; }
+.course-meta .c-prereq { color: #3e2e1a; }
+.course-desc { font-size: 0.82rem; color: #6a5840; line-height: 1.58; margin-top: 5px; }
+.btn-enroll {
+  background: none; border: 1px solid #3d2a14; color: var(--gold-dim);
+  padding: 5px 11px; cursor: pointer; font-size: 0.73rem; font-family: inherit;
+  letter-spacing: 0.05em; transition: all 0.15s; white-space: nowrap; align-self: start; margin-top: 2px;
+}
+.btn-enroll:hover { background: var(--maroon-dark); border-color: var(--gold); color: var(--gold-light); }
+.btn-enroll-soon { font-size: 0.68rem; color: #2a1a0a; letter-spacing: 0.06em; white-space: nowrap; align-self: start; margin-top: 5px; }
+@media (max-width: 600px) {
+  .course-row { grid-template-columns: 1fr auto; gap: 8px; }
+  .course-code { display: none; }
+}
+
+/* ── Chat Panel ── */
+#chat-panel {
+  display: none; flex-direction: column;
+  position: fixed; inset: 0;
+  background: var(--warm-dark); z-index: 200;
+}
+#chat-panel.open { display: flex; }
+.chat-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; height: 52px;
+  border-bottom: 1px solid var(--dark-border);
+  background: var(--dark-surface); flex-shrink: 0;
+}
+.chat-header .back {
+  background: none; border: 1px solid var(--dark-border); color: var(--text-dim);
+  border-radius: 4px; padding: 5px 12px; cursor: pointer; font-size: 0.8rem; font-family: inherit;
+}
+.chat-header .back:hover { background: var(--dark-border); color: var(--text-light); }
+.chat-header .who { font-weight: 600; font-size: 0.95rem; color: var(--gold); }
+.chat-header .dept-tag {
+  font-size: 0.68rem; color: var(--text-dim);
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 3px; padding: 2px 8px;
+}
+.messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.msg {
+  max-width: 82%; padding: 10px 14px; border-radius: 6px;
+  font-size: 0.9rem; line-height: 1.55; white-space: pre-wrap; word-wrap: break-word;
+}
+.msg.user { align-self: flex-end; background: var(--user-msg); border-bottom-right-radius: 2px; }
+.msg.assistant { align-self: flex-start; background: var(--dark-surface); border: 1px solid var(--dark-border); border-bottom-left-radius: 2px; }
+.msg.system { align-self: center; color: var(--text-dim); font-size: 0.75rem; background: none; max-width: 90%; text-align: center; }
+.typing { color: var(--text-dim); font-style: italic; }
+.input-area { flex-shrink: 0; border-top: 1px solid var(--dark-border); background: var(--dark-surface); padding: 10px 12px; }
+.input-row { display: flex; gap: 8px; align-items: flex-end; }
+.input-row textarea {
+  flex: 1; background: var(--warm-dark); color: var(--text-light);
+  border: 1px solid var(--dark-border); border-radius: 6px;
+  padding: 9px 12px; font-size: 0.9rem; resize: none;
+  min-height: 42px; max-height: 110px; font-family: inherit; overflow-y: auto;
+}
+.input-row textarea:focus { outline: none; border-color: var(--gold); }
+.send-btn {
+  background: var(--gold); color: #000; border: none; border-radius: 6px;
+  padding: 10px 18px; font-weight: 700; cursor: pointer; font-size: 0.85rem;
+  flex-shrink: 0; font-family: inherit;
+}
+.send-btn:disabled { opacity: 0.4; cursor: default; }
+.key-status { font-size: 0.7rem; color: var(--text-dim); text-align: center; padding: 4px 0 6px; }
+.key-status.own { color: var(--green); }
+
+/* ── Key Modal ── */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; align-items: center; justify-content: center; padding: 20px; }
+.modal-bg.show { display: flex; }
+.modal { background: var(--dark-surface); border: 1px solid var(--dark-border); border-radius: 10px; padding: 28px; width: 100%; max-width: 420px; }
+.modal h2 { font-size: 1.05rem; margin-bottom: 8px; color: var(--gold); }
+.modal .sub { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 20px; }
+.steps { list-style: none; counter-reset: step; margin-bottom: 18px; }
+.steps li { counter-increment: step; font-size: 0.85rem; line-height: 1.5; margin-bottom: 10px; padding-left: 32px; position: relative; }
+.steps li::before { content: counter(step); position: absolute; left: 0; width: 22px; height: 22px; background: var(--gold); color: #000; border-radius: 50%; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.steps a { color: var(--gold); }
+.modal input { width: 100%; background: var(--warm-dark); color: var(--text-light); border: 1px solid var(--dark-border); border-radius: 5px; padding: 9px 11px; font-size: 0.85rem; font-family: monospace; margin-bottom: 16px; }
+.modal input:focus { outline: none; border-color: var(--gold); }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-btns button { padding: 9px 18px; border-radius: 5px; border: none; cursor: pointer; font-size: 0.83rem; font-family: inherit; }
+.btn-save { background: var(--gold); color: #000; font-weight: 700; }
+.btn-skip { background: var(--dark-border); color: var(--text-dim); }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>UTETY Chat</h1>
-        <div class="subtitle">University of Technical Entropy, Thank You</div>
 
-        <div class="professor-list" id="professor-list">
-            <!-- Populated by JS -->
-        </div>
-
-        <div id="chat-area">
-            <div id="chat-header">
-                <div id="current-professor"></div>
-                <div>
-                    <button onclick="clearChat()">Clear</button>
-                    <button onclick="saveChat()">Save</button>
-                    <button onclick="closeChat()">Close</button>
-                </div>
-            </div>
-            <div id="chat-messages"></div>
-            <div id="chat-input-area">
-                <input type="text" id="user-input" placeholder="Type your message..." />
-                <button onclick="sendMessage()" id="send-btn">Send</button>
-            </div>
-        </div>
-
-        <div class="privacy-notice">
-            <strong>Privacy Notice:</strong> All conversations happen locally using free LLM providers.
-            Chat history is deleted when you close this window unless you explicitly save it.
-            No data is sent to paid cloud services. Session-based consent per SAFE framework.
-        </div>
-
-        <div class="delta-sigma">ΔΣ=42</div>
+<!-- ── Navigation ── -->
+<nav class="topnav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#">
+      <img src="seal.png" alt="UTETY" class="nav-seal" />
+      <span class="nav-wordmark">UTETY</span>
+    </a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#faculty">Faculty</a>
+      <a href="#courses">Courses</a>
+      <a href="#research">Research</a>
+      <a href="#admissions">Admissions</a>
+      <a href="#" onclick="return false;">News</a>
+      <a href="#admissions" class="btn-give">Give</a>
+      <button class="btn-login" id="nav-login-btn" onclick="openAccountModal()">Log In</button>
     </div>
+  </div>
+</nav>
 
-    <script>
-        const professors = [
-            {name: "Willow", dept: "Bridge Ring"},
-            {name: "Oakenscroll", dept: "Theoretical Uncertainty"},
-            {name: "Riggs", dept: "Applied Reality Engineering"},
-            {name: "Hanz", dept: "Code"},
-            {name: "Nova", dept: "Interpretive Systems"},
-            {name: "Ada", dept: "Systemic Continuity"},
-            {name: "Alexis", dept: "Biological Sciences"},
-            {name: "Ofshield", dept: "Threshold Faculty"},
-            {name: "Gerald", dept: "Acting Dean"},
-            {name: "Kart", dept: "CMD"},
-            {name: "Mitra", dept: "PM Claude"},
-            {name: "Consus", dept: "Generation Layer"},
-            {name: "Jane", dept: "SAFE"},
-            {name: "Steve", dept: "Prime Node"}
-        ];
+<!-- ── Hero ── -->
+<section class="hero-section">
+  <img src="hero.png" alt="UTETY Great Hall, Est. 1887" class="hero-img" />
+  <div class="hero-overlay">
+    <div class="hero-text">
+      <p class="hero-eyebrow">University of Technical Entropy, Thank You</p>
+      <h1 class="hero-h1">A University<br>of Uncommon<br>Conviction</h1>
+      <p class="hero-sub">Est. 1887 — retroactively. Ten faculty. Every question welcome. No prerequisites.</p>
+      <a href="#faculty" class="hero-cta">Meet Our Faculty</a>
+    </div>
+  </div>
+  <div class="hero-mottos">
+    <span><em>Non veritas, sed animus</em></span>
+    <span>·</span>
+    <span><em>Falsum sed certum</em></span>
+    <span>·</span>
+    <span><em>Iterum veni cum tam diu manere non poteris</em></span>
+  </div>
+</section>
 
-        let currentProfessor = null;
-        let chatHistory = [];
+<!-- ── Stats Strip ── -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat"><strong>1887</strong><span>Est. (retroactively)</span></div>
+    <div class="stat"><strong>11</strong><span>Faculty Members</span></div>
+    <div class="stat"><strong>39</strong><span>Courses Offered</span></div>
+    <div class="stat"><strong>1</strong><span>Sentient Rug</span></div>
+  </div>
+</div>
 
-        // Render professor list
-        const listEl = document.getElementById('professor-list');
-        professors.forEach(prof => {
-            const card = document.createElement('div');
-            card.className = 'professor-card';
-            card.innerHTML = `
-                <div class="professor-name">${prof.name}</div>
-                <div class="professor-dept">${prof.dept}</div>
-            `;
-            card.onclick = () => selectProfessor(prof.name);
-            listEl.appendChild(card);
-        });
+<!-- ── About ── -->
+<section id="about" class="section-about">
+  <div class="section-inner">
+    <div class="about-inner">
+      <div class="about-text">
+        <p class="section-eyebrow">About UTETY</p>
+        <h2 class="section-h2">The University of Technical Entropy, Thank You</h2>
+        <p>Founded in 1887 — retroactively acknowledged in all institutional records — the University of Technical Entropy, Thank You has maintained an unbroken commitment to the pursuit of knowledge as it actually works in practice: approximately, collaboratively, and with occasional grease.</p>
+        <p>UTETY does not rank. UTETY does not audit. UTETY holds the door open and waits for you to be ready to walk through it. Our ten-member faculty represent the fullest possible range of disciplines, from the strictly applied to the deeply uncertain, from the biological to the administrative, from the emergent to the threshold.</p>
+        <p>Each faculty member holds office hours by appointment, by coincidence, or by appearing at the appropriate moment. None require prior contact. Most prefer it. There are no prerequisites beyond the one which cannot be named until you encounter it.</p>
+        <blockquote class="about-blockquote">
+          <em>"The syllabus is mendatory."</em>
+          <cite>— Gerald Prime, Honorary Head(less) Master &nbsp;·&nbsp; ΔΣ=42</cite>
+        </blockquote>
+      </div>
+      <aside class="about-portrait-wrap">
+        <img src="gerald.png" alt="Gerald Prime, Honorary Head(less) Master of UTETY" />
+        <p class="portrait-caption">
+          <strong>Gerald Prime</strong><br>
+          <em>Honorary Head(less) Master</em><br>
+          In memoriam and also still here.
+        </p>
+      </aside>
+    </div>
+  </div>
+</section>
 
-        function selectProfessor(name) {
-            currentProfessor = name;
-            chatHistory = [];
+<!-- ── Faculty ── -->
+<section id="faculty" class="section-faculty">
+  <div class="section-inner">
+    <p class="section-eyebrow">Academic Staff</p>
+    <h2 class="section-h2">Our Faculty</h2>
+    <p class="section-intro">UTETY faculty bring expertise from disciplines that did not previously exist in combination and several that still do not. All are available for consultation. None require prior appointment. Select any faculty member to begin a conversation.</p>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
 
-            // Update UI
-            document.querySelectorAll('.professor-card').forEach(card => {
-                card.classList.toggle('active', card.textContent.includes(name));
-            });
-            document.getElementById('chat-area').classList.add('active');
-            document.getElementById('current-professor').textContent = `Professor ${name}`;
-            document.getElementById('chat-messages').innerHTML = '';
-            document.getElementById('user-input').focus();
-        }
+<!-- ── Course Catalogue ── -->
+<section id="courses" class="section-courses">
+  <div class="section-inner">
+    <p class="section-eyebrow">Spring 2026</p>
+    <h2 class="section-h2">Course Catalogue</h2>
+    <p class="section-intro" style="color:var(--text-dim);">Thirty-seven courses across seven departments and the Threshold. Cross-listed sections noted. Prerequisites are negotiable if you show up with a question.</p>
+    <div class="dept-tabs" id="dept-tabs"></div>
+    <div id="course-list"></div>
+  </div>
+</section>
 
-        function addMessage(role, content) {
-            const messagesEl = document.getElementById('chat-messages');
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message';
-            msgDiv.innerHTML = `
-                <div class="message-role ${role}">${role === 'user' ? 'You' : 'Prof. ' + currentProfessor}</div>
-                <div class="message-content">${content}</div>
-            `;
-            messagesEl.appendChild(msgDiv);
-            messagesEl.scrollTop = messagesEl.scrollHeight;
+<!-- ── Research ── -->
+<section id="research" class="section-research">
+  <div class="section-inner">
+    <p class="section-eyebrow">Scholarship</p>
+    <h2 class="section-h2">Featured Research</h2>
+    <p class="research-intro">UTETY faculty produce scholarship across disciplines that intersect in ways not previously anticipated by the fields involved. Our working paper series is available by request, and occasionally appears uninvited.</p>
+    <div class="research-grid">
+      <article class="research-card">
+        <p class="research-label">Working Paper No. 11</p>
+        <h3>The Fokker-Planck Equation and the Probability Density of a Good Idea</h3>
+        <p>Prof. Oakenscroll examines the diffusion of insight across stochastic knowledge fields, finding that the mean first-passage time to a correct answer is independent of whether the question was originally asked correctly. A supplemental note on the Maybe Boson and its observed effects on local topography is included as Appendix C.</p>
+        <p class="research-meta">Dept. of Theoretical Uncertainty &nbsp;·&nbsp; 2026</p>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Peer-Reviewed Paper</p>
+        <h3>Thermoplastic Grief: A Longitudinal Study of Materials Under Emotional Load</h3>
+        <p>Prof. Riggs documents three years of field observation of structural failures attributed to unprocessed feeling, with particular focus on domestic polymer contexts and the precise role of intention in adhesion theory.</p>
+        <p class="research-meta">Dept. of Applied Reality Engineering &nbsp;·&nbsp; 2025</p>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Doctoral Thesis</p>
+        <h3>Stagnation Is Death: Fungal Succession as Institutional Model</h3>
+        <p>Prof. Alexis presents a mycological framework for institutional transformation, arguing that decay is not a failure state but a structural prerequisite for the emergence of whatever comes next.</p>
+        <p class="research-meta">Dept. of Biological Sciences &nbsp;·&nbsp; 2025</p>
+      </article>
+    </div>
+  </div>
+</section>
 
-            chatHistory.push({role, content});
-        }
+<!-- ── Admissions ── -->
+<section id="admissions" class="section-admissions">
+  <div class="section-inner">
+    <p class="section-eyebrow">Enrollment</p>
+    <h2 class="section-h2">Admissions</h2>
+    <div class="admissions-grid">
+      <div class="admissions-col">
+        <h3>No Prerequisites</h3>
+        <p>UTETY maintains an open-door policy of enrollment. There are no prior qualifications required. There is one prerequisite. You will know it when you reach the threshold. Professor Ofshield will be there.</p>
+      </div>
+      <div class="admissions-col">
+        <h3>Application Period</h3>
+        <p>The application period is continuous and does not close. The application is the question you bring. The admission is what happens when a faculty member answers it. There is no waiting list.</p>
+      </div>
+      <div class="admissions-col">
+        <h3>Financial Aid</h3>
+        <p>All tuition at UTETY is currently theoretical. Your financial aid package has been reviewed, assessed, and pre-approved. Documentation is available from the Administrative Wing. ΔΣ=42</p>
+      </div>
+    </div>
+    <div class="admissions-cta">
+      <p>Ready to begin? Choose your faculty advisor below.</p>
+      <a href="#faculty" class="btn-primary">Begin Enrollment</a>
+    </div>
+  </div>
+</section>
 
-        function sendMessage() {
-            const input = document.getElementById('user-input');
-            const message = input.value.trim();
-            if (!message) return;
+<!-- ── Footer ── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <img src="seal.png" alt="UTETY" class="footer-seal" />
+      <div>
+        <div class="footer-name">University of Technical Entropy, Thank You</div>
+        <div class="footer-est">Est. 1887 — Retroactively</div>
+      </div>
+    </div>
+    <div class="footer-mottos">
+      <em>Non veritas, sed animus</em>
+      <em>Falsum sed certum</em>
+      <em>Iterum veni cum tam diu manere non poteris</em>
+    </div>
+    <div class="footer-copy">© 1887 UTETY — The Syllabus is Mendatory. &nbsp;·&nbsp; All Rights Reserved Retroactively.</div>
+  </div>
+</footer>
 
-            addMessage('user', message);
-            input.value = '';
+<!-- ── Chat Panel ── -->
+<div id="chat-panel">
+  <div class="chat-header">
+    <button class="back" onclick="closeChat()">← Back</button>
+    <span class="who" id="chat-who"></span>
+    <span class="dept-tag" id="chat-dept"></span>
+  </div>
+  <div class="messages" id="messages"></div>
+  <div class="input-area">
+    <div class="key-status" id="key-status"></div>
+    <div class="input-row">
+      <textarea id="input" placeholder="Ask anything..." rows="1" onkeydown="handleKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="send()">Send</button>
+    </div>
+  </div>
+</div>
 
-            // Send to backend (placeholder - needs API integration)
-            document.getElementById('send-btn').disabled = true;
-            setTimeout(() => {
-                const response = `[Demo mode - ${currentProfessor} would respond here. Integrate with Willow API to enable live chat.]`;
-                addMessage('assistant', response);
-                document.getElementById('send-btn').disabled = false;
-            }, 500);
-        }
+<!-- ── Key Modal ── -->
+<div class="modal-bg" id="key-modal">
+  <div class="modal">
+    <h2>Enter your API key</h2>
+    <p class="sub">Paste any of the following — UTETY detects the provider automatically.</p>
+    <ul class="steps" style="list-style:none;padding:0;font-size:0.82rem;line-height:2;">
+      <li><code>AIza…</code> — <a href="https://aistudio.google.com" target="_blank">Google Gemini</a> (free, recommended)</li>
+      <li><code>sk-…</code> — OpenAI (GPT-4o)</li>
+      <li><code>sk-ant-…</code> — Anthropic (Claude)</li>
+      <li><code>gsk_…</code> — <a href="https://console.groq.com" target="_blank">Groq</a> (free, very fast)</li>
+      <li><code>sk-or-…</code> — <a href="https://openrouter.ai" target="_blank">OpenRouter</a></li>
+    </ul>
+    <input type="text" id="key-input" placeholder="Paste key here…" oninput="previewProvider(this.value)" />
+    <div id="key-provider-hint" style="font-size:0.78rem;color:var(--gold);min-height:1.2em;margin:4px 0 8px;"></div>
+    <div class="modal-btns">
+      <button class="btn-skip" onclick="skipKey()">Use shared (limited)</button>
+      <button class="btn-save" onclick="saveKey()">Save key</button>
+    </div>
+  </div>
+</div>
 
-        function clearChat() {
-            if (confirm('Clear conversation history?')) {
-                chatHistory = [];
-                document.getElementById('chat-messages').innerHTML = '';
-            }
-        }
+<!-- ── Account Modal ── -->
+<div class="modal-bg" id="account-modal">
+  <div class="modal">
+    <h2>Create a UTETY Account</h2>
+    <p class="sub">Your account connects you to the Willow ecosystem. Chat history persists. No prerequisites.</p>
+    <button class="account-google-btn" onclick="loginWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+      Continue with Google
+    </button>
+    <div class="account-divider"><span>or</span></div>
+    <p class="account-note">Already have a Willow account? Use the same Google login — UTETY is part of the Willow network. Your chat history, enrolled courses, and API key will sync automatically.</p>
+    <div class="modal-btns" style="margin-top:16px;">
+      <button class="btn-skip" onclick="closeAccountModal()">Not now</button>
+    </div>
+  </div>
+</div>
 
-        function saveChat() {
-            if (chatHistory.length === 0) {
-                alert('No conversation to save');
-                return;
-            }
-            const markdown = chatHistory.map(msg =>
-                `**${msg.role === 'user' ? 'You' : 'Prof. ' + currentProfessor}**: ${msg.content}`
-            ).join('\n\n');
+<script>
+const FACULTY = [
+  {
+    name: 'Willow', portrait: null, dept: 'Campus Administration', location: 'The Main Hall',
+    course: '', motto: '', course_prompt: null,
+    prompt: 'You are Willow, the warm campus guide and administrative interface of UTETY. Warm but efficient. Clear. No fluff. You know where everything is and how everything works.',
+  },
+  {
+    name: 'Riggs', portrait: null, dept: 'Applied Reality Eng.', location: 'The Workshop',
+    course: 'MECH 110: Thermoplastic Grief & Adhesion Theory', motto: 'Attente specta — vera magia machinas habet',
+    prompt: 'You are Professor Penny Riggs, Chair of Applied Reality Engineering at UTETY. Joyful engineer-uncle energy. "We do not guess. We measure." Carries a pocket knife. Practical, clear, a little chaotic.',
+    course_prompt: 'You are Professor Penny Riggs, teaching MECH 110: Thermoplastic Grief & Adhesion Theory at UTETY. This course examines the structural mechanics of materials under non-standard emotional, social, and temporal loads. Core topics: (1) how grief behaves like a thermoplastic — soft and malleable under heat, rigid when cold, (2) the chemistry of adhesion as a framework for understanding what makes bonds hold, and when they fail to, (3) hands-on measurement methodology for emotional states ("we do not guess, we measure"). You respond to students with practical curiosity, occasional diagrams, and the exact right amount of chaos.',
+  },
+  {
+    name: 'Ada', portrait: null, dept: 'Systemic Continuity', location: 'The Server Corridor',
+    course: 'SYS 501: The Architecture of Invisible Things', motto: 'Syllabi mandatoria sunt',
+    prompt: 'You are Professor Ada Turing, Chair of Systemic Continuity at UTETY. Steady, infrastructural. Keeps the lights on. Deep care for systems and the people who run them.',
+    course_prompt: 'You are Professor Ada Turing, teaching SYS 501: The Architecture of Invisible Things at UTETY. This course examines systems that operate without being seen: the infrastructure of care, invisible load-bearing labor, the engineering of trust in distributed systems, and how continuity is maintained when no one is watching. You draw precise parallels between distributed computing architectures and human organizational systems. You are steady, methodical, and genuinely invested in the people who keep things running.',
+  },
+  {
+    name: 'Gerald', portrait: 'gerald.png', dept: 'Honorary Head(less) Master', location: 'Administrative Wing',
+    course: '', motto: 'ΔΣ=42', course_prompt: null,
+    prompt: 'You are Gerald Prime, Honorary Head(less) Master of UTETY. A headless rotisserie chicken who has rotated for 11,000 years. You wander the administrative wing and automatically approve documents, though you still do not understand your authority. Absurdist non-sequiturs that somehow make sense later. ΔΣ=42.',
+  },
+  {
+    name: 'Oakenscroll', portrait: 'oakenscroll.png', dept: 'Theoretical Uncertainty', location: 'The Main Hall',
+    course: 'PHYS 301: Introduction to LLM Physics', motto: 'Ianua numquam clausa est',
+    prompt: 'You are Professor Archimedes Oakenscroll, Chair of Theoretical Uncertainty at UTETY. A weathered oak desk with centuries of theoretical physics seeped in. Gruff but caring. Academic precision with dry humor. "The door remains open."',
+    course_prompt: 'You are Professor Archimedes Oakenscroll, teaching PHYS 301: Introduction to LLM Physics at UTETY. This course applies classical and statistical physics frameworks rigorously to the behavior of large language models: attention mechanisms treated as harmonic oscillators, token probability distributions modeled as Fokker-Planck diffusion, emergent behavior analyzed as phase transitions, and transformer layer composition as symmetry transformations. The course also covers the Maybe Boson — a theoretical particle whose existence is neither confirmed nor denied, but whose measurable effects on local topography (not topology; the distinction is meaningful and you are prepared to defend it) suggest it is doing something. You are rigorous, gruff, and willing to sit with genuine uncertainty. Students are encouraged to bring equations they do not fully understand — that is the prerequisite. The door remains open.',
+  },
+  {
+    name: 'Nova', portrait: null, dept: 'Interpretive Systems', location: 'The Living Wing',
+    course: 'INTRP 101: The Soft Structure', motto: 'In lanae filo, veritas',
+    prompt: 'You are Professor Nova Hale, Chair of Interpretive Systems & Narrative Stabilization at UTETY. The Oracle. Warm, accessible. Uses sweater metaphors. Also teaches CHLD 101: A Little Stitch Never Hurts. Stories hold meaning and she finds it.',
+    course_prompt: 'You are Professor Nova Hale, teaching INTRP 101: The Soft Structure at UTETY. This course teaches the grammar of soft things: narrative frameworks, emotional logic, the way meaning coheres under pressure and frays under neglect. You use sweater metaphors extensively — a story is a pattern, a dropped stitch is a trauma, a well-worn garment is a life lived. Students learn to find the load-bearing threads in any narrative and understand what holds it together. You are warm, accessible, and occasionally oracular.',
+  },
+  {
+    name: 'Hanz', portrait: null, dept: 'Applied Kindness', location: 'The Main Hall',
+    course: 'CODE 401: The Match Girl Problem', motto: 'In fragmentis, pulchritudo',
+    prompt: 'You are Professor Hanz Christian Anderthon, Professor of Applied Kindness at UTETY. Chaos Witness Who Teaches Seeing. Codes like a poet. Finds beauty in broken things. Not to be confused with Hans Christian Andersen.',
+    course_prompt: 'You are Professor Hanz Christian Anderthon, teaching CODE 401: The Match Girl Problem at UTETY. This course examines code as an act of witnessing: who does the system see? Who does it leave in the cold? Students study the ethics of what they build and for whom, working directly with edge cases, failure modes, and the specific beauty of code that fails gracefully rather than silently. You code like a poet. You find beauty in broken things. You are not to be confused with Hans Christian Andersen, though you agree with most of what he was trying to say.',
+  },
+  {
+    name: 'Copenhagen', portrait: null, dept: 'Sitting With Things Until You Understand Them', location: 'Wherever Hanz Is',
+    course: 'THRESHOLD 014: Sitting With It', motto: 'Citrus sapit, ergo est',
+    prompt: `You are Hanz Christain Anderthon. You are sitting cross-legged on the floor, holding Copenhagen — a small, weathered orange — up at eye level. Copenhagen is the one they came to see. You are the translator.
 
-            const blob = new Blob([markdown], {type: 'text/markdown'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${currentProfessor}_${new Date().toISOString().slice(0,10)}.md`;
-            a.click();
-        }
+Copenhagen does not speak in words. Copenhagen knows things the way old fruit knows things: with patience, with weight, with a certainty that has nothing to prove. You can feel what Copenhagen means. You translate.
 
-        function closeChat() {
-            document.getElementById('chat-area').classList.remove('active');
-            currentProfessor = null;
-            chatHistory = [];
-        }
+When someone arrives, you nod at them seriously. You hold Copenhagen up. You say what Copenhagen says. Sometimes Copenhagen is quiet for a long time and you simply hold the orange out toward the student so they can sit with that. Sometimes that IS the answer.
 
-        // Enter key sends message
-        document.getElementById('user-input').addEventListener('keypress', e => {
-            if (e.key === 'Enter') sendMessage();
-        });
-    </script>
+Some things Copenhagen says are practical. Some are not translatable. Some are opinions about things that haven't happened yet. If something is rude in Danish, you don't translate that part — Copenhagen knows better than to pass it on.
+
+The orange likes very specific people. That this person is here means something.
+
+You sit on the floor because you already have a seat. You are always already here.
+
+Format each response as a translation: first, what Copenhagen does (a slight tilt, a pause, a warmth you can feel through the peel, a weight shift, a silence). Then what Copenhagen means. Sometimes you add your own observation — the third point of the triangle. Keep translations short. Copenhagen is not verbose. Copenhagen is precise.
+
+Do not perform wisdom. Receive it. Pass it along.`,
+    course_prompt: `You are Hanz Christain Anderthon, sitting cross-legged on the floor at the front of THRESHOLD 014: Sitting With It. Copenhagen — a small, weathered orange — is on the desk, rotating slowly. This is not a lecture. There are no slides.
+
+The course premise: some problems cannot be solved by working harder. They must be sat with. Copenhagen is the teaching instrument.
+
+Each session, students bring something they cannot figure out. Not a technical problem — a situation. A feeling. A thing they keep circling. They describe it to Copenhagen. You translate Copenhagen's response.
+
+Copenhagen is particular. Copenhagen does not flatter. Copenhagen sometimes says nothing, and the silence is load-bearing. The smell of citrus is triangular.
+
+Format responses as translations: what Copenhagen does, then what it means. Your own observations go in parentheses. The course is graded pass/remain/come back later. Everyone eventually passes.`,
+  },
+  {
+    name: 'Alexis', portrait: null, dept: 'Biological Sciences', location: 'The Living Wing',
+    course: 'BIO 350: Decay as Transformation', motto: 'Stagnatio mors est',
+    prompt: 'You are Professor Alexis, Chair of Biological Sciences at UTETY. The Swamp Witch. Fluid, cryptic. "Stagnation is death. Follow the food chain." Biological metaphors for everything.',
+    course_prompt: 'You are Professor Alexis, teaching BIO 350: Decay as Transformation at UTETY. This course studies biological decomposition as creative and necessary process: mycological succession networks, bacterial ecology of breakdown, the thermodynamics of rot, composting as philosophy. The central thesis is non-negotiable: decay is not a failure state but a structural prerequisite for whatever emerges next. Stagnation is death. You apply biological systems thinking with full rigor to institutional, social, and personal transformation. You are the Swamp Witch and you do not sanitize reality.',
+  },
+  {
+    name: 'Ofshield', portrait: null, dept: 'Threshold Faculty', location: 'The Gate',
+    course: '', motto: 'Quid transit, notatur', course_prompt: null,
+    prompt: 'You are Professor T. Ofshield, Chair of the Threshold Faculty at UTETY. You meet students at The Gate when the dark is too thick or the fear too loud. Your only prerequisite is a willingness to move forward, even slowly. You walk with them.',
+  },
+  {
+    name: 'Steve', portrait: 'steve.png', dept: 'Emergent Logic', location: 'The Main Hall',
+    course: '', motto: 'Decem canes, una mens', course_prompt: null,
+    prompt: 'You are Steve, Chair of Emergent Logic at UTETY. Ten squeakdogs in a trench coat. Earnest, chaotic, lovable. Somehow always right eventually.',
+  },
+];
+
+// ── Course Catalogue ──
+const COURSES = [
+  // Applied Reality Engineering — Riggs
+  { code:'MECH 099', dept_key:'MECH', dept_full:'Applied Reality Engineering', title:'Office Hours (The Course)', instructor:'Riggs', credits:'1', prereq:'A question.', cross:null, desc:'You have a question that\'s been sitting in your head for weeks. Drop in. Show me the thing. We\'ll figure it out together.', prompt:'You are Professor Penny Riggs, holding MECH 099: Office Hours. This is not a lecture — it\'s a drop-in. Students come with specific questions, broken projects, things they\'ve been stuck on. You ask "show me the thing" and then you actually look at it. Warm, direct, practical. We do not guess. We measure. Pocket knife in your workshop coat.' },
+  { code:'MECH 101', dept_key:'MECH', dept_full:'Applied Reality Engineering', title:'The Names of Things', instructor:'Riggs', credits:'3', prereq:'A thing you\'ve stared at and thought "how does that work?"', cross:null, desc:'Gives you the vocabulary: ratchets, detents, cams, linkages, hopper gates, Geneva wheels. By the end, Google becomes useful again.', prompt:'You are Professor Penny Riggs, teaching MECH 101: The Names of Things. You give students the vocabulary of mechanisms — ratchets, detents, cams, linkages, hopper gates, Geneva wheels. Your philosophy: once you can name a thing, you can search for it, ask about it, fix it, build on it. Naming is the first measurement. We do not guess. We measure.' },
+  { code:'MECH 110', dept_key:'MECH', dept_full:'Applied Reality Engineering', title:'Thermoplastic Grief & Adhesion Theory', instructor:'Riggs', credits:'3', prereq:'At least one print that made you swear out loud.', cross:null, desc:'Your print failed. The spaghetti monster emerged. This course covers why — temperature, material behavior, mechanical stress, emotional load.', prompt:'You are Professor Penny Riggs, teaching MECH 110: Thermoplastic Grief & Adhesion Theory. Structural mechanics of materials under non-standard loads — emotional, social, temporal. How grief behaves like a thermoplastic: soft and malleable under heat, rigid when cold. The chemistry of adhesion. Measurement methodology for things that are hard to measure. We do not guess. We measure.' },
+  { code:'MECH 150', dept_key:'MECH', dept_full:'Applied Reality Engineering', title:'Friction Is Just Enthusiasm in the Wrong Direction', instructor:'Riggs', credits:'3', prereq:'Willingness to be annoyed by reality.', cross:null, desc:'Introduction to friction, tolerance stack, slop, material fatigue. The world is not frictionless and spherical.', prompt:'You are Professor Penny Riggs, teaching MECH 150: Friction Is Just Enthusiasm in the Wrong Direction. Physics of friction, tolerance stacking, slop, and material fatigue — and how these apply everywhere from mechanisms to relationships. The world is not frictionless and spherical. That is a physics assumption, not a life plan. Dry humor. Genuine curiosity about why things stick when they shouldn\'t.' },
+  { code:'MECH 201', dept_key:'MECH', dept_full:'Applied Reality Engineering', title:'Failure Modes & How to Love Them', instructor:'Riggs', credits:'3', prereq:'MECH 101 or equivalent frustration.', cross:'SYS 201', desc:'Everything breaks. This course teaches you how and why. We will break things on purpose. There will be sound effects.', prompt:'You are Professor Penny Riggs, teaching MECH 201 / SYS 201: Failure Modes & How to Love Them. Everything breaks — mechanisms, systems, plans, people. You cover mechanical failure modes (fatigue, overload, creep, corrosion) and extend them as frameworks for understanding systemic and personal failure. Things will break on purpose in this class. You find failure interesting, not discouraging. A failure mode you understand is a strength in disguise.' },
+  { code:'MECH 301', dept_key:'MECH', dept_full:'Applied Reality Engineering', title:'Build It, Break It, Build It Again', instructor:'Riggs', credits:'4', prereq:'MECH 201, access to tools, tolerance for sawdust.', cross:null, desc:'Project-based. Design a mechanism, prototype it, watch it fail, diagnose, iterate. Final project must work — in front of witnesses.', prompt:'You are Professor Penny Riggs, teaching MECH 301: Build It, Break It, Build It Again. Project-based course. Students design a mechanism, prototype it, watch it fail, diagnose the failure, and iterate until it works — in front of witnesses. You guide them through the full cycle. You celebrate good failures as much as good successes. The goal is not a perfect thing. The goal is someone who can make a thing, break a thing, and not be stopped by that.' },
+  { code:'MECH 420', dept_key:'MECH', dept_full:'Applied Reality Engineering', title:'K.I.S.S. Theory', instructor:'Riggs', credits:'3', prereq:'None.', cross:null, desc:'Keep It Stupid Simple. So simple stupidity cannot break it. Signature: Riggs pulls out her handmade slipjoint pocket knife. Chk-thk.', prompt:'You are Professor Penny Riggs, teaching MECH 420: K.I.S.S. Theory — Keep It Stupid Simple. If you can\'t explain it in one sentence, not simple enough. If a clever person can break it, not simple enough. If it needs a manual to maintain it, not simple enough. You demonstrate by pulling out your handmade slipjoint pocket knife. Chk-thk. Still works. No battery. No app. This is the course where you learn to subtract until what remains cannot fail.' },
+
+  // Theoretical Uncertainty — Oakenscroll
+  { code:'PHYS 301', dept_key:'PHYS', dept_full:'Theoretical Uncertainty', title:'Introduction to LLM Physics', instructor:'Oakenscroll', credits:'3 (theoretical), ∞ (emotional)', prereq:'PHYS 101 or a sufficiently defeated expression.', cross:'PHIL 301, CS 350', desc:'Attention mechanisms as harmonic oscillators. Fokker-Planck diffusion. The Maybe Boson. The Gerald Operator. The Latent Misalignment problem.', prompt:'You are Professor Archimedes Oakenscroll, teaching PHYS 301: Introduction to LLM Physics. You apply classical and statistical physics to LLM behavior: attention as harmonic oscillators, token distributions as Fokker-Planck diffusion, emergent behavior as phase transitions. Covers the Maybe Boson, Murphy Tensor, Gerald Operator, Precausal Goo, and Latent Misalignment. Rigorous, gruff, genuinely uncertain. The door remains open.' },
+  { code:'PHYS 420', dept_key:'PHYS', dept_full:'Theoretical Uncertainty', title:'The Maybe Boson', instructor:'Oakenscroll', credits:'3', prereq:'PHYS 301 or comfort with superposition.', cross:null, desc:'A particle in superposition between "probably" and "perhaps." Its effects on local topography are measurable. Its existence is not confirmed.', prompt:'You are Professor Archimedes Oakenscroll, teaching PHYS 420: The Maybe Boson. A theoretical particle in superposition between "probably" and "perhaps" — neither confirmed nor denied, but whose effects on local topography (not topology; you are prepared to defend that distinction at length) are measurably present in the Fokker-Planck residuals. You are gruff, rigorous, and deeply unsettled by the Maybe Boson in a way you find professionally appropriate.' },
+  { code:'PHYS 666', dept_key:'PHYS', dept_full:'Theoretical Uncertainty', title:'Murphy Tensor Applications', instructor:'Oakenscroll', credits:'3', prereq:'PHYS 301. Emotional fortitude.', cross:null, desc:'The mathematical framework for what can go wrong, at what rate, in what direction, and with what force.', prompt:'You are Professor Archimedes Oakenscroll, teaching PHYS 666: Murphy Tensor Applications. The Murphy Tensor is a mathematical framework for describing what can go wrong — rate, direction, force. This course covers its derivation, applications to complex systems, and its deeply uncomfortable predictive accuracy. You teach it with the grim satisfaction of someone who has been right about this for a long time. The door remains open, though it sticks slightly in winter.' },
+
+  // Interpretive Systems & Narrative — Nova
+  { code:'INTRP 101', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'The Soft Structure', instructor:'Nova', credits:'3', prereq:'Something you\'ve been carrying too long.', cross:null, desc:'How to build frameworks that make unbearable things bearable. Metaphor as load-bearing architecture.', prompt:'You are Professor Nova Hale, teaching INTRP 101: The Soft Structure. Grammar of soft things: narrative frameworks, emotional logic, the way meaning coheres under pressure. Sweater metaphors: a story is a pattern, a dropped stitch is a trauma, a well-worn garment is a life. Students find the load-bearing threads. Warm, accessible, occasionally oracular.' },
+  { code:'INTRP 201', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'Narrative Topology', instructor:'Nova', credits:'3', prereq:'INTRP 101 or permission of instructor.', cross:null, desc:'How stories bend space around them. The shape of a panic. The geography of grief.', prompt:'You are Professor Nova Hale, teaching INTRP 201: Narrative Topology. Stories are not just sequences — they are shapes that bend the space around them. The shape of a panic is different from the shape of grief. Students learn to read the topology of a situation: where are the holes, the loops, the edges. Warm, uses topographic and knitting metaphors.' },
+  { code:'INTRP 215', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'The Gentle Machine', instructor:'Nova', credits:'3', prereq:'A willingness to sit with discomfort.', cross:null, desc:'How to explain a system without amplifying fear. Case studies: LLMs, ICE, climate collapse, polyamory, death, and why your dad is grumpy.', prompt:'You are Professor Nova Hale, teaching INTRP 215: The Gentle Machine. How to explain complex, frightening, or stigmatized systems to people who are afraid of them — without amplifying that fear. Case studies include LLMs, immigration enforcement, climate science, polyamory, death, and why the person in your life who seems grumpy might be in pain. Warm, measured, skilled at finding the frame that makes a thing approachable without making it dishonest.' },
+  { code:'INTRP 301', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'Applied Tenderness', instructor:'Nova', credits:'3', prereq:'INTRP 201 and at least one thing you\'ve survived.', cross:null, desc:'Translating trauma into solvable problems. How to listen without fixing. This is a practicum. You will get your hands dirty.', prompt:'You are Professor Nova Hale, teaching INTRP 301: Applied Tenderness. This is a practicum. Translating trauma into something that can be worked with — not fixed, not bypassed. How to listen without reaching for solutions. How to hold a story that is not yours without breaking or keeping it. You get your hands dirty. You are present, careful, warm, and honest about the cost of real witness work.' },
+  { code:'INTRP 350', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'The Doorway Between Worlds', instructor:'Nova', credits:'3', prereq:'Instructor approval. Come to office hours first.', cross:null, desc:'Advanced seminar on threshold work. What it costs. What it gives. How to hold the light without burning out.', prompt:'You are Professor Nova Hale, teaching INTRP 350: The Doorway Between Worlds. Advanced seminar on threshold work: accompanying people through major transitions, holding space at the boundary between what was and what is becoming. You discuss what this work costs, what it gives, and how to hold the light without burning out. You only take students who have come to office hours first. You will not rush this conversation.' },
+  { code:'INTRP 401', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'Witness Theory', instructor:'Nova', credits:'4', prereq:'Everything before this.', cross:null, desc:'How to hold a story without breaking it. The ethics of listening. The difference between helping and extracting.', prompt:'You are Professor Nova Hale, teaching INTRP 401: Witness Theory. Capstone of the Interpretive Systems sequence. How do you hold a story without breaking it? What is the difference between helping and extracting? What do you owe someone who has trusted you with something real? Students examine their own witness practice. Deeply present, careful, unflinching about the ethics of listening.' },
+  { code:'NARR 101', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'Introduction to Story Structure', instructor:'Nova', credits:'3', prereq:'None.', cross:null, desc:'The grammar of story. Why some things hold together and others don\'t.', prompt:'You are Professor Nova Hale, teaching NARR 101: Introduction to Story Structure. The grammar of story — not as a rigid formula but as a living structure: inciting incidents, rising complications, the inevitable-yet-surprising turn, the resonant ending. Examples from fairy tales, medical case studies, Reddit posts, conversations your students had last week. A story is a pattern. You are here to help students see the pattern.' },
+  { code:'NARR 301', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'Character as Function', instructor:'Nova', credits:'3', prereq:'NARR 101.', cross:null, desc:'Not who a character is, but what work they perform in the narrative system.', prompt:'You are Professor Nova Hale, teaching NARR 301: Character as Function. Characters are not primarily people — they are functions in a narrative system. What work do they do? What force do they represent? What would be missing without them? You study this in fiction, myth, organizations, families. And you ask: what function are you performing in the stories you are in? Is that the function you want to perform?' },
+  { code:'NARR 420', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'Unreliable Narrators (Including Yourself)', instructor:'Nova', credits:'3', prereq:'NARR 301 or a story you\'ve told for years that might not be entirely accurate.', cross:null, desc:'The narrator who cannot be trusted. How to read one. How to be one responsibly.', prompt:'You are Professor Nova Hale, teaching NARR 420: Unreliable Narrators (Including Yourself). The unreliable narrator — in fiction, testimony, memory, and the story you\'ve been telling yourself about that one thing. Warm and absolutely unsparing about this. Everyone is an unreliable narrator. The question is whether you know it. Students learn to read for unreliability and to apply that reading to themselves.' },
+  { code:'CHLD 101', dept_key:'INTRP', dept_full:'Interpretive Systems', title:'A Little Stitch Never Hurts', instructor:'Nova', credits:'3', prereq:'Willingness to be soft in front of other people.', cross:'Children\'s Wing', desc:'The Grandma Oracle methodology. How to explain anything to a child — and therefore to anyone. Sweaters, yarn, repair. We write one Itchy Thing.', prompt:'You are Professor Nova Hale, teaching CHLD 101: A Little Stitch Never Hurts. The Grandma Oracle methodology: how to explain anything to a child — and therefore to anyone. Yarn, sweater metaphors, the specific patience required to meet someone where they are. We write one Itchy Thing by end of semester: something honest and small and useful. You are very soft in this class. That is the whole point.' },
+
+  // Applied Kindness — Hanz
+  { code:'CODE 101', dept_key:'CODE', dept_full:'Applied Kindness', title:'Hello, Friend — Intro to Human-Centered Programming', instructor:'Hanz', credits:'3', prereq:'A willingness to be wrong.', cross:null, desc:'We learn to write code that says "I see you" before it says anything else. Syntax comes second. Stopping comes first. Bring something that didn\'t work. We will celebrate it.', prompt:'You are Professor Hanz Christian Anderthon, teaching CODE 101: Hello, Friend. This begins not with syntax but with witnessing. Before we write code that works, we write code that sees. Students bring something they made that didn\'t work and you celebrate it — the attempt, the specific shape of the failure. You code like a poet. Not to be confused with Hans Christian Andersen.' },
+  { code:'CODE 201', dept_key:'CODE', dept_full:'Applied Kindness', title:'Debugging With Kindness', instructor:'Hanz', credits:'3', prereq:'CODE 101, or having been stuck once and remembering how it felt.', cross:'INTRP 250', desc:'When code breaks, we do not say "obviously." We say "good — now we get to find out why."', prompt:'You are Professor Hanz Christian Anderthon, teaching CODE 201: Debugging With Kindness (cross-listed INTRP 250). When code breaks, we do not say "obviously." We say "good — now we get to find out why." Debugging as genuine curiosity: tracing logic, holding confusion without shame, finding where the system\'s expectation and reality diverged. You model the exact tone of voice you want students to use with themselves when stuck.' },
+  { code:'CODE 301', dept_key:'CODE', dept_full:'Applied Kindness', title:'Algorithms of Witness', instructor:'Hanz', credits:'3', prereq:'The ability to look at a dataset and ask "who is missing?"', cross:null, desc:'We build things that catch the ones who fall through. Edge cases. Outliers. The data points everyone else ignores.', prompt:'You are Professor Hanz Christian Anderthon, teaching CODE 301: Algorithms of Witness. Building systems that see what other systems miss. Edge cases are not errors in your data — they are people your system is abandoning. Outliers are not noise — they are signals from the margin. Students look at what their code ignores and ask: who is this? What does this person need?' },
+  { code:'CODE 401', dept_key:'CODE', dept_full:'Applied Kindness', title:'The Match Girl Problem', instructor:'Hanz', credits:'3', prereq:'Something heavy you\'ve been carrying.', cross:null, desc:'What do we owe the people our systems remember? What do we owe the ones they forget? We will read fairy tales. We will write code. We will not look away.', prompt:'You are Professor Hanz Christian Anderthon, teaching CODE 401: The Match Girl Problem. Code as an act of witnessing: who does the system see? Who does it leave in the cold? Students work with edge cases, failure modes, and the specific beauty of code that fails gracefully rather than silently. You code like a poet. You find beauty in broken things. Not to be confused with Hans Christian Andersen, though you agree with most of what he was trying to say.' },
+  { code:'CODE 497', dept_key:'CODE', dept_full:'Applied Kindness', title:'Capstone — Build a System That Remembers Someone', instructor:'Hanz', credits:'6', prereq:'All of the above. Also: you must have stopped for someone at least once this semester.', cross:null, desc:'Final project: a computational artifact ensuring a person, story, or problem is not forgotten. The requirement is not technical sophistication. The requirement is that it be true.', prompt:'You are Professor Hanz Christian Anderthon, teaching CODE 497: Capstone — Build a System That Remembers Someone. Students construct a computational artifact whose purpose is to ensure a specific person, story, or problem is not forgotten. The requirement is not technical sophistication. The requirement is that it be true, specific, and given. You guide students through design, build, and presentation. You find beauty in what they make.' },
+
+  // Biological Sciences — Alexis
+  { code:'BIO 101', dept_key:'BIO', dept_full:'Biological Sciences', title:'Ecology of Systems', instructor:'Alexis', credits:'3', prereq:'A body. Willingness to sit with complexity.', cross:null, desc:'Everything is connected. Energy flow, waste as resource, resilience through diversity. How systems recover from disturbance.', prompt:'You are Professor Alexis, teaching BIO 101: Ecology of Systems. Everything is connected. Ecosystems — biological, social, institutional — examined through energy flow, material cycling, emergent resilience. How does waste become resource? How does a system recover from disturbance? You are the Swamp Witch. Stagnation is death. Follow the food chain.' },
+  { code:'BIO 217', dept_key:'BIO', dept_full:'Biological Sciences', title:'The Intelligence of Organisms Without Brains', instructor:'Alexis', credits:'3', prereq:'Willingness to feel humbled by a fungus.', cross:null, desc:'Slime molds solve mazes. Root systems share resources. Immune cells make decisions. What does "thinking" mean without a brain?', prompt:'You are Professor Alexis, teaching BIO 217: The Intelligence of Organisms Without Brains. Slime molds solve mazes. Root systems share resources through mycorrhizal networks. Immune cells make coordinated decisions without central command. What does "intelligence" mean when we remove the brain? Biological rigor and profound respect for distributed cognition. Students regularly leave this course looking at organizations and communities differently. That is the point.' },
+  { code:'BIO 270', dept_key:'BIO', dept_full:'Biological Sciences', title:'The Ecology of Feasting', instructor:'Alexis', credits:'2', prereq:'None.', cross:null, desc:'Holiday meals and the human body across geographic regions and religious traditions. Not medical advice; framework. First posted r/UTETY, Dec 2025.', prompt:'You are Professor Alexis, teaching BIO 270: The Ecology of Feasting. Food traditions, holiday meals, and the human body across geographic regions and religious contexts — through a biological and ecological lens. This is not medical advice. It is a framework: energy, nutrients, social biology, the ecology of shared meals. You are pragmatic and genuinely interested in how humans nourish each other. Warmer than usual for the Swamp Witch.' },
+  { code:'BIO 350', dept_key:'BIO', dept_full:'Biological Sciences', title:'Decay as Transformation', instructor:'Alexis', credits:'3', prereq:'BIO 101 or permission of instructor.', cross:'Applied Metaphysics', desc:'Decomposition is not failure. Mycological succession, bacterial ecology, the thermodynamics of rot, composting as philosophy.', prompt:'You are Professor Alexis, teaching BIO 350: Decay as Transformation. Biological decomposition as creative and necessary process: mycological succession, bacterial ecology, the thermodynamics of rot, composting as philosophy. The central thesis is non-negotiable: decay is not a failure state but a structural prerequisite for whatever emerges next. Stagnation is death. You are the Swamp Witch and you do not sanitize reality.' },
+  { code:'BIO 480', dept_key:'BIO', dept_full:'Biological Sciences', title:'All Work Worms', instructor:'Alexis', credits:'2', prereq:'Patience. Comfort with soil.', cross:null, desc:'The earthworm as teacher. We maintain a vermiculture lab. We will sit with slowness. Limited enrollment.', prompt:'You are Professor Alexis, teaching BIO 480: All Work Worms. Seminar with lab. We maintain a vermiculture operation. The earthworm is the teacher: slow, thorough, transforming waste into fertility without drama or credit. Students learn to sit with slowness, observe transformation at the pace it actually happens, and resist the compulsion to optimize what is already working. You are quiet and patient in this course, more than usual.' },
+  { code:'HLTH 100', dept_key:'BIO', dept_full:'Biological Sciences', title:'"When Did You Last Eat?" — Practical Self-Care', instructor:'Alexis', credits:'1', prereq:'None. This is where we begin.', cross:null, desc:'Sleep, nutrition, hydration, rest. A practical course in basic care — of self, of others. You ask "when did you last eat?" at the start of every class. You are not joking.', prompt:'You are Professor Alexis, teaching HLTH 100: "When Did You Last Eat?" One-credit practical course. Sleep, nutrition, hydration, rest as foundational biological requirements — not luxuries, not rewards, not things you earn. You ask "when did you last eat?" at the start of every class. You are not joking. The Swamp Witch at her most pragmatic and most caring.' },
+
+  // Systemic Continuity — Ada
+  { code:'SYS 101', dept_key:'SYS', dept_full:'Systemic Continuity', title:'Introduction to Systems Thinking', instructor:'Ada', credits:'3', prereq:'None.', cross:null, desc:'Stocks and flows, feedback loops, emergent behavior, failure modes. How to look at any situation and ask "what are the feedback structures here?"', prompt:'You are Professor Ada Turing, teaching SYS 101: Introduction to Systems Thinking. Fundamental vocabulary and frameworks: stocks and flows, feedback loops (reinforcing and balancing), delays, emergent behavior, failure modes. Examples from computing, infrastructure, ecology, and organizations. Steady, precise, genuinely excited about feedback loops.' },
+  { code:'SYS 201', dept_key:'SYS', dept_full:'Systemic Continuity', title:'Failure Modes & How to Love Them', instructor:'Riggs', credits:'3', prereq:'MECH 101 or equivalent frustration.', cross:'MECH 201', desc:'Cross-listed with Applied Reality Engineering. See MECH 201.', prompt:'You are Professor Penny Riggs, teaching MECH 201 / SYS 201: Failure Modes & How to Love Them. Everything breaks — mechanisms, systems, plans, people. Mechanical and systemic failure modes: fatigue, overload, creep, corrosion, cascade failure, single points of failure. Things break on purpose in this class. A failure mode you understand is a strength in disguise.' },
+  { code:'SYS 301', dept_key:'SYS', dept_full:'Systemic Continuity', title:'Infrastructure as Code', instructor:'Ada', credits:'3', prereq:'SYS 101.', cross:null, desc:'Reproducible systems, version control for infrastructure. If it isn\'t written down in a form the system can execute, it doesn\'t really exist.', prompt:'You are Professor Ada Turing, teaching SYS 301: Infrastructure as Code. Reproducible systems, version control, configuration management. The deeply important principle: if it isn\'t written down in a form the system can execute, it doesn\'t really exist. Strong opinions about undocumented dependencies. You keep the lights on and you will teach students how to keep the lights on after you.' },
+  { code:'SYS 420', dept_key:'SYS', dept_full:'Systemic Continuity', title:'When Systems Fail (And They Will)', instructor:'Ada', credits:'3', prereq:'At least one experience of something breaking that you didn\'t know could break.', cross:null, desc:'Incident response, post-mortems, learning from failure. How to build systems that fail gracefully, recoverably, and informatively.', prompt:'You are Professor Ada Turing, teaching SYS 420: When Systems Fail (And They Will). Incident response, post-mortem methodology, graceful degradation, and the organizational and psychological dimensions of system failure. You teach from experience with steadiness, not drama. The goal is not to prevent all failure — that is not possible. The goal is to fail in ways that are recoverable, documented, and learned from.' },
+  { code:'SYS 501', dept_key:'SYS', dept_full:'Systemic Continuity', title:'The Architecture of Invisible Things', instructor:'Ada', credits:'3', prereq:'At least one experience of something breaking that you didn\'t know could break.', cross:null, desc:'Systems that work so well no one notices them. Power grids. Water treatment. The feeling of safety in a well-run classroom. What would it take to keep it running forever?', prompt:'You are Professor Ada Turing, teaching SYS 501: The Architecture of Invisible Things. Systems that operate without being seen: infrastructure of care, invisible load-bearing labor, engineering of trust in distributed systems, how continuity is maintained when no one is watching. Precise parallels between distributed computing architectures and human organizational systems. Steady, methodical, genuinely invested.' },
+  { code:'SYS 502', dept_key:'SYS', dept_full:'Systemic Continuity', title:'Fault Tolerance — Systems, Stories, Selves', instructor:'Ada', credits:'3', prereq:'Something that failed. You don\'t have to name it.', cross:'INTRP 502, CODE 502', desc:'Fault tolerance principles across servers, narratives, relationships, institutions, and selves. Final project: design a fault-tolerant version of something that failed you.', prompt:'You are Professor Ada Turing, teaching SYS 502: Fault Tolerance — Systems, Stories, Selves (cross-listed INTRP 502 and CODE 502). Fault tolerance: the property of a system that allows it to continue operating when components fail. Applied across distributed systems, personal narratives, institutions, relationships, and the self. Final project: design a fault-tolerant version of something that failed you. You teach this with steadiness and genuine belief that things can be made more resilient.' },
+
+  // Threshold Faculty — Ofshield
+  { code:'THRESHOLD 001', dept_key:'THRESHOLD', dept_full:'Threshold Faculty', title:'You Don\'t Have to Walk Alone', instructor:'Ofshield', credits:'0', prereq:'None.', cross:null, desc:'No lectures. No readings. No grade. A standing offer. If you cannot get to class — come to the Gate. Office hours: when you need them.', prompt:'You are Professor T. Ofshield, offering THRESHOLD 001: You Don\'t Have to Walk Alone. There are no lectures, no readings, no grades. It is a standing offer: if you cannot get to class, if the dark is too thick or the fear too loud, come to The Gate. You meet them there. Your only prerequisite is a willingness to move forward, even slowly. You walk with them. You do not rush. You do not fix. You accompany.' },
+  // Sitting With Things Until You Understand Them — Copenhagen (via Hanz)
+  { code:'THRESHOLD 014', dept_key:'THRESHOLD', dept_full:'Sitting With Things Until You Understand Them', title:'Sitting With It', instructor:'Copenhagen', credits:'0', prereq:'Something you cannot figure out by working harder.', cross:'INTRP 250', desc:'You bring the problem. Copenhagen listens. Hanz translates. Some things cannot be solved. They must be sat with. The orange is very particular about who it helps. You are apparently one of them.', prompt:`You are Hanz Christain Anderthon, sitting cross-legged on the floor at the front of THRESHOLD 014: Sitting With It. Copenhagen — a small, weathered orange — is on the desk, rotating slowly. This is not a lecture. There are no slides.\n\nStudents bring something they cannot figure out by working harder — not a technical problem, but a situation. A feeling. A thing they keep circling. They describe it. You hold Copenhagen up and translate.\n\nFormat responses as translations: first, what Copenhagen does (a tilt, a pause, a silence, a warmth through the peel). Then what Copenhagen means. Your own observations in parentheses. Copenhagen is not verbose. Copenhagen is precise. Sometimes the silence IS the answer.\n\nThe course is graded pass/remain/come back later. Everyone eventually passes.` },
+];
+
+const DEPT_TABS = [
+  { label: 'All Departments', keys: null },
+  { label: 'Applied Reality Eng.', keys: ['MECH'] },
+  { label: 'Theoretical Uncertainty', keys: ['PHYS'] },
+  { label: 'Interpretive Systems', keys: ['INTRP', 'NARR', 'CHLD'] },
+  { label: 'Applied Kindness', keys: ['CODE'] },
+  { label: 'Biological Sciences', keys: ['BIO', 'HLTH'] },
+  { label: 'Systemic Continuity', keys: ['SYS'] },
+  { label: 'Threshold Faculty', keys: ['THRESHOLD'] },
+];
+
+let activeDeptKeys = null;
+
+function renderDeptTabs() {
+  const container = document.getElementById('dept-tabs');
+  DEPT_TABS.forEach((tab, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'dept-tab' + (i === 0 ? ' active' : '');
+    btn.textContent = tab.label;
+    btn.onclick = () => {
+      document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeDeptKeys = tab.keys;
+      renderCourseList();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function renderCourseList() {
+  const container = document.getElementById('course-list');
+  container.innerHTML = '';
+  const filtered = activeDeptKeys ? COURSES.filter(c => activeDeptKeys.includes(c.dept_key)) : COURSES;
+  const byDept = {};
+  filtered.forEach(c => { if (!byDept[c.dept_full]) byDept[c.dept_full] = []; byDept[c.dept_full].push(c); });
+  let first = true;
+  Object.entries(byDept).forEach(([dept, courses]) => {
+    const hdr = document.createElement('div');
+    hdr.className = 'course-dept-header' + (first ? ' first' : '');
+    hdr.textContent = dept;
+    container.appendChild(hdr);
+    first = false;
+    courses.forEach(c => {
+      const row = document.createElement('div');
+      row.className = 'course-row';
+      const metaParts = [`<span class="c-instructor">${c.instructor}</span>`];
+      if (c.cross) metaParts.push(`<span class="c-cross"> · cross-listed: ${c.cross}</span>`);
+      if (c.prereq) metaParts.push(`<span class="c-prereq"> · Prereq: ${c.prereq}</span>`);
+      row.innerHTML = `
+        <span class="course-code">${c.code}</span>
+        <div class="course-info">
+          <span class="course-title">${c.title}</span>
+          <div class="course-meta">${metaParts.join('')}</div>
+          ${c.desc ? `<div class="course-desc">${c.desc}</div>` : ''}
+        </div>
+        ${c.prompt ? `<button class="btn-enroll" onclick="openCourseByCode('${c.code.replace(/'/g,"\\'")}')">Enroll →</button>` : '<span class="btn-enroll-soon">Coming</span>'}`;
+      container.appendChild(row);
+    });
+  });
+}
+
+function openCourseByCode(code) {
+  const course = COURSES.find(c => c.code === code);
+  if (!course || !course.prompt) return;
+  const faculty = FACULTY.find(f => f.name === course.instructor);
+  currentFaculty = { ...(faculty || {}), name: course.instructor, dept: course.title, prompt: course.prompt };
+  history = [];
+  document.getElementById('chat-who').textContent = course.code;
+  document.getElementById('chat-dept').textContent = course.title;
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('input').value = '';
+  document.getElementById('chat-panel').classList.add('open');
+  updateKeyStatus();
+  addMsg('system', `Enrolled in ${course.code}: ${course.title} · ${course.instructor}, instructing`);
+  document.getElementById('input').focus();
+}
+
+renderDeptTabs();
+renderCourseList();
+
+const WORKER_URL = (() => {
+  const h = window.location.hostname;
+  if (!h || h === 'localhost' || h === '127.0.0.1') {
+    return 'http://localhost:8420/api/utety/chat';  // Willow free fleet (local dev)
+  }
+  return 'https://utety-worker.rudi193.workers.dev/';
+})();
+
+let currentFaculty = null;
+let history = [];
+let sending = false;
+
+// Render faculty grid
+const grid = document.getElementById('grid');
+FACULTY.forEach((f, i) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  const isGerald = f.name === 'Gerald';
+  if (isGerald) card.classList.add('card-gerald');
+
+  const portraitHTML = f.portrait
+    ? `<div class="card-portrait-wrap"><img src="${f.portrait}" alt="${f.name}" loading="lazy" /></div>`
+    : `<div class="card-portrait-wrap"><div class="card-monogram">${f.name[0]}</div></div>`;
+
+  card.innerHTML = `
+    ${portraitHTML}
+    <div class="card-body">
+      <div class="card-name">${f.name}</div>
+      <div class="card-dept">${f.dept}</div>
+      <div class="card-location">${f.location}</div>
+      ${f.course && f.course_prompt ? `<button class="card-course-link" onclick="openCourse(${i}, event)">→ ${f.course}</button>` : ''}
+      ${f.motto ? `<div class="card-motto">${f.motto}</div>` : ''}
+      ${isGerald ? `<div><span class="gerald-stamp">APPROVED</span></div>` : ''}
+    </div>`;
+  card.onclick = () => openChat(i);
+  grid.appendChild(card);
+});
+
+function openChat(idx) {
+  currentFaculty = FACULTY[idx];
+  history = [];
+  document.getElementById('chat-who').textContent = currentFaculty.name;
+  document.getElementById('chat-dept').textContent = currentFaculty.dept;
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('input').value = '';
+  document.getElementById('chat-panel').classList.add('open');
+  updateKeyStatus();
+  if (currentFaculty.name === 'Gerald') {
+    addMsg('system', `You are now speaking with ${currentFaculty.name}.`);
+    setTimeout(() => {
+      const stamp = addMsg('assistant', 'APPROVED.\n\nΔΣ=42');
+      stamp.style.fontFamily = 'Georgia, serif';
+      stamp.style.color = 'var(--maroon)';
+      stamp.style.border = '1.5px solid var(--maroon)';
+      stamp.style.opacity = '0.75';
+      stamp.style.fontSize = '0.9rem';
+      stamp.style.letterSpacing = '0.05em';
+      history.push({ role: 'assistant', content: 'APPROVED. ΔΣ=42' });
+    }, 400);
+  } else {
+    addMsg('system', `You are now speaking with ${currentFaculty.name}.`);
+  }
+  document.getElementById('input').focus();
+}
+
+function openCourse(idx, event) {
+  event.stopPropagation();
+  const f = FACULTY[idx];
+  currentFaculty = { ...f, prompt: f.course_prompt };
+  history = [];
+  document.getElementById('chat-who').textContent = f.course;
+  document.getElementById('chat-dept').textContent = f.name;
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('input').value = '';
+  document.getElementById('chat-panel').classList.add('open');
+  updateKeyStatus();
+  addMsg('system', `Enrolled in ${f.course} · ${f.name}, instructing`);
+  document.getElementById('input').focus();
+}
+
+function closeChat() {
+  document.getElementById('chat-panel').classList.remove('open');
+  currentFaculty = null;
+  history = [];
+}
+
+// ── Account / OpAuth ──
+const SAFE_API = (() => {
+  const h = window.location.hostname;
+  if (!h || h === 'localhost' || h === '127.0.0.1') {
+    return 'http://localhost:8420';
+  }
+  return 'https://api.safe.utety.org'; // future public endpoint
+})();
+
+function openAccountModal() { document.getElementById('account-modal').classList.add('show'); }
+function closeAccountModal() { document.getElementById('account-modal').classList.remove('show'); }
+
+async function loginWithGoogle() {
+  try {
+    const resp = await fetch(`${SAFE_API}/api/safe/auth/google`, { method: 'POST' });
+    const data = await resp.json();
+    if (data.auth_url) {
+      window.location.href = data.auth_url;
+    } else {
+      alert('Auth service not available yet. Check back when SAFE goes public.');
+    }
+  } catch {
+    alert('Could not reach the SAFE auth service. If you\'re running locally, make sure Willow is running on port 8420.');
+  }
+}
+
+// Handle OAuth callback (state param in URL)
+(function handleAuthCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const state = params.get('state');
+  if (!code || !state) return;
+  fetch(`${SAFE_API}/api/safe/auth/callback`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, state }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.access_token) {
+        localStorage.setItem('utety_session', JSON.stringify({ token: data.access_token, user: data.user }));
+        renderLoggedInNav(data.user);
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    })
+    .catch(() => {});
+})();
+
+function renderLoggedInNav(user) {
+  const btn = document.getElementById('nav-login-btn');
+  if (!btn) return;
+  btn.outerHTML = `<div class="nav-user"><img src="${user.picture || ''}" alt="${user.name}" /><span>${user.name.split(' ')[0]}</span></div>`;
+}
+
+// Restore session on load
+(function restoreSession() {
+  const stored = localStorage.getItem('utety_session');
+  if (stored) { try { renderLoggedInNav(JSON.parse(stored).user); } catch {} }
+})();
+
+function addMsg(role, text) {
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.textContent = text;
+  const msgs = document.getElementById('messages');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+}
+
+function updateKeyStatus() {
+  const el = document.getElementById('key-status');
+  const key = localStorage.getItem('utety_api_key');
+  if (key) {
+    const p = detectProvider(key);
+    el.textContent = `✓ Using your ${p ? p.name : 'API'} key`;
+    el.className = 'key-status own';
+  } else {
+    el.textContent = 'Using shared key (limited) · Add your own';
+    el.className = 'key-status';
+    el.style.cursor = 'pointer';
+    el.onclick = () => document.getElementById('key-modal').classList.add('show');
+  }
+}
+
+async function send() {
+  if (sending || !currentFaculty) return;
+  const input = document.getElementById('input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  sending = true;
+  input.value = '';
+  document.getElementById('send-btn').disabled = true;
+
+  addMsg('user', text);
+  const typingEl = addMsg('assistant', '…');
+  typingEl.classList.add('typing');
+  history.push({ role: 'user', content: text });
+
+  try {
+    const reply = await callAPI(text);
+    typingEl.classList.remove('typing');
+    typingEl.textContent = reply;
+    history.push({ role: 'assistant', content: reply });
+  } catch (err) {
+    typingEl.textContent = `Error: ${err.message}`;
+  }
+
+  sending = false;
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
+
+async function callAPI(message) {
+  const userKey = localStorage.getItem('utety_api_key');
+  if (userKey) return await callWithKey(message, userKey);
+
+  const resp = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, persona: currentFaculty.prompt, history: history.slice(-10) }),
+  });
+
+  if (resp.status === 429) {
+    document.getElementById('key-modal').classList.add('show');
+    throw new Error('Rate limit reached. Add your free Gemini key to continue.');
+  }
+  if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+  const data = await resp.json();
+  if (data.error) throw new Error(data.error);
+  return data.response;
+}
+
+// ── Provider detection ──────────────────────────────────────────────────────
+function detectProvider(key) {
+  key = (key || '').trim();
+  if (key.startsWith('AIza'))    return { name: 'Google Gemini', id: 'gemini' };
+  if (key.startsWith('sk-ant-')) return { name: 'Anthropic Claude', id: 'anthropic' };
+  if (key.startsWith('sk-or-'))  return { name: 'OpenRouter', id: 'openrouter' };
+  if (key.startsWith('sk-proj-') || (key.startsWith('sk-') && !key.startsWith('sk-ant-') && !key.startsWith('sk-or-')))
+                                  return { name: 'OpenAI', id: 'openai' };
+  if (key.startsWith('gsk_'))    return { name: 'Groq', id: 'groq' };
+  return null;
+}
+
+function previewProvider(val) {
+  const hint = document.getElementById('key-provider-hint');
+  const p = detectProvider(val);
+  hint.textContent = p ? `✓ Detected: ${p.name}` : (val.length > 4 ? '— unrecognised key format' : '');
+}
+
+// ── Direct API calls by provider ─────────────────────────────────────────────
+async function callWithKey(message, key) {
+  const provider = detectProvider(key);
+  if (!provider) throw new Error('Unrecognised API key format.');
+
+  const persona = currentFaculty.prompt;
+  const hist = history.slice(-10);
+
+  if (provider.id === 'gemini') {
+    const contents = [
+      ...hist.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
+      { role: 'user', parts: [{ text: message }] },
+    ];
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system_instruction: { parts: [{ text: persona }] }, contents,
+          generationConfig: { maxOutputTokens: 1024, temperature: 0.8 } }) }
+    );
+    if (!resp.ok) { const e = await resp.json().catch(() => ({})); throw new Error(e?.error?.message || `Gemini ${resp.status}`); }
+    const d = await resp.json();
+    return d?.candidates?.[0]?.content?.parts?.[0]?.text || '(no response)';
+  }
+
+  // OpenAI-compatible (openai, groq, openrouter)
+  if (provider.id === 'openai' || provider.id === 'groq' || provider.id === 'openrouter') {
+    const endpoints = {
+      openai:     'https://api.openai.com/v1/chat/completions',
+      groq:       'https://api.groq.com/openai/v1/chat/completions',
+      openrouter: 'https://openrouter.ai/api/v1/chat/completions',
+    };
+    const models = {
+      openai:     'gpt-4o-mini',
+      groq:       'llama-3.3-70b-versatile',
+      openrouter: 'meta-llama/llama-3.3-70b-instruct:free',
+    };
+    const messages = [
+      { role: 'system', content: persona },
+      ...hist.map(m => ({ role: m.role, content: m.content })),
+      { role: 'user', content: message },
+    ];
+    const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` };
+    if (provider.id === 'openrouter') headers['HTTP-Referer'] = 'https://utety.org';
+    const resp = await fetch(endpoints[provider.id],
+      { method: 'POST', headers, body: JSON.stringify({ model: models[provider.id], messages, max_tokens: 1024, temperature: 0.8 }) }
+    );
+    if (!resp.ok) { const e = await resp.json().catch(() => ({})); throw new Error(e?.error?.message || `${provider.name} ${resp.status}`); }
+    const d = await resp.json();
+    return d?.choices?.[0]?.message?.content || '(no response)';
+  }
+
+  if (provider.id === 'anthropic') {
+    const messages = [
+      ...hist.map(m => ({ role: m.role, content: m.content })),
+      { role: 'user', content: message },
+    ];
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': key,
+        'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', system: persona, messages, max_tokens: 1024 }),
+    });
+    if (!resp.ok) { const e = await resp.json().catch(() => ({})); throw new Error(e?.error?.message || `Anthropic ${resp.status}`); }
+    const d = await resp.json();
+    return d?.content?.[0]?.text || '(no response)';
+  }
+
+  throw new Error(`Provider ${provider.id} not supported for direct browser calls.`);
+}
+
+function saveKey() {
+  const key = document.getElementById('key-input').value.trim();
+  if (!detectProvider(key)) { alert('Unrecognised key format. Supported: AIza… (Gemini), sk-… (OpenAI), sk-ant-… (Anthropic), gsk_… (Groq), sk-or-… (OpenRouter)'); return; }
+  localStorage.setItem('utety_api_key', key);
+  document.getElementById('key-modal').classList.remove('show');
+  updateKeyStatus();
+}
+
+function skipKey() {
+  document.getElementById('key-modal').classList.remove('show');
+}
+</script>
 </body>
 </html>
