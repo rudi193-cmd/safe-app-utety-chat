@@ -368,6 +368,11 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 .send-btn:disabled { opacity: 0.4; cursor: default; }
 .key-status { font-size: 0.7rem; color: var(--text-dim); text-align: center; padding: 4px 0 6px; }
 .key-status.own { color: var(--green); }
+.trial-badge {
+  display: none; font-size: 0.72rem; color: var(--gold); border: 1px solid var(--gold-dim);
+  border-radius: 3px; padding: 3px 8px; letter-spacing: 0.04em; white-space: nowrap;
+}
+.trial-badge.ended { color: var(--text-dim); border-color: transparent; }
 
 /* ── Key Modal ── */
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; align-items: center; justify-content: center; padding: 20px; }
@@ -404,6 +409,7 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
       <a href="#admissions">Admissions</a>
       <a href="#" onclick="return false;">News</a>
       <a href="#admissions" class="btn-give">Give</a>
+      <span class="trial-badge" id="trial-badge"></span>
       <button class="btn-login" id="nav-login-btn" onclick="openAccountModal()">Log In</button>
     </div>
   </div>
@@ -595,6 +601,24 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
     <div class="modal-btns">
       <button class="btn-skip" onclick="skipKey()">Use shared (limited)</button>
       <button class="btn-save" onclick="saveKey()">Save key</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Trial Ended Modal ── -->
+<div class="modal-bg" id="trial-modal">
+  <div class="modal">
+    <h2>Your 23-minute trial has ended.</h2>
+    <p class="sub">Copenhagen noticed. He doesn't say anything. He just holds the moment.</p>
+    <p class="sub" style="margin-top:8px;">Choose how to continue:</p>
+    <button class="account-google-btn" onclick="closeTrialModal(); loginWithGoogle();" style="margin-top:12px;">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+      Log In with Google — unlimited access
+    </button>
+    <div class="account-divider"><span>or</span></div>
+    <div class="modal-btns">
+      <button class="btn-skip" onclick="closeTrialModal(); document.getElementById('key-modal').classList.add('show');">Add your own API key (free)</button>
+      <button class="btn-skip" onclick="askCopenhagen()" title="Copenhagen will sit with this.">Ask Copenhagen</button>
     </div>
   </div>
 </div>
@@ -1004,16 +1028,31 @@ function handleKey(e) {
 function updateKeyStatus() {
   const el = document.getElementById('key-status');
   const key = localStorage.getItem('utety_api_key');
+  const session = JSON.parse(localStorage.getItem('utety_session') || 'null');
   if (key) {
     const p = detectProvider(key);
     el.textContent = `✓ Using your ${p ? p.name : 'API'} key`;
     el.className = 'key-status own';
+    el.style.cursor = 'default'; el.onclick = null;
+  } else if (session?.token) {
+    el.textContent = `✓ Logged in — Willow fleet`;
+    el.className = 'key-status own';
+    el.style.cursor = 'default'; el.onclick = null;
   } else {
-    el.textContent = 'Using shared key (limited) · Add your own';
+    const { started, active } = getTrialState();
+    if (started && !active) {
+      el.textContent = 'Trial ended · Log in or add your own key';
+    } else if (started) {
+      el.textContent = 'Trial active · Add your own key for unlimited';
+    } else {
+      el.textContent = '23-min free trial · or add your own key';
+    }
     el.className = 'key-status';
     el.style.cursor = 'pointer';
     el.onclick = () => document.getElementById('key-modal').classList.add('show');
   }
+  // Sync nav trial badge
+  tickTrial();
 }
 
 async function send() {
@@ -1045,10 +1084,99 @@ async function send() {
   input.focus();
 }
 
+// ── Trial System ─────────────────────────────────────────────────────────────
+const TRIAL_MS = 23 * 60 * 1000;
+let _trialInterval = null;
+
+function getTrialState() {
+  const start = localStorage.getItem('utety_trial_start');
+  if (!start) return { started: false, active: false, remaining: 0 };
+  const remaining = Math.max(0, TRIAL_MS - (Date.now() - parseInt(start)));
+  return { started: true, active: remaining > 0, remaining };
+}
+
+function startTrial() {
+  if (!localStorage.getItem('utety_trial_start')) {
+    localStorage.setItem('utety_trial_start', String(Date.now()));
+  }
+  tickTrial();
+}
+
+function tickTrial() {
+  const badge = document.getElementById('trial-badge');
+  if (!badge) return;
+  const { active, remaining } = getTrialState();
+  if (active) {
+    const m = Math.floor(remaining / 60000);
+    const s = Math.floor((remaining % 60000) / 1000);
+    badge.textContent = `Trial ${m}:${String(s).padStart(2,'0')}`;
+    badge.style.display = 'inline-block';
+    badge.classList.remove('ended');
+    if (!_trialInterval) {
+      _trialInterval = setInterval(() => {
+        const { active, remaining } = getTrialState();
+        if (active) {
+          const m = Math.floor(remaining / 60000);
+          const s = Math.floor((remaining % 60000) / 1000);
+          badge.textContent = `Trial ${m}:${String(s).padStart(2,'0')}`;
+        } else {
+          clearInterval(_trialInterval); _trialInterval = null;
+          badge.textContent = 'Trial ended'; badge.classList.add('ended');
+          document.getElementById('trial-modal').classList.add('show');
+        }
+      }, 1000);
+    }
+  } else if (getTrialState().started) {
+    badge.textContent = 'Trial ended'; badge.style.display = 'inline-block'; badge.classList.add('ended');
+  }
+}
+
+function closeTrialModal() { document.getElementById('trial-modal').classList.remove('show'); }
+
+function askCopenhagen() {
+  closeTrialModal();
+  // Find Copenhagen in faculty and open a chat
+  const f = FACULTY.find(x => x.name === 'Copenhagen');
+  if (f) { currentFaculty = f; openChat(FACULTY.indexOf(f)); }
+}
+
+// Fleet call for logged-in users (routes via api.safe.utety.org tunnel when available)
+const FLEET_URL = (() => {
+  const h = window.location.hostname;
+  if (!h || h === 'localhost' || h === '127.0.0.1') return 'http://localhost:8420/api/utety/chat';
+  return 'https://api.safe.utety.org/api/utety/chat';
+})();
+
+async function callFleet(message, token) {
+  const resp = await fetch(FLEET_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ message, persona: currentFaculty.prompt, history: history.slice(-10) }),
+  });
+  if (!resp.ok) throw new Error(`Fleet error ${resp.status}`);
+  const data = await resp.json();
+  if (data.error) throw new Error(data.error);
+  return data.response;
+}
+
 async function callAPI(message) {
+  // 1. Personal API key — direct, unlimited
   const userKey = localStorage.getItem('utety_api_key');
   if (userKey) return await callWithKey(message, userKey);
 
+  // 2. Logged in — Willow free fleet (unlimited)
+  const session = JSON.parse(localStorage.getItem('utety_session') || 'null');
+  if (session?.token) return await callFleet(message, session.token);
+
+  // 3. Trial — start on first message, gate on expiry
+  const { started, active } = getTrialState();
+  if (started && !active) {
+    document.getElementById('trial-modal').classList.add('show');
+    throw new Error('Trial ended.');
+  }
+  if (!started) startTrial();
+
+  // 4. Worker (shared key) — used during trial
   const resp = await fetch(WORKER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
