@@ -80,6 +80,41 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 .account-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--dark-border); }
 .account-divider span { background: var(--dark-surface); padding: 0 10px; position: relative; }
 .account-note { font-size: 0.75rem; color: var(--text-dim); text-align: center; line-height: 1.5; margin-top: 12px; }
+/* ── Secondary Nav Bar ── */
+.subnav {
+  background: #0a0604;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.71rem; letter-spacing: 0.05em;
+}
+.subnav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: flex-end;
+  gap: 22px; padding: 5px 24px;
+}
+.subnav a { color: rgba(255,255,255,0.42); text-decoration: none; }
+.subnav a:hover { color: var(--gold-light); }
+
+/* ── Dropdown Nav ── */
+.nav-has-dropdown { position: relative; }
+.nav-has-dropdown > a::after { content: ' ▾'; font-size: 0.65rem; opacity: 0.65; }
+.nav-drop {
+  display: none;
+  position: absolute; top: 100%; left: 0;
+  background: var(--cream); min-width: 230px;
+  border-top: 3px solid var(--gold);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  z-index: 200;
+}
+.nav-drop a {
+  display: block; padding: 10px 20px;
+  color: var(--text-body) !important;
+  font-size: 0.86rem; line-height: 1.3;
+  border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+  letter-spacing: 0.01em; text-decoration: none;
+}
+.nav-drop a:last-child { border-bottom: none !important; }
+.nav-drop a:hover { background: var(--cream-dark); color: var(--maroon) !important; }
+.nav-has-dropdown:hover .nav-drop { display: block; }
 @media (max-width: 700px) { .nav-links { display: none; } .nav-wordmark { display: none; } }
 
 /* ── Hero ── */
@@ -210,7 +245,7 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
   transition: color 0.15s, text-decoration-color 0.15s;
 }
 .card-course-link:hover { color: var(--gold); text-decoration-color: var(--gold-dim); }
-.card-motto { font-size: 0.64rem; color: #4a3a28; margin-top: 5px; font-style: italic; line-height: 1.3; }
+.card-motto { font-size: 0.64rem; color: var(--text-dim); margin-top: 5px; font-style: italic; line-height: 1.3; }
 
 /* Gerald easter egg */
 .card-gerald { position: relative; overflow: visible; }
@@ -269,10 +304,10 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 .footer-top { display: flex; align-items: flex-start; gap: 22px; margin-bottom: 32px; }
 .footer-seal { width: 58px; opacity: 0.72; flex-shrink: 0; }
 .footer-name { font-size: 0.95rem; color: var(--gold); margin-bottom: 4px; }
-.footer-est { font-size: 0.7rem; color: #4a3520; letter-spacing: 0.1em; }
+.footer-est { font-size: 0.7rem; color: var(--gold-dim); letter-spacing: 0.1em; }
 .footer-mottos { display: flex; flex-wrap: wrap; gap: 4px 0; margin-bottom: 24px; font-style: italic; font-size: 0.88rem; color: var(--gold-dim); }
 .footer-mottos em { margin-right: 22px; margin-bottom: 4px; }
-.footer-copy { font-size: 0.67rem; color: #2a1a0a; letter-spacing: 0.07em; text-transform: uppercase; }
+.footer-copy { font-size: 0.67rem; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
 
 /* ── Course Catalogue ── */
 .section-courses { background: #0b0804; color: var(--text-light); }
@@ -289,7 +324,7 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 .dept-tab.active { background: var(--maroon-dark); border-color: var(--gold-dim); color: var(--gold-light); }
 .course-dept-header {
   font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--maroon); padding: 24px 0 10px;
+  color: var(--gold-dim); padding: 24px 0 10px;
   border-top: 1px solid var(--dark-border); margin-top: 4px;
 }
 .course-dept-header:first-child { margin-top: 0; border-top: none; padding-top: 4px; }
@@ -303,17 +338,17 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 .course-info { min-width: 0; }
 .course-title { font-size: 0.93rem; color: var(--text-light); display: block; margin-bottom: 3px; }
 .course-meta { font-size: 0.68rem; color: var(--text-dim); }
-.course-meta .c-instructor { color: #7a6040; }
-.course-meta .c-cross { color: #5a4a35; font-style: italic; }
-.course-meta .c-prereq { color: #3e2e1a; }
-.course-desc { font-size: 0.82rem; color: #6a5840; line-height: 1.58; margin-top: 5px; }
+.course-meta .c-instructor { color: var(--text-dim); }
+.course-meta .c-cross { color: #9a8060; font-style: italic; }
+.course-meta .c-prereq { color: var(--text-dim); }
+.course-desc { font-size: 0.82rem; color: rgba(232,220,200,0.55); line-height: 1.58; margin-top: 5px; }
 .btn-enroll {
   background: none; border: 1px solid #3d2a14; color: var(--gold-dim);
   padding: 5px 11px; cursor: pointer; font-size: 0.73rem; font-family: inherit;
   letter-spacing: 0.05em; transition: all 0.15s; white-space: nowrap; align-self: start; margin-top: 2px;
 }
 .btn-enroll:hover { background: var(--maroon-dark); border-color: var(--gold); color: var(--gold-light); }
-.btn-enroll-soon { font-size: 0.68rem; color: #2a1a0a; letter-spacing: 0.06em; white-space: nowrap; align-self: start; margin-top: 5px; }
+.btn-enroll-soon { font-size: 0.68rem; color: var(--text-dim); letter-spacing: 0.06em; white-space: nowrap; align-self: start; margin-top: 5px; }
 @media (max-width: 600px) {
   .course-row { grid-template-columns: 1fr auto; gap: 8px; }
   .course-code { display: none; }
@@ -396,6 +431,15 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 <body>
 
 <!-- ── Navigation ── -->
+<!-- ── Secondary Nav (Oxford-style utility bar) ── -->
+<div class="subnav">
+  <div class="subnav-inner">
+    <a href="https://reddit.com/r/DispatchesFromReality" target="_blank">Gerald's Dispatches</a>
+    <a href="#faculty" onclick="setTimeout(()=>openChatByName('Copenhagen'),100);return false;">Copenhagen</a>
+    <a href="https://github.com/rudi193-cmd/safe-app-utety-chat" target="_blank">GitHub</a>
+    <a href="#" onclick="alert('The pigeon is acknowledged.');return false;">The Pigeon</a>
+  </div>
+</div>
 <nav class="topnav">
   <div class="nav-inner">
     <a class="nav-brand" href="#">
@@ -403,12 +447,25 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
       <span class="nav-wordmark">UTETY</span>
     </a>
     <div class="nav-links">
-      <a href="#about">About</a>
-      <a href="#faculty">Faculty</a>
-      <a href="#courses">Courses</a>
+      <div class="nav-has-dropdown">
+        <a href="#about">About</a>
+        <div class="nav-drop">
+          <a href="#about">About UTETY</a>
+          <a href="#research">Featured Research</a>
+          <a href="#admissions">Admissions</a>
+          <a href="https://reddit.com/r/DispatchesFromReality" target="_blank">Gerald's Dispatches</a>
+        </div>
+      </div>
+      <div class="nav-has-dropdown">
+        <a href="#faculty">Faculty</a>
+        <div class="nav-drop" id="faculty-drop"></div>
+      </div>
+      <div class="nav-has-dropdown">
+        <a href="#courses">Courses</a>
+        <div class="nav-drop" id="courses-drop"></div>
+      </div>
       <a href="#research">Research</a>
       <a href="#admissions">Admissions</a>
-      <a href="#" onclick="return false;">News</a>
       <a href="#admissions" class="btn-give">Give</a>
       <span class="trial-badge" id="trial-badge"></span>
       <button class="btn-login" id="nav-login-btn" onclick="openAccountModal()">Log In</button>
@@ -878,6 +935,46 @@ let currentFaculty = null;
 let history = [];
 let sending = false;
 
+function openChatByName(name) {
+  const idx = FACULTY.findIndex(f => f.name === name);
+  if (idx >= 0) openChat(idx);
+}
+
+function buildNavDropdowns() {
+  const fd = document.getElementById('faculty-drop');
+  if (fd) {
+    FACULTY.forEach((f, i) => {
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = f.name + (f.dept ? '  —  ' + f.dept : '');
+      a.onclick = (e) => { e.preventDefault(); openChat(i); };
+      fd.appendChild(a);
+    });
+  }
+  const cd = document.getElementById('courses-drop');
+  if (cd) {
+    const depts = [...new Set(COURSES.map(c => c.dept_full))];
+    const all = document.createElement('a');
+    all.href = '#courses';
+    all.textContent = 'All Courses';
+    all.onclick = (e) => { e.preventDefault(); document.getElementById('courses').scrollIntoView({behavior:'smooth'}); };
+    cd.appendChild(all);
+    depts.forEach(dept => {
+      const a = document.createElement('a');
+      a.href = '#courses';
+      a.textContent = dept;
+      a.onclick = (e) => {
+        e.preventDefault();
+        document.getElementById('courses').scrollIntoView({behavior:'smooth'});
+        setTimeout(() => {
+          document.querySelectorAll('.dept-tab').forEach(t => { if (t.textContent.trim() === dept) t.click(); });
+        }, 400);
+      };
+      cd.appendChild(a);
+    });
+  }
+}
+
 // Render faculty grid
 const grid = document.getElementById('grid');
 FACULTY.forEach((f, i) => {
@@ -903,6 +1000,8 @@ FACULTY.forEach((f, i) => {
   card.onclick = () => openChat(i);
   grid.appendChild(card);
 });
+
+buildNavDropdowns();
 
 function openChat(idx) {
   currentFaculty = FACULTY[idx];
