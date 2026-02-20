@@ -236,7 +236,7 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 .card-body { padding: 12px; flex: 1; }
 .card-name { font-weight: 600; font-size: 0.95rem; color: var(--gold); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-dept { font-size: 0.69rem; color: var(--text-dim); line-height: 1.3; }
-.card-location { font-size: 0.66rem; color: var(--maroon); margin-top: 4px; letter-spacing: 0.02em; }
+.card-location { font-size: 0.66rem; color: var(--text-dim); margin-top: 4px; letter-spacing: 0.02em; }
 .card-course-link {
   font-size: 0.62rem; color: var(--gold-dim); margin-top: 5px; line-height: 1.3;
   font-style: italic; cursor: pointer; background: none; border: none;
@@ -426,6 +426,21 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 .modal-btns button { padding: 9px 18px; border-radius: 5px; border: none; cursor: pointer; font-size: 0.83rem; font-family: inherit; }
 .btn-save { background: var(--gold); color: #000; font-weight: 700; }
 .btn-skip { background: var(--dark-border); color: var(--text-dim); }
+/* SSS hint on Steve card */
+.sss-hint {
+  font-size: 0.6rem; color: rgba(100,70,50,0.18);
+  margin-top: 6px; letter-spacing: 0.3em; cursor: default;
+  transition: color 0.4s; user-select: none; display: block;
+}
+.sss-hint:hover { color: rgba(180,130,80,0.5); cursor: pointer; }
+/* New conversation button */
+.btn-new-chat {
+  margin-left: auto; background: none; border: 1px solid var(--dark-border);
+  color: var(--text-dim); border-radius: 4px; padding: 4px 10px;
+  cursor: pointer; font-size: 0.75rem; font-family: inherit;
+  transition: border-color 0.15s, color 0.15s; flex-shrink: 0;
+}
+.btn-new-chat:hover { border-color: var(--gold-dim); color: var(--text-light); }
 </style>
 </head>
 <body>
@@ -631,6 +646,7 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
     <button class="back" onclick="closeChat()">← Back</button>
     <span class="who" id="chat-who"></span>
     <span class="dept-tag" id="chat-dept"></span>
+    <button class="btn-new-chat" onclick="newConversation()" title="Start new conversation">↺ New</button>
   </div>
   <div class="messages" id="messages"></div>
   <div class="input-area">
@@ -898,7 +914,7 @@ function renderDeptTabs() {
 function renderCourseList() {
   const container = document.getElementById('course-list');
   container.innerHTML = '';
-  const filtered = activeDeptKeys ? COURSES.filter(c => activeDeptKeys.includes(c.dept_key)) : COURSES;
+  const filtered = (activeDeptKeys ? COURSES.filter(c => activeDeptKeys.includes(c.dept_key)) : COURSES).filter(c => c.code !== 'SSS 001');
   const byDept = {};
   filtered.forEach(c => { if (!byDept[c.dept_full]) byDept[c.dept_full] = []; byDept[c.dept_full].push(c); });
   let first = true;
@@ -1022,20 +1038,84 @@ FACULTY.forEach((f, i) => {
     </div>`;
   card.onclick = () => openChat(i);
   grid.appendChild(card);
+  if (f.name === 'Steve') {
+    const hint = document.createElement('div');
+    hint.className = 'sss-hint';
+    hint.textContent = '···';
+    hint.onclick = (e) => { e.stopPropagation(); openSSSCourse(); };
+    card.querySelector('.card-body').appendChild(hint);
+  }
 });
 
 buildNavDropdowns();
 
+function chatHistoryKey(name) {
+  return 'utety_hist_' + name.toLowerCase().replace(/\s+/g, '_');
+}
+function saveChat(name, hist) {
+  if (!hist.length) return;
+  try { localStorage.setItem(chatHistoryKey(name), JSON.stringify(hist.slice(-60))); } catch(e) {}
+}
+function loadChat(name) {
+  try { return JSON.parse(localStorage.getItem(chatHistoryKey(name))) || []; } catch(e) { return []; }
+}
+function clearChat(name) {
+  localStorage.removeItem(chatHistoryKey(name));
+}
+function openSSSCourse() {
+  const sss = COURSES.find(c => c.code === 'SSS 001');
+  if (!sss) return;
+  const steve = FACULTY.find(f => f.name === 'Steve');
+  currentFaculty = { ...steve, prompt: sss.prompt };
+  history = [];
+  document.getElementById('chat-who').textContent = 'SSS 001';
+  document.getElementById('chat-dept').textContent = 'The Society';
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('input').value = '';
+  document.getElementById('chat-panel').classList.add('open');
+  updateKeyStatus();
+  addMsg('system', 'SSS 001: Advanced Squeaking · Enrollment confirmed.');
+  document.getElementById('input').focus();
+}
+function newConversation() {
+  if (!currentFaculty) return;
+  clearChat(currentFaculty.name);
+  history = [];
+  document.getElementById('messages').innerHTML = '';
+  if (currentFaculty.name === 'Gerald') {
+    addMsg('system', 'New conversation with Gerald.');
+    setTimeout(() => {
+      const stamp = addMsg('assistant', 'APPROVED.\n\nΔΣ=42');
+      stamp.style.fontFamily = 'Georgia, serif';
+      stamp.style.color = 'var(--maroon)';
+      stamp.style.border = '1.5px solid var(--maroon)';
+      stamp.style.opacity = '0.75';
+      stamp.style.fontSize = '0.9rem';
+      stamp.style.letterSpacing = '0.05em';
+      history.push({ role: 'assistant', content: 'APPROVED. ΔΣ=42' });
+    }, 400);
+  } else {
+    addMsg('system', `New conversation with ${currentFaculty.name}.`);
+  }
+  document.getElementById('input').focus();
+}
+
 function openChat(idx) {
   currentFaculty = FACULTY[idx];
-  history = [];
+  const saved = loadChat(currentFaculty.name);
+  history = saved.slice();
   document.getElementById('chat-who').textContent = currentFaculty.name;
   document.getElementById('chat-dept').textContent = currentFaculty.dept;
   document.getElementById('messages').innerHTML = '';
   document.getElementById('input').value = '';
   document.getElementById('chat-panel').classList.add('open');
   updateKeyStatus();
-  if (currentFaculty.name === 'Gerald') {
+  if (saved.length) {
+    addMsg('system', `Resuming conversation with ${currentFaculty.name}.`);
+    saved.forEach(m => addMsg(m.role === 'user' ? 'user' : 'assistant', m.content));
+    const msgs = document.getElementById('messages');
+    msgs.scrollTop = msgs.scrollHeight;
+  } else if (currentFaculty.name === 'Gerald') {
     addMsg('system', `You are now speaking with ${currentFaculty.name}.`);
     setTimeout(() => {
       const stamp = addMsg('assistant', 'APPROVED.\n\nΔΣ=42');
@@ -1069,6 +1149,7 @@ function openCourse(idx, event) {
 }
 
 function closeChat() {
+  if (currentFaculty && history.length) saveChat(currentFaculty.name, history);
   document.getElementById('chat-panel').classList.remove('open');
   currentFaculty = null;
   history = [];
@@ -1198,6 +1279,7 @@ async function send() {
     typingEl.classList.remove('typing');
     typingEl.textContent = reply;
     history.push({ role: 'assistant', content: reply });
+    if (currentFaculty) saveChat(currentFaculty.name, history);
   } catch (err) {
     typingEl.textContent = `Error: ${err.message}`;
   }
