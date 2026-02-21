@@ -1073,6 +1073,20 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
   </div>
 </div>
 
+<!-- ── Save Key Prompt ── -->
+<div class="modal-bg" id="save-key-prompt">
+  <div class="modal" style="max-width:380px;">
+    <h2>Remember this key?</h2>
+    <p class="sub">Your key can be saved to this browser for future sessions. It never leaves your device — no server ever sees it.</p>
+    <p class="sub" style="margin-top:8px;font-style:italic;color:var(--muted);">This is your choice, every time.</p>
+    <div class="modal-btns" style="margin-top:16px;">
+      <button class="btn-skip" onclick="declineSaveKey()">No, this session only</button>
+      <button class="btn-save" onclick="confirmSaveKey()">Yes, remember it</button>
+    </div>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:14px;text-align:center;letter-spacing:0.04em;">SAFE — your data, your decision</p>
+  </div>
+</div>
+
 <!-- ── Trial Ended Modal ── -->
 <div class="modal-bg" id="trial-modal">
   <div class="modal">
@@ -1382,6 +1396,7 @@ const WORKER_URL = (() => {
 
 let currentFaculty = null;
 let history = [];
+let sessionKey = null; // API key for this session only — not persisted unless user confirms
 let sending = false;
 
 function fillBio(f) {
@@ -1797,8 +1812,8 @@ async function callFleet(message, token) {
 }
 
 async function callAPI(message) {
-  // 1. Personal API key — direct, unlimited
-  const userKey = localStorage.getItem('utety_api_key');
+  // 1. Personal API key — direct, unlimited (saved or session-only)
+  const userKey = localStorage.getItem('utety_api_key') || sessionKey;
   if (userKey) return await callWithKey(message, userKey);
 
   // 2. Logged in — Willow free fleet (unlimited)
@@ -1862,7 +1877,7 @@ async function callWithKey(message, key) {
       { role: 'user', parts: [{ text: message }] },
     ];
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ system_instruction: { parts: [{ text: persona }] }, contents,
           generationConfig: { maxOutputTokens: 1024, temperature: 0.8 } }) }
@@ -1921,9 +1936,21 @@ async function callWithKey(message, key) {
 function saveKey() {
   const key = document.getElementById('key-input').value.trim();
   if (!detectProvider(key)) { alert('Unrecognised key format. Supported: AIza… (Gemini), sk-… (OpenAI), sk-ant-… (Anthropic), gsk_… (Groq), sk-or-… (OpenRouter)'); return; }
-  localStorage.setItem('utety_api_key', key);
+  sessionKey = key; // use immediately this session
   document.getElementById('key-modal').classList.remove('show');
   updateKeyStatus();
+  document.getElementById('save-key-prompt').classList.add('show');
+}
+
+function confirmSaveKey() {
+  if (sessionKey) localStorage.setItem('utety_api_key', sessionKey);
+  document.getElementById('save-key-prompt').classList.remove('show');
+  updateKeyStatus();
+}
+
+function declineSaveKey() {
+  document.getElementById('save-key-prompt').classList.remove('show');
+  // sessionKey stays set — key works for this session, forgotten on close
 }
 
 function skipKey() {
