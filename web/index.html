@@ -463,6 +463,29 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 .bio-dept { font-size: 0.71rem; color: var(--text-dim); margin-bottom: 4px; }
 .bio-motto { font-size: 0.78rem; color: var(--gold-dim); font-style: italic; margin-bottom: 6px; }
 .bio-body { font-size: 0.82rem; color: rgba(232,220,200,0.58); line-height: 1.52; }
+/* ── Old-School Visit Counter ── */
+.enroll-counter {
+  text-align: center; margin-top: 28px; padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.enroll-counter-label {
+  font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.2); display: block; margin-bottom: 5px;
+}
+.enroll-counter-digits {
+  display: inline-block;
+  background: #050100;
+  color: #bb2200;
+  font-family: "Courier New", "Lucida Console", monospace;
+  font-size: 0.88rem; font-weight: bold;
+  letter-spacing: 0.25em;
+  padding: 3px 10px 3px 12px;
+  border: 1px solid #2a1008;
+  border-top-color: #0a0302; border-left-color: #0a0302;
+  border-bottom-color: #3a1510; border-right-color: #3a1510;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.9), 0 0 3px rgba(180,40,0,0.08);
+  min-width: 7ch; text-align: center;
+}
 </style>
 </head>
 <body>
@@ -522,7 +545,7 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
     </div>
   </div>
   <div class="hero-mottos">
-    <span><em>Non veritas, sed animus</em></span>
+    <span><em>Non veritas, vibras</em></span>
     <span>·</span>
     <span><em>Falsum sed certum</em></span>
     <span>·</span>
@@ -659,6 +682,10 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
       <em>Iterum veni cum tam diu manere non poteris</em>
     </div>
     <div class="footer-copy">© 1095 UTETY — The Syllabus is Mendatory. &nbsp;·&nbsp; All Rights Reserved Retroactively.</div>
+    <div class="enroll-counter">
+      <span class="enroll-counter-label">Students Enrolled</span>
+      <span class="enroll-counter-digits" id="enroll-count">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span>
+    </div>
   </div>
 </footer>
 
@@ -1558,6 +1585,16 @@ function saveKey() {
 function skipKey() {
   document.getElementById('key-modal').classList.remove('show');
 }
+
+// ── Visit counter ──
+(function() {
+  const el = document.getElementById('enroll-count');
+  if (!el) return;
+  fetch('https://utety-worker.rudi193.workers.dev/counter')
+    .then(r => r.ok ? r.json() : null)
+    .then(d => { if (d && d.count) el.textContent = String(d.count).padStart(6, '0'); })
+    .catch(() => { el.textContent = '001095'; });
+})();
 </script>
 </body>
 </html>

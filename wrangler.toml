@@ -4,3 +4,7 @@ compatibility_date = "2024-01-01"
 
 # Set GEMINI_API_KEY via: wrangler secret put GEMINI_API_KEY
 # Or in the Cloudflare dashboard under Workers > Settings > Variables
+
+[[kv_namespaces]]
+binding = "UTETY_COUNTER"
+id = "c3cbb1ad53f04d44b144dfa0afd5ac04"

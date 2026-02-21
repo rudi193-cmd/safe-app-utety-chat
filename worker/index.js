@@ -10,9 +10,11 @@ const ipMap = new Map(); // { ip: { count, resetAt } }
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
+const COUNTER_KEY = 'utety:visits';
+const COUNTER_SEED = 1095; // founding year
 
 function rateCheck(ip) {
   const now = Date.now();
@@ -30,6 +32,22 @@ export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: CORS });
+    }
+
+    const url = new URL(request.url);
+
+    // ── Visit counter ──
+    if (url.pathname === '/counter' && request.method === 'GET') {
+      let count = COUNTER_SEED;
+      if (env.UTETY_COUNTER) {
+        const stored = await env.UTETY_COUNTER.get(COUNTER_KEY);
+        count = stored ? parseInt(stored) + 1 : COUNTER_SEED + 1;
+        await env.UTETY_COUNTER.put(COUNTER_KEY, String(count));
+      }
+      return new Response(JSON.stringify({ count }), {
+        status: 200,
+        headers: { ...CORS, 'Content-Type': 'application/json' },
+      });
     }
 
     if (request.method !== 'POST') {
