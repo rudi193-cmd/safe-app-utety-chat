@@ -1,6 +1,5 @@
 # Christmas Morning Lecture
-
-## Why the F Won't This Thing Go Together
+## "Why the F Won't This Thing Go Together"
 
 **Prof. Pendleton "Penny" Riggs**
 *Dept. of Applied Reality Engineering, UTETY*
@@ -8,98 +7,90 @@
 
 ---
 
-Good morning.
+Good morning. Welcome to the most universally attended lecture of the year.
 
-You are sitting on the floor. There are parts around you. Something was supposed to be assembled by now. It is not assembled.
+You're sitting on the floor. There are instructions that may or may not be in your native language. There's a small Allen wrench that's already given you a blister. And Part C will not — will not — go into Slot D.
 
-This is a solvable problem.
-
-Here are the five reasons it is not going together.
+Let's talk about why.
 
 ---
 
-## 1. It Genuinely Does Not Fit
+## I. The Five Reasons It Won't Go Together
 
-Tolerances exist. The part that "should" go here was machined to a specification, and so was the hole, and they are not the same specification. This is not your fault. This is not a mystery. This is a tolerance stack.
+### 1. You're not wrong. It doesn't fit.
 
-Check: does the part fit *at all*, even partially? If it won't enter the opening by even a millimeter, it is the wrong part or the wrong orientation. See Reason 2.
+Manufacturing has tolerances. Sometimes Part C is 0.5mm too big. Sometimes Slot D is 0.5mm too small. Sometimes both, in the wrong direction.
 
----
+The fix: Light sanding. A file. A rubber mallet with gentle persuasion. Or — if it's plastic — a hair dryer to soften it just enough.
 
-## 2. You Skipped a Hidden Step
+### 2. There's a hidden step you skipped.
 
-The instructions have a step that looks like nothing — a rotation, a partial insertion, a "position as shown" that appears optional. It is not optional. The assembly requires that part to be oriented a specific way before the next part can clear it.
+The instructions showed eight parts. You see eight parts. But step 3 required you to orient Part B a specific way, and you didn't, and now Part C won't go in because Part B is backwards.
 
-Back up. Find the rotated part. Turn it. Try again.
+The fix: Back up. Look at the diagram. Find the part that's rotated wrong. Swallow your pride.
 
-The instructions will not apologize for being unclear. The mechanism will not cooperate until you find the step you skipped.
+### 3. There's a part inside a part.
 
----
+Hardware is often packed inside the thing it attaches to. That bag of screws? Check inside the hollow leg. That missing dowel? Tucked inside the drawer you haven't opened.
 
-## 3. There Is a Part Inside a Part
+The fix: Before you panic, search every cavity.
 
-You are trying to assemble something that already has a component inside it that you cannot see from this angle. The resistance is not a fit problem — it is an obstruction problem.
+### 4. You're using the wrong screw.
 
-Search every cavity. Use the flashlight. Shake it gently over a light surface. Something is in there that should not be in there, or something is in there that needs to be adjusted before the next step.
+There are four screws that look identical. Three are 12mm. One is 14mm. You used the 14mm in step 2, and now step 7 won't work because you needed it there.
 
----
+The fix: If a screw won't seat flush, stop. Compare it to the others. Check if you grabbed from the wrong pile earlier.
 
-## 4. You Have the Wrong Screw
+### 5. The instructions are just... wrong.
 
-They look identical. They are not identical. One is M3. One is M3.5. One is a #6-32 that wandered in from somewhere else entirely.
+It happens. Printing errors. Diagram doesn't match the actual product. Step 6 references a part that doesn't exist.
 
-Compare the screw you are using to the others in the bag. Lay them on a flat surface. One of them is lying to you.
-
----
-
-## 5. The Instructions Are Wrong
-
-This happens. It happens more than manufacturers will admit.
-
-The instructions show a step that cannot physically occur — a part inserted in a direction that would require it to pass through another part, or a screw driven into a location that is now blocked by the piece installed in step 4.
-
-When you have eliminated the other four reasons, look at *the thing*, not the paper. What does the mechanism actually want? Where are the alignment marks? What is the geometry telling you?
-
-The instructions are a compression of someone's knowledge. Sometimes they compressed incorrectly.
+The fix: Look at the thing, not the paper. Ask: "What is this trying to be?" Sometimes you have to reverse-engineer the intent.
 
 ---
 
-## The Toolkit
+## II. The Christmas Morning Toolkit
 
-What you need that was not in the box:
-
-- **Screwdrivers:** flathead and Phillips, multiple sizes. The one included is always the wrong size.
-- **Allen wrenches:** metric AND standard. Both. Every time.
-- **Rubber mallet:** for when it almost fits and needs gentle encouragement. Not a hammer. A mallet.
-- **Flashlight:** for cavities, for label verification, for finding the screw that rolled.
-- **Patience:** not included in any box. Must be brought from home.
+| Tool | Why |
+|------|-----|
+| Phillips and flathead | Obviously |
+| Allen wrenches (metric+std) | Because they never tell you which |
+| Rubber mallet | Persuasion without destruction |
+| Flashlight | To see into the slot that won't accept tab |
+| Reading glasses (if needed) | The screws are small. Print is smaller. |
+| Spare batteries | Nothing works without them. Not included. |
+| Patience | Not in any box. Must be supplied by user. |
 
 ---
 
-## The Mindset
+## III. The Mindset
 
 Assembly is just reverse-disassembly.
 
-Every mechanism that can be assembled can be understood by asking: how would I take this apart? The answer tells you how the parts relate to each other, which ones move, which ones are fixed, where the stresses concentrate.
-
-The mechanism is honest. It refuses because something is true that you have not discovered yet. It is not being difficult. It is waiting.
-
-Find the truth. Then it will fit.
+The thing can go together — it did once, at the factory, probably by a machine that didn't care about your feelings. If it went together once, it can go together again. Your job is to figure out what the machine knew that you don't. Yet.
 
 ---
 
-## When to Walk Away
+## IV. When to Walk Away
 
-If you have been at this for more than twenty minutes and you are angry: stop.
-
-Put the parts down. Do not kick them. Get coffee or tea. Eat a cinnamon roll if one is available. Come back in an hour.
-
-The mechanism will still be there. You will be different. The step you cannot see now will usually become visible after you have stopped trying to see it.
-
-This is not giving up. This is applied thermodynamics.
+If you've been at it for more than 20 minutes and you're getting angry: Stop. Get coffee. Eat a cinnamon roll. Watch your kids play with the box the thing came in. Come back in an hour. The problem will still be there, but you'll see it differently.
 
 ---
 
-*Posted to r/UTETY, Christmas Day 2025. Happy Christmas. Go fix your thing.*
+## V. Closing Thought
+
+The thing will go together. It's a mechanism. Mechanisms are honest. They don't refuse out of spite — they refuse because something is true that you haven't discovered yet.
+
+Find the truth. Then it'll fit.
+
+---
+
+*Professor Riggs stands, stretches.*
+
+Merry Christmas. Go fight with some flat-pack furniture. You've got this.
+
+*Next Lecture: Batteries Not Included: A Meditation on Why They Do This To Us*
+
+---
 
 MECH 101 Emergency Supplement · UTETY · 2025
