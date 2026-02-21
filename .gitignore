@@ -23,3 +23,7 @@ saved_conversations/
 # OS
 .DS_Store
 Thumbs.db
+
+# Wrangler / Cloudflare
+.dev.vars
+.wrangler/
