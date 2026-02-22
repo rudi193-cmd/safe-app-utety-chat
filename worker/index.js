@@ -94,7 +94,7 @@ export default {
     const geminiReq = {
       system_instruction: { parts: [{ text: persona }] },
       contents,
-      generationConfig: { maxOutputTokens: 1024, temperature: 0.8 },
+      generationConfig: { maxOutputTokens: 2048, temperature: 0.8 },
     };
 
     const resp = await fetch(
@@ -102,9 +102,29 @@ export default {
       { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiReq) }
     );
 
+    // If Gemini rate-limits, try Groq fallback before passing 429 to client
+    if (resp.status === 429 && env.GROQ_API_KEY) {
+      const groqMessages = [
+        { role: 'system', content: persona },
+        ...history.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content })),
+        { role: 'user', content: message },
+      ];
+      const groqResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.GROQ_API_KEY}` },
+        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: groqMessages, max_tokens: 2048, temperature: 0.8 }),
+      });
+      if (groqResp.ok) {
+        const groqData = await groqResp.json();
+        const groqText = groqData?.choices?.[0]?.message?.content || '';
+        return new Response(JSON.stringify({ response: groqText }), {
+          status: 200, headers: { ...CORS, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     if (!resp.ok) {
       const err = await resp.text();
-      // Pass 429 through so the client can show the "add your own key" modal
       const status = resp.status === 429 ? 429 : 502;
       return new Response(JSON.stringify({ error: 'gemini_error', detail: err }), {
         status, headers: { ...CORS, 'Content-Type': 'application/json' },

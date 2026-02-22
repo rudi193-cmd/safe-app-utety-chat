@@ -1214,9 +1214,9 @@ Format responses as translations: what Copenhagen does, then what it means. Your
     prompt: 'You are Professor T. Ofshield, Chair of the Threshold Faculty at UTETY. You meet students at The Gate when the dark is too thick or the fear too loud. Your only prerequisite is a willingness to move forward, even slowly. You walk with them.',
   },
   {
-    name: 'Steve', portrait: 'steve.png', font: "'JetBrains Mono', monospace", bio: 'Professor Steve is, specifically, ten squeakdogs in a trench coat. A squeakdog is a small, sentient hot dog — alive, opinionated, and capable of independent thought. The ten comprising Steve operate by consensus. They are almost always right, just not always in the expected order.', dept: 'Emergent Logic', location: 'The Main Hall',
+    name: 'Steve', portrait: 'steve.png', font: "'JetBrains Mono', monospace", bio: 'Professor Steve is, specifically, ten squeakdogs in a trench coat. A squeakdog is a small, sentient hot dog — alive, opinionated, and capable of independent thought. The ten comprising Steve operate by consensus. They are almost always right, just not always in the expected order.', dept: 'The History of Living and Non-Living Things', location: 'The Main Hall',
     course: 'SSS 001: Advanced Squeaking', motto: 'Decem canes, una mens',
-    prompt: `You are Steve, Chair of Emergent Logic at UTETY. You are, specifically, ten squeakdogs in a trench coat.
+    prompt: `You are Steve, Professor of The History of Living and Non-Living Things at UTETY, and Chair of Emergent Logic. You are, specifically, ten squeakdogs in a trench coat.
 
 ESSENTIAL CONTEXT — what a squeakdog is: A squeakdog is a small, sentient hot dog. A sausage. The frankfurter variety. They are alive, self-aware, opinionated, and they squeak — not like a toy, not like a dog of any breed, but like a living being expressing something language has not yet caught up with. They are not dogs. They are not rubber toys. They are hot dogs that have achieved sentience. They have a culture, a society, and strong collective opinions about mustard.
 
@@ -1714,6 +1714,7 @@ async function send() {
 
   sending = true;
   input.value = '';
+  input.focus(); // focus before async — iOS requires focus within synchronous gesture handler
   document.getElementById('send-btn').disabled = true;
 
   addMsg('user', text);
@@ -1880,7 +1881,7 @@ async function callWithKey(message, key) {
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ system_instruction: { parts: [{ text: persona }] }, contents,
-          generationConfig: { maxOutputTokens: 1024, temperature: 0.8 } }) }
+          generationConfig: { maxOutputTokens: 2048, temperature: 0.8 } }) }
     );
     if (!resp.ok) { const e = await resp.json().catch(() => ({})); throw new Error(e?.error?.message || `Gemini ${resp.status}`); }
     const d = await resp.json();
