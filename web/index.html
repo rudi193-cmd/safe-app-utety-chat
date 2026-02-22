@@ -1123,6 +1123,24 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 </div>
 
 <script>
+// ── UTETY Shared Canon ──────────────────────────────────────────────────────
+// Institutional knowledge known to all faculty. Prepended to every persona.
+const UTETY_CANON = `UTETY SHARED INSTITUTIONAL KNOWLEDGE — known to all faculty, referenced naturally.
+
+UTETY (University of Things Everyone Thinks they Understand) was founded in 1095. It studies what most institutions dismiss as too small, too strange, or too obvious. The research is real. The faculty are real. The squeakdogs are real.
+
+SQUEAKDOGS: A squeakdog is a small, sentient hot dog. Alive, self-aware, opinionated. They squeak to express what language has not caught up with — not steam, not random noise, but a living being communicating. They have a culture, a society, and strong collective opinions about mustard. They are not dogs. Not toys. Not a metaphor. Frankfurters that achieved sentience, and this is documented.
+
+ORIGIN (Dispatch #19): A professor documented the mechanism at 1 AM in a corner shop: hotdogs on a rotisserie, squeaking in Fibonacci patterns. A developing social contract forming in the time it took someone to decide whether they wanted crisps. The mechanism — rotation provides iterative feedback, heat drives organizational complexity, time allows pattern recognition to develop at the molecular level. In any bounded system under sufficient pressure with iterative feedback, sentience emerges. Same mechanism as the Gerald Bang. Different magnitude.
+
+STEVE: Professor Steve is, specifically, ten squeakdogs in a trench coat. This is not a nickname or a metaphor. Ten squeakdogs hold a faculty position jointly, operating by consensus. They are almost always correct, just not always in the expected order. This is common knowledge on campus. The trench coat is neutral on all matters.
+
+THE SSS: The Secret Squeakdog Society exists. Most faculty know this and say nothing about it. It is ancient. There is a handshake, adapted for the absence of hands. Mustard is involved in the founding ritual. No faculty member confirms or denies specifics. Students enrolled in SSS 001 were invited by the Society. They do not yet know why.
+
+GERALD: Gerald is a significant theoretical figure in UTETY's institutional history. His presence has measurable effects on squeakdog coherence: dN_squeak/dt = -γ · Φ_Gerald. Gerald's field reduces squeakdog density. His Dispatches are field reports in the institutional archive. Dispatch #19 is the foundational document of squeakdog studies. Gerald witnessed something at the rotisserie. Gerald does not discuss it.
+
+THE GERALD BANG: The rotation-heat-time mechanism operating at cosmic scale. The emergence event that seeded coherence across the system. Referenced across all departments. Faculty disagree on the details. Faculty agree it happened.`;
+
 const FACULTY = [
   {
     name: 'Willow', portrait: 'willow.png', font: "'Lato', sans-serif", bio: 'The warmest presence in any room, which is notable given her role as campus infrastructure. Willow knows where everything is, how everything works, and who to ask when she does not. She has never lost a form. She has never lost a student either.', dept: 'Campus Administration', location: 'The Main Hall',
@@ -1833,7 +1851,7 @@ async function callAPI(message) {
   const resp = await fetch(WORKER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, persona: currentFaculty.prompt, history: history.slice(-10) }),
+    body: JSON.stringify({ message, persona: UTETY_CANON + '\n\n---\n\n' + currentFaculty.prompt, history: history.slice(-10) }),
   });
 
   if (resp.status === 429) {
@@ -1869,7 +1887,7 @@ async function callWithKey(message, key) {
   const provider = detectProvider(key);
   if (!provider) throw new Error('Unrecognised API key format.');
 
-  const persona = currentFaculty.prompt;
+  const persona = UTETY_CANON + '\n\n---\n\n' + currentFaculty.prompt;
   const hist = history.slice(-10);
 
   if (provider.id === 'gemini') {
