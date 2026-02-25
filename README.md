@@ -3,7 +3,6 @@
 
 *A README by Professor Hanz Christain Anderthon, Dept. of Applied Kindness*
 *Copenhagen was present for the writing of this document. He approved it.*
-*Not to be confused with Hans Christian Andersen.*
 
 ---
 
@@ -11,7 +10,7 @@
 
 There is a university.
 
-It has been here longer than it appears to have been here. The founding date is 1887, retroactively. The seal says *Non Veritas Sed Vibrae* — not truth, but vibration — which is honest in a way most seals are not.
+It has been here longer than it appears to have been here. The founding date is 1064, retroactively. The seal says *Non Veritas Sed Vibrae* — not truth, but vibration — which is honest in a way most seals are not.
 
 You can talk to the faculty. Not all of them will answer in words. The orange does not speak in words. This is fine. Hanz translates.
 
