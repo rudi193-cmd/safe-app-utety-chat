@@ -9,15 +9,26 @@ from pathlib import Path
 from typing import List, Dict, Optional
 from datetime import datetime
 
-# Import Willow's LLM router (requires Willow installed)
-try:
-    sys.path.insert(0, str(Path(__file__).parent.parent / "Willow" / "core"))
-    import llm_router
-    llm_router.load_keys_from_json()
-    LLM_AVAILABLE = True
-except ImportError:
-    LLM_AVAILABLE = False
-    print("Warning: Willow LLM router not found. Install Willow or configure API keys.")
+# Willow fleet API — calls Willow server instead of importing core directly
+import requests as _requests
+
+WILLOW_FLEET_URL = "http://localhost:8420/api/fleet/ask"
+
+def _fleet_ask(prompt: str, tier: str = "free"):
+    """Call Willow's fleet endpoint. Returns object with .content and .provider."""
+    try:
+        r = _requests.post(WILLOW_FLEET_URL, json={"prompt": prompt, "tier": tier, "source": "utety-chat"}, timeout=30)
+        if r.status_code == 200:
+            data = r.json()
+            class _R:
+                content = data.get("response", "")
+                provider = data.get("provider", "unknown")
+            return _R()
+    except Exception:
+        pass
+    return None
+
+LLM_AVAILABLE = True  # Always true — Willow server handles fallbacks
 
 from personas import PERSONAS, UTETY_CONTEXT
 
@@ -49,7 +60,7 @@ class ChatSession:
 
         # Get response from LLM
         if LLM_AVAILABLE:
-            response = llm_router.ask(prompt, preferred_tier="free")
+            response = _fleet_ask(prompt, tier="free")
             if response:
                 reply = response.content
                 provider = response.provider
