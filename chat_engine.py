@@ -13,6 +13,27 @@ from datetime import datetime
 import requests as _requests
 
 WILLOW_FLEET_URL = "http://localhost:8420/api/fleet/ask"
+WILLOW_SEARCH_URL = "http://localhost:8420/api/knowledge/semantic-search"
+
+
+def _willow_context(query: str, limit: int = 3) -> str:
+    """Fetch relevant atoms from Willow's knowledge graph for this query."""
+    try:
+        r = _requests.get(WILLOW_SEARCH_URL, params={"q": query, "limit": limit}, timeout=5)
+        if r.status_code != 200:
+            return ""
+        results = r.json().get("results", [])
+        if not results:
+            return ""
+        lines = ["### Willow Knows:"]
+        for atom in results:
+            title = atom.get("title", "").strip()
+            snippet = atom.get("content_snippet", atom.get("summary", "")).strip()[:200]
+            if title or snippet:
+                lines.append(f"- **{title}**: {snippet}" if title else f"- {snippet}")
+        return "\n".join(lines)
+    except Exception:
+        return ""
 
 def _fleet_ask(prompt: str, tier: str = "free"):
     """Call Willow's fleet endpoint. Returns object with .content and .provider."""
@@ -86,13 +107,16 @@ class ChatSession:
         """Build LLM prompt with professor persona and chat history."""
 
         # Start with persona prompt
+        willow_ctx = _willow_context(user_message)
         prompt_parts = [
             self.persona_prompt,
             "",
             UTETY_CONTEXT,
             "",
-            "### Conversation History:",
         ]
+        if willow_ctx:
+            prompt_parts += [willow_ctx, ""]
+        prompt_parts.append("### Conversation History:")
 
         # Add recent history (last 10 messages for context)
         recent_history = self.history[-10:] if len(self.history) > 10 else self.history
