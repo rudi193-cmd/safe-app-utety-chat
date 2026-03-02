@@ -60,6 +60,10 @@ async def research_page():
 async def dispatches_page():
     return FileResponse("web/dispatches.html")
 
+@app.get("/faculty.html")
+async def faculty_page():
+    return FileResponse("web/faculty.html")
+
 
 @app.post("/api/session/start")
 async def start_session():

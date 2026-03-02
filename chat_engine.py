@@ -57,6 +57,9 @@ from personas import PERSONAS, UTETY_CONTEXT
 class ChatSession:
     """Manages a conversation session with a UTETY professor."""
 
+    # Pre-computed per-professor Willow memory (seeded by pipeline/seed_professors.py)
+    _MEMORY_DIR = Path(__file__).parent / "data" / "professors"
+
     def __init__(self, professor_name: str, session_id: str):
         self.professor_name = professor_name
         self.session_id = session_id
@@ -65,6 +68,17 @@ class ChatSession:
 
         # Get professor persona
         self.persona_prompt = PERSONAS.get(professor_name, PERSONAS["Willow"])
+
+        # Load pre-seeded Willow memory for this professor (if available)
+        self.professor_memory = self._load_professor_memory(professor_name)
+
+    @classmethod
+    def _load_professor_memory(cls, name: str) -> str:
+        """Load pre-seeded Willow memory from data/professors/{name}_context.md."""
+        path = cls._MEMORY_DIR / f"{name.lower()}_context.md"
+        if path.exists():
+            return path.read_text(encoding="utf-8").strip()
+        return ""
 
     def send_message(self, user_message: str) -> str:
         """Send a message to the professor and get response."""
@@ -114,6 +128,14 @@ class ChatSession:
             UTETY_CONTEXT,
             "",
         ]
+        # Inject professor-specific Willow memory (pre-seeded, stable context)
+        if self.professor_memory:
+            prompt_parts += [
+                f"### {self.professor_name}'s Willow Memory:",
+                self.professor_memory,
+                "",
+            ]
+        # Inject query-specific atoms (dynamic, per-message)
         if willow_ctx:
             prompt_parts += [willow_ctx, ""]
         prompt_parts.append("### Conversation History:")

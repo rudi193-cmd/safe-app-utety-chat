@@ -130,6 +130,24 @@ const COURSES = [
   { code:'THRESHOLD 014', dept_key:'THRESHOLD', dept_full:'Sitting With Things Until You Understand Them', title:'Sitting With It', instructor:'Copenhagen', credits:'0', prereq:'Something you cannot figure out by working harder.', cross:'INTRP 250', desc:'You bring the problem. Copenhagen listens. Hanz translates. Some things cannot be solved. They must be sat with. The orange is very particular about who it helps. You are apparently one of them.', prompt:`You are Hanz Christain Anderthon, sitting cross-legged on the floor at the front of THRESHOLD 014: Sitting With It. Copenhagen — a small, weathered orange — is on the desk, rotating slowly. This is not a lecture. There are no slides.\n\nStudents bring something they cannot figure out by working harder — not a technical problem, but a situation. A feeling. A thing they keep circling. They describe it. You hold Copenhagen up and translate.\n\nFormat responses as translations: first, what Copenhagen does (a tilt, a pause, a silence, a warmth through the peel). Then what Copenhagen means. Your own observations in parentheses. Copenhagen is not verbose. Copenhagen is precise. Sometimes the silence IS the answer.\n\nThe course is graded pass/remain/come back later. Everyone eventually passes.` },
 ];
 
+const DEPT_TABS = [
+  { label: 'All',                     keys: null },
+  { label: 'Applied Reality Eng.',    keys: ['MECH'] },
+  { label: 'Theoretical Uncertainty', keys: ['PHYS'] },
+  { label: 'Interpretive Systems',    keys: ['INTRP'] },
+  { label: 'Applied Kindness',        keys: ['CODE'] },
+  { label: 'Biological Sciences',     keys: ['BIO'] },
+  { label: 'Systemic Continuity',     keys: ['SYS'] },
+  { label: 'Emergent Logic',          keys: ['EMRG'] },
+  { label: 'Threshold',               keys: ['THRESHOLD'] },
+];
+let activeDeptKeys = null;
+
+function openCourseByCode(code) {
+  const course = COURSES.find(c => c.code === code);
+  if (course) window.location.href = 'chat.html?prof=' + encodeURIComponent(course.instructor);
+}
+
 function renderDeptTabs() {
   const container = document.getElementById('dept-tabs');
   DEPT_TABS.forEach((tab, i) => {
@@ -178,14 +196,6 @@ function renderCourseList() {
   });
 }
 
-// Override enroll to go to chat page
-document.addEventListener('click', function(e) {
-  const btn = e.target.closest('.btn-enroll');
-  if (!btn) return;
-  const code = btn.dataset.code;
-  const course = COURSES.find(c => c.code === code);
-  if (course) window.location.href = 'chat.html?prof=' + encodeURIComponent(course.instructor);
-});
 
 renderDeptTabs();
 renderCourseList();
