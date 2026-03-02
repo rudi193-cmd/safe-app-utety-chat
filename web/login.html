@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTETY — Log In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="static/style.css">
+<style>
+.login-wrap {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--warm-dark);
+  padding: 24px;
+}
+.login-card {
+  background: var(--dark-surface);
+  border: 1px solid var(--dark-border);
+  border-radius: 8px;
+  padding: 40px;
+  width: 100%; max-width: 400px;
+}
+.login-seal { text-align: center; margin-bottom: 20px; }
+.login-seal img { width: 52px; opacity: 0.85; }
+.login-title { text-align: center; font-size: 1.2rem; color: var(--gold-light); margin-bottom: 4px; font-weight: 500; }
+.login-sub { text-align: center; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 28px; letter-spacing: 0.03em; }
+.login-label { display: block; font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.login-input {
+  width: 100%; background: var(--warm-dark); color: var(--text-light);
+  border: 1px solid var(--dark-border); border-radius: 5px;
+  padding: 10px 12px; font-size: 0.9rem; font-family: inherit;
+  margin-bottom: 18px; box-sizing: border-box;
+}
+.login-input:focus { outline: none; border-color: var(--gold); }
+.login-btn {
+  width: 100%; background: var(--gold); color: #000;
+  border: none; padding: 11px; font-size: 0.88rem; font-weight: 700;
+  font-family: inherit; letter-spacing: 0.06em; cursor: pointer;
+  border-radius: 4px; transition: background 0.15s;
+}
+.login-btn:hover { background: var(--gold-light); }
+.login-btn:disabled { opacity: 0.45; cursor: default; }
+.login-err {
+  display: none; background: rgba(107,31,42,0.4); border: 1px solid var(--maroon);
+  color: #e88; padding: 9px 12px; border-radius: 4px;
+  font-size: 0.82rem; margin-bottom: 16px; text-align: center;
+}
+.login-note { text-align: center; font-size: 0.72rem; color: var(--text-dim); margin-top: 20px; line-height: 1.6; }
+.login-note a { color: var(--gold-dim); }
+.login-divider { text-align: center; color: var(--text-dim); font-size: 0.72rem; margin: 16px 0; position: relative; }
+.login-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--dark-border); }
+.login-divider span { background: var(--dark-surface); padding: 0 12px; position: relative; }
+.guest-btn {
+  width: 100%; background: none; color: var(--text-dim);
+  border: 1px solid var(--dark-border); padding: 10px;
+  font-size: 0.82rem; font-family: inherit; letter-spacing: 0.04em;
+  cursor: pointer; border-radius: 4px; transition: border-color 0.15s, color 0.15s;
+}
+.guest-btn:hover { border-color: var(--gold-dim); color: var(--text-light); }
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<div class="subnav">
+  <div class="subnav-inner">
+    <a href="https://reddit.com/r/DispatchesFromReality" target="_blank">Gerald's Dispatches</a>
+    <a href="https://github.com/rudi193-cmd/safe-app-utety-chat" target="_blank">GitHub</a>
+  </div>
+</div>
+<nav class="topnav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">
+      <img src="seal.png" alt="UTETY" class="nav-seal" />
+      <span class="nav-wordmark">UTETY</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="courses.html">Courses</a>
+      <a href="research.html">Research</a>
+      <a href="dispatches.html">Dispatches</a>
+      <a href="index.html#admissions">Admissions</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Login Form ── -->
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-seal">
+      <img src="seal.png" alt="UTETY Seal" />
+    </div>
+    <div class="login-title">Willow Login</div>
+    <div class="login-sub">Enter your Willow credentials to access faculty chat</div>
+
+    <div class="login-err" id="login-err"></div>
+
+    <label class="login-label" for="username">Username</label>
+    <input class="login-input" type="text" id="username" autocomplete="username" placeholder="your-username" />
+
+    <label class="login-label" for="passphrase">Passphrase</label>
+    <input class="login-input" type="password" id="passphrase" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Log In</button>
+
+    <div class="login-divider"><span>or</span></div>
+
+    <button class="guest-btn" onclick="guestAccess()">Continue as guest — 23-minute trial</button>
+
+    <p class="login-note">
+      UTETY is part of the Willow ecosystem.<br>
+      No account? <a href="index.html">Return to campus</a> — some faculty are accessible without login.
+    </p>
+  </div>
+</div>
+
+<script src="static/shared.js"></script>
+<script>
+// If already logged in, redirect away
+(function() {
+  const token = sessionStorage.getItem('willow_token');
+  if (token) {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get('next');
+    window.location.href = next || 'index.html';
+  }
+})();
+
+async function doLogin() {
+  const username = document.getElementById('username').value.trim();
+  const passphrase = document.getElementById('passphrase').value;
+  const err = document.getElementById('login-err');
+  const btn = document.getElementById('login-btn');
+
+  if (!username || !passphrase) {
+    err.textContent = 'Please enter username and passphrase.';
+    err.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Logging in…';
+  err.style.display = 'none';
+
+  try {
+    const r = await fetch('http://localhost:8420/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, passphrase })
+    });
+
+    if (r.ok) {
+      const data = await r.json();
+      const token = data.token || data.access_token;
+      if (token) {
+        sessionStorage.setItem('willow_token', token);
+        sessionStorage.setItem('willow_user', username);
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get('next');
+        window.location.href = next || 'index.html';
+        return;
+      }
+    }
+
+    const errData = await r.json().catch(() => ({}));
+    err.textContent = errData.detail || errData.error || 'Login failed. Check your credentials.';
+    err.style.display = 'block';
+  } catch (e) {
+    err.textContent = 'Cannot reach Willow server (localhost:8420). Is Willow running?';
+    err.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Log In';
+}
+
+function guestAccess() {
+  // Grant a temporary guest token
+  sessionStorage.setItem('willow_token', 'guest-trial-' + Date.now());
+  sessionStorage.setItem('willow_user', 'guest');
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get('next');
+  window.location.href = next || 'index.html';
+}
+</script>
+</body>
+</html>

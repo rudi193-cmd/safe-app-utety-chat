@@ -36,6 +36,31 @@ async def root():
     return FileResponse("web/index.html")
 
 
+@app.get("/login.html")
+async def login_page():
+    return FileResponse("web/login.html")
+
+
+@app.get("/chat.html")
+async def chat_page():
+    return FileResponse("web/chat.html")
+
+
+@app.get("/courses.html")
+async def courses_page():
+    return FileResponse("web/courses.html")
+
+
+@app.get("/research.html")
+async def research_page():
+    return FileResponse("web/research.html")
+
+
+@app.get("/dispatches.html")
+async def dispatches_page():
+    return FileResponse("web/dispatches.html")
+
+
 @app.post("/api/session/start")
 async def start_session():
     """Start new SAFE session."""
@@ -159,7 +184,10 @@ async def end_session(session_id: str):
 
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="web"), name="static")
+# web/static/ → /static/ (CSS, JS assets)
+app.mount("/static", StaticFiles(directory="web/static"), name="static")
+# web/ root → / (images, seal.png, etc.)
+app.mount("/", StaticFiles(directory="web"), name="web")
 
 
 if __name__ == "__main__":

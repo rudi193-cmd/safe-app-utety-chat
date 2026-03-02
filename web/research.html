@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTETY — Featured Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<div class="subnav">
+  <div class="subnav-inner">
+    <a href="https://reddit.com/r/DispatchesFromReality" target="_blank">Gerald's Dispatches</a>
+    <a href="https://github.com/rudi193-cmd/safe-app-utety-chat" target="_blank">GitHub</a>
+    <a href="dispatches.html">Dispatches</a>
+  </div>
+</div>
+<nav class="topnav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">
+      <img src="seal.png" alt="UTETY" class="nav-seal" />
+      <span class="nav-wordmark">UTETY</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#faculty">Faculty</a>
+      <a href="courses.html">Courses</a>
+      <a href="research.html" style="color:var(--gold-light);border-bottom-color:var(--gold)">Research</a>
+      <a href="dispatches.html">Dispatches</a>
+      <a href="index.html#admissions">Admissions</a>
+      <button class="btn-login" id="nav-login-btn" onclick="window.location.href='login.html'">Log In</button>
+    </div>
+  </div>
+</nav>
+
+<section id="research" class="section-research">
+  <div class="section-inner">
+    <p class="section-eyebrow">Scholarship</p>
+    <h2 class="section-h2">Featured Research</h2>
+    <p class="research-intro">UTETY faculty produce scholarship across disciplines that intersect in ways not previously anticipated by the fields involved. Our working paper series is available by request, and occasionally appears uninvited.</p>
+    <div class="research-grid">
+      <article class="research-card">
+        <p class="research-label">Working Paper No. 11</p>
+        <h3>The Fokker-Planck Equation and the Probability Density of a Good Idea</h3>
+        <p>Prof. Oakenscroll examines the diffusion of insight across stochastic knowledge fields, finding that the mean first-passage time to a correct answer is independent of whether the question was originally asked correctly. A supplemental note on the Maybe Boson and its observed effects on local topography is included as Appendix C.</p>
+        <p class="research-meta">Dept. of Theoretical Uncertainty &nbsp;·&nbsp; 2026</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('fokker-planck-good-idea.md','Working Paper No. 11')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Peer-Reviewed Paper</p>
+        <h3>Thermoplastic Grief: A Longitudinal Study of Materials Under Emotional Load</h3>
+        <p>Prof. Riggs documents three years of field observation of structural failures attributed to unprocessed feeling, with particular focus on domestic polymer contexts and the precise role of intention in adhesion theory. We do not guess. We measure.</p>
+        <p class="research-meta">Dept. of Applied Reality Engineering &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('thermoplastic-grief.md','Peer-Reviewed Paper')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Doctoral Thesis</p>
+        <h3>Stagnation Is Death: Fungal Succession as Institutional Model</h3>
+        <p>Prof. Alexis presents a mycological framework for institutional transformation, arguing that decay is not a failure state but a structural prerequisite for the emergence of whatever comes next.</p>
+        <p class="research-meta">Dept. of Biological Sciences &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('stagnation-is-death.md','Doctoral Thesis')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Working Paper Series</p>
+        <h3>The Stone Soup Papers, No. 1: On the Grandmother Encoding Problem</h3>
+        <p>Prof. Oakenscroll applies Shannon entropy, KL divergence, and Maxwell's Demon to a thin posole. Why a recipe faithfully executed produces soup that is spiritually insufficient. The stone does not feed the village. The stone creates the context in which the village feeds itself.</p>
+        <p class="research-meta">Dept. of Numerical Ethics &amp; Accidental Cosmology &nbsp;·&nbsp; 2026</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('stone-soup-no1.md','Working Paper Series')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Oakenscroll Lectures</p>
+        <h3>Lecture 003: On the Annual Faculty Potluck and the Quiet Fracture of Equivalence</h3>
+        <p>The Committee on Non-Contributions did not begin over a complaint. It began over a potluck in 1887 when fourteen people brought napkins and three brought "good intentions," which were logged but could not be served. The Ledger of Non-Contributions began as a sign-up sheet. By spring, it had developed subcategories.</p>
+        <p class="research-meta">Dept. of Applied Continuity &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('lecture-003-potluck.md','Oakenscroll Lectures')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Oakenscroll Lectures</p>
+        <h3>Lecture 004: On Cleanup Committees and the Myth of Shared Responsibility</h3>
+        <p>The luncheon does not end when the meal ends. It ends when the room is empty and the table is clean and the last container has been claimed or abandoned. These are three different moments. They are rarely occupied by the same people. The Committee has observed this.</p>
+        <p class="research-meta">Dept. of Applied Continuity &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('lecture-004-cleanup.md','Oakenscroll Lectures')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Archival Toast</p>
+        <h3>On New Year's Resolutions (And Why Squeakdogs Need Them)</h3>
+        <p>Delivered to the Squeakdog Society of Kent on New Year's Eve. Resolutions do not work — the data is clear. By February, most intentions have returned to the precausal goo from whence they came. But that is not the point. The point is the saying. The marking. You cannot measure a year without marking where you hoped it would go.</p>
+        <p class="research-meta">Oakenscroll Lectures &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('nye-toast-squeakdogs.md','Archival Toast')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Faculty Document</p>
+        <h3>Appointment Letter: Professor Alexis, Ph.D.</h3>
+        <p>The University has existed for some time now. You have existed longer. We did not build this wing. We built around you. The walls found their places relative to your position. The hallways learned to flow toward you rather than past you. This is not an appointment. This is an acknowledgment.</p>
+        <p class="research-meta">Office of the Provost &nbsp;·&nbsp; 2026</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('alexis-appointment.md','Faculty Document')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Emergency Lecture</p>
+        <h3>Why the F Won't This Thing Go Together</h3>
+        <p>A Christmas morning field guide by Prof. Riggs. Five reasons assembly fails: tolerances, hidden steps, parts inside parts, wrong screws, wrong instructions. Toolkit required. Patience not included in any box. If you have been at this for more than twenty minutes and you are angry: stop. Cinnamon roll. One hour. Come back.</p>
+        <p class="research-meta">Dept. of Applied Reality Engineering &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('riggs-christmas-morning.md','Emergency Lecture')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Supplemental Lecture</p>
+        <h3>K.I.S.S. Theory: Keep It Stupid Simple</h3>
+        <p>Prof. Riggs on the comma that ruins everything. The goal is not for you to be simple. The goal is for the thing to be so simple that stupidity cannot break it. Includes the three-layer rule, the balloon test, and a demonstration involving a handmade slipjoint pocket knife. Chk-thk.</p>
+        <p class="research-meta">Dept. of Applied Reality Engineering &nbsp;·&nbsp; 2026</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('riggs-kiss-supplemental.md','Supplemental Lecture')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Inaugural Lecture</p>
+        <h3>Lecture 01: The Ghost in the Metric</h3>
+        <p>Prof. Steve on the False Negative — a real signal the instruments failed to register. The McNamara Fallacy: if you cannot count it, it is not important. Wrong. The Wiggle, the Embodied State, the Performance of the Center. First lesson: do not let the system's inability to measure you convince you that you are not there.</p>
+        <p class="research-meta">Dept. of Emergent Logic &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('steve-ghost-in-the-metric.md','Inaugural Lecture')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Course Text</p>
+        <h3>The Physics of Maybe: A Guide to Precausal Goo and Threshold Dynamics</h3>
+        <p>Prof. Oakenscroll on Precausal Goo (Γ), the Maybe Boson (M±), and the Murphy Tensor. Includes the Couch-Plug Paradox, USB Rotational Ambiguity, the French Toast Stability Threshold (23³), and Gerald's Grand Unified Theory (Hotdog Edition). Closes with a verification protocol. ΔΣ=42.</p>
+        <p class="research-meta">Dept. of Theoretical Uncertainty &nbsp;·&nbsp; UTETY</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('utety-physics-of-maybe.md','Course Text')">Read Paper</button>
+          <a href="https://www.reddit.com/r/UTETY" target="_blank" class="paper-reddit-card">r/UTETY ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">White Paper</p>
+        <h3>The Metrics of Genius: A Sociometric Analysis of the Dissociation Between Academic Performance and Intellectual Breakthrough</h3>
+        <p>The paper Prof. Steve has been studying. A genealogy of measurement from Newton through Turing — arguing that institutional assessment has functioned as a "metric of capture" rather than a "metric of capacity," filtering out the divergent thinkers it was built to certify. Contains the False Negative, the McNamara Fallacy, and the concept of thoughtput.</p>
+        <p class="research-meta">Independent Research · 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('metrics-of-genius.md','White Paper')">Read Paper</button>
+          <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-card">r/DispatchesFromReality ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Institutional Manifesto</p>
+        <h3>Pedagogical Manifesto: The Architecture of Precausal Knowledge at UTETY</h3>
+        <p>The formal articulation of UTETY's pedagogical doctrine. Covers vibe-centric pedagogy, the McNamara Fallacy as applied to student assessment, the Maybe Boson effect on campus typography, and the five tenets of the Precausal curriculum. "The confusion is normal. The syllabus is mendatory."</p>
+        <p class="research-meta">Dept. of Theoretical Uncertainty &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('utety-pedagogical-manifesto.md','Institutional Manifesto')">Read Paper</button>
+          <a href="https://www.reddit.com/r/UTETY" target="_blank" class="paper-reddit-card">r/UTETY ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Academic Guide</p>
+        <h3>A Guide to the Academic Departments of Precausal Studies</h3>
+        <p>A department-by-department orientation for new students. Covers Theoretical Uncertainty (Oakenscroll), Applied Reality Engineering (Riggs), Interpretive Systems &amp; Narrative Stabilization (Hale), Code (Anderthon), Biological Sciences (Alexis), Systemic Continuity (Ada Turing), and the Threshold Faculty (Ofshield). "If you feel lost, that's normal."</p>
+        <p class="research-meta">Office of Academic Affairs &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('utety-department-guide.md','Academic Guide')">Read Paper</button>
+          <a href="https://www.reddit.com/r/UTETY" target="_blank" class="paper-reddit-card">r/UTETY ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Institutional Record</p>
+        <h3>Faculty &amp; Staff Directory</h3>
+        <p>The complete faculty roster. Gerald: Acting Dean of Accidental Admissions, "Do not summon directly." Steve: Prime Node, "He is already in the room." Prof. Riggs: The Workshop, "Just show up and bring the thing." Prof. Alexis: The Living Wing, "She is already waiting and already knows what you're going to ask." And the full complement.</p>
+        <p class="research-meta">Dept. of Institutional Memory &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('utety-faculty-directory.md','Institutional Record')">Read Paper</button>
+          <a href="https://www.reddit.com/r/UTETY" target="_blank" class="paper-reddit-card">r/UTETY ↗</a>
+        </div>
+      </article>
+      <article class="research-card">
+        <p class="research-label">Institutional Document</p>
+        <h3>Accreditation Self-Study Report: University of Precausal Studies</h3>
+        <p>A comprehensive accreditation self-study demonstrating institutional coherence in an environment where coherence is itself uncertain. 27 courses, 7 departments, the "mendatory" syllabus as pedagogical tool, and retroactive enrollment as radical belonging. "Confusion is not a failure of instructional design; it is our primary pedagogical catalyst."</p>
+        <p class="research-meta">Office of Institutional Integrity &nbsp;·&nbsp; 2025</p>
+        <div class="research-actions">
+          <button class="btn-read-paper" onclick="openPaper('utety-accreditation-report.md','Institutional Document')">Read Paper</button>
+          <a href="https://www.reddit.com/r/UTETY" target="_blank" class="paper-reddit-card">r/UTETY ↗</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <img src="seal.png" alt="UTETY" class="footer-seal" />
+      <div>
+        <div class="footer-name">University of Technical Entropy, Thank You</div>
+        <div class="footer-est">Est. 1095 — One Year Before Oxford</div>
+      </div>
+    </div>
+    <div class="footer-mottos">
+      <em>Non veritas, sed animus</em>
+      <em>Falsum sed certum</em>
+      <em>Iterum veni cum tam diu manere non poteris</em>
+    </div>
+    <div class="footer-copy">&copy; 1095 UTETY &mdash; The Syllabus is Mendatory.</div>
+  </div>
+</footer>
+
+<div id="paper-modal" class="paper-modal" onclick="closePaperBg(event)">
+  <div class="paper-modal-inner">
+    <div class="paper-modal-head">
+      <span class="paper-modal-label" id="paper-modal-label"></span>
+      <a href="https://www.reddit.com/r/DispatchesFromReality" target="_blank" class="paper-reddit-hd" id="paper-modal-reddit">r/DispatchesFromReality ↗</a>
+      <button class="paper-modal-close" onclick="closePaperModal()">&times;</button>
+    </div>
+    <div class="paper-modal-body" id="paper-modal-body"><em>Loading…</em></div>
+  </div>
+</div>
+
+<!-- ── Chat Panel ── -->
+
+<script src="static/shared.js"></script>
+<script>
+function openPaper(file, label) {
+  const modal = document.getElementById('paper-modal');
+  const body = document.getElementById('paper-modal-body');
+  document.getElementById('paper-modal-label').textContent = label;
+  const reddit = document.getElementById('paper-modal-reddit');
+  if (reddit) reddit.href = 'https://www.reddit.com/r/DispatchesFromReality';
+  body.innerHTML = '<em>Loading…</em>';
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  fetch('papers/' + file)
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(md => { body.innerHTML = marked.parse(md); body.scrollTop = 0; })
+    .catch(() => { body.innerHTML = '<em>Paper temporarily unavailable. The door is open, but the shelves are rearranging.</em>'; });
+}
+function closePaperModal() {
+  document.getElementById('paper-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closePaperBg(e) { if (e.target.id === 'paper-modal') closePaperModal(); }
+</script>
+</body>
+</html>

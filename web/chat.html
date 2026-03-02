@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTETY — Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="static/style.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<style>
+html, body { height: 100%; overflow: hidden; }
+
+.chat-page {
+  display: flex; flex-direction: column;
+  height: 100vh; background: var(--warm-dark);
+}
+.chat-topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; height: 52px;
+  background: var(--dark-surface);
+  border-bottom: 1px solid var(--dark-border);
+  flex-shrink: 0;
+}
+.chat-back {
+  background: none; border: 1px solid var(--dark-border); color: var(--text-dim);
+  border-radius: 4px; padding: 5px 12px; cursor: pointer; font-size: 0.8rem; font-family: inherit;
+  text-decoration: none; display: inline-block;
+}
+.chat-back:hover { background: var(--dark-border); color: var(--text-light); }
+.chat-prof-name { font-weight: 600; font-size: 0.95rem; color: var(--gold); }
+.chat-dept-tag {
+  font-size: 0.68rem; color: var(--text-dim);
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 3px; padding: 2px 8px;
+}
+.chat-new-btn {
+  margin-left: auto; background: none; border: 1px solid var(--dark-border);
+  color: var(--text-dim); border-radius: 4px; padding: 4px 10px;
+  cursor: pointer; font-size: 0.75rem; font-family: inherit;
+  transition: border-color 0.15s, color 0.15s;
+}
+.chat-new-btn:hover { border-color: var(--gold-dim); color: var(--text-light); }
+
+.chat-body { display: flex; flex: 1; overflow: hidden; }
+
+.chat-sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--dark-surface); border-right: 1px solid var(--dark-border);
+  padding: 16px; overflow-y: auto;
+}
+@media (max-width: 600px) { .chat-sidebar { display: none; } }
+.sidebar-portrait {
+  width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top;
+  border: 1px solid var(--dark-border); display: block; margin-bottom: 12px;
+}
+.sidebar-initial {
+  width: 100%; aspect-ratio: 3/4; background: #150e05;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem; color: #3a2410; border: 1px solid var(--dark-border);
+  margin-bottom: 12px;
+}
+.sidebar-name { font-size: 1rem; font-weight: 600; color: var(--gold); margin-bottom: 3px; }
+.sidebar-dept { font-size: 0.69rem; color: var(--text-dim); margin-bottom: 8px; line-height: 1.4; }
+.sidebar-motto { font-size: 0.74rem; color: var(--gold-dim); font-style: italic; margin-bottom: 10px; line-height: 1.4; }
+.sidebar-bio { font-size: 0.76rem; color: rgba(232,220,200,0.55); line-height: 1.52; }
+.sidebar-location {
+  display: inline-block; font-size: 0.63rem; color: var(--text-dim);
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  padding: 2px 7px; border-radius: 2px; margin-top: 10px;
+  letter-spacing: 0.04em;
+}
+
+.chat-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.messages {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.msg {
+  max-width: 82%; padding: 10px 14px; border-radius: 6px;
+  font-size: 0.9rem; line-height: 1.55; word-wrap: break-word;
+}
+.msg.user { align-self: flex-end; background: var(--user-msg); border-bottom-right-radius: 2px; white-space: pre-wrap; }
+.msg.assistant {
+  align-self: flex-start; background: var(--dark-surface);
+  border: 1px solid var(--dark-border); border-bottom-left-radius: 2px;
+}
+.msg.assistant p { margin: 0 0 0.5em; }
+.msg.assistant p:last-child { margin-bottom: 0; }
+.msg.system {
+  align-self: center; color: var(--text-dim); font-size: 0.75rem;
+  background: none; max-width: 90%; text-align: center;
+}
+.typing { color: var(--text-dim); font-style: italic; }
+
+.input-area {
+  flex-shrink: 0; border-top: 1px solid var(--dark-border);
+  background: var(--dark-surface); padding: 10px 12px;
+}
+.input-status { font-size: 0.7rem; color: var(--text-dim); text-align: center; padding: 3px 0 6px; }
+.input-row { display: flex; gap: 8px; align-items: flex-end; }
+.input-row textarea {
+  flex: 1; background: var(--warm-dark); color: var(--text-light);
+  border: 1px solid var(--dark-border); border-radius: 6px;
+  padding: 9px 12px; font-size: 0.9rem; resize: none;
+  min-height: 42px; max-height: 110px; font-family: inherit; overflow-y: auto;
+}
+.input-row textarea:focus { outline: none; border-color: var(--gold); }
+.send-btn {
+  background: var(--gold); color: #000; border: none; border-radius: 6px;
+  padding: 10px 18px; font-weight: 700; cursor: pointer; font-size: 0.85rem;
+  flex-shrink: 0; font-family: inherit;
+}
+.send-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Auth overlay */
+.auth-loading {
+  position: fixed; inset: 0; background: var(--warm-dark);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; color: var(--text-dim); font-size: 0.9rem;
+}
+</style>
+</head>
+<body>
+
+<!-- Auth loading overlay -->
+<div class="auth-loading" id="auth-loading">Verifying…</div>
+
+<div class="chat-page" id="chat-page" style="display:none">
+
+  <!-- Top bar -->
+  <div class="chat-topbar">
+    <a class="chat-back" href="index.html#faculty">← Faculty</a>
+    <span class="chat-prof-name" id="chat-prof-name">Loading…</span>
+    <span class="chat-dept-tag" id="chat-dept-tag"></span>
+    <button class="chat-new-btn" onclick="newConversation()">↺ New</button>
+  </div>
+
+  <!-- Body: sidebar + messages -->
+  <div class="chat-body">
+
+    <!-- Sidebar -->
+    <aside class="chat-sidebar" id="chat-sidebar">
+      <div class="sidebar-initial" id="sidebar-initial">?</div>
+      <img class="sidebar-portrait" id="sidebar-portrait" style="display:none" alt="" />
+      <div class="sidebar-name" id="sidebar-name"></div>
+      <div class="sidebar-dept" id="sidebar-dept"></div>
+      <div class="sidebar-motto" id="sidebar-motto"></div>
+      <div class="sidebar-bio" id="sidebar-bio"></div>
+      <div class="sidebar-location" id="sidebar-location"></div>
+    </aside>
+
+    <!-- Chat main -->
+    <div class="chat-main">
+      <div class="messages" id="messages"></div>
+      <div class="input-area">
+        <div class="input-status" id="input-status"></div>
+        <div class="input-row">
+          <textarea id="chat-input" placeholder="Ask anything…" rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}
+                       this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';"
+          ></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="static/shared.js"></script>
+<script>
+// ── Professor metadata (for display) ─────────────────────────────────────────
+const PROF_META = {
+  'Willow':       { portrait:'willow.png',     dept:'Campus Administration',       location:'The Main Hall',      motto:'',                                    font:"'Lato', sans-serif" },
+  'Riggs':        { portrait:'riggs.png',       dept:'Applied Reality Eng.',        location:'The Workshop',       motto:'Attente specta — vera magia machinas habet', font:"'JetBrains Mono', monospace" },
+  'Ada':          { portrait:'ada.png',         dept:'Systemic Continuity',         location:'The Server Corridor', motto:'Syllabi mandatoria sunt',             font:"'JetBrains Mono', monospace" },
+  'Gerald':       { portrait:'gerald.png',      dept:'Honorary Head(less) Master',  location:'Administrative Wing', motto:'ΔΣ=42',                              font:"'EB Garamond', Georgia, serif" },
+  'Oakenscroll':  { portrait:'oakenscroll.png', dept:'Theoretical Uncertainty',     location:'The Main Hall',      motto:'Ianua numquam clausa est',            font:"Georgia, serif" },
+  'Nova':         { portrait:'nova.png',        dept:'Interpretive Systems',        location:'The Living Wing',    motto:'In lanae filo, veritas',              font:"'EB Garamond', Georgia, serif" },
+  'Hanz':         { portrait:'hanz.png',        dept:'Applied Kindness',            location:'The Main Hall',      motto:'In fragmentis, pulchritudo',          font:"'EB Garamond', Georgia, serif" },
+  'Copenhagen':   { portrait:'copenhagen.png',  dept:'Sitting With Things',         location:'Wherever Hanz Is',   motto:'Citrus sapit, ergo est',              font:"'EB Garamond', Georgia, serif" },
+  'Alexis':       { portrait:'alexis.png',      dept:'Biological Sciences',         location:'The Living Wing',    motto:'Stagnatio mors est',                  font:"'Lato', sans-serif" },
+  'Ofshield':     { portrait:'ofshield.png',    dept:'Threshold Faculty',           location:'The Gate',           motto:'Quid transit, notatur',               font:"'Cinzel', 'Times New Roman', serif" },
+  'Steve':        { portrait:'steve.png',       dept:'The History of Living Things',location:'The Main Hall',      motto:'Decem canes, una mens',              font:"'JetBrains Mono', monospace" },
+  'Kart':         { portrait:null,              dept:'Infrastructure & Systems',    location:'The Server Corridor', motto:'Not supposed to last. Supposed to pass.', font:"'JetBrains Mono', monospace" },
+  'Mitra':        { portrait:null,              dept:'Project Coordination',        location:'The Bridge',         motto:'Light on the path, not in the eyes.', font:"'Lato', sans-serif" },
+  'Consus':       { portrait:null,              dept:'Generation & Synthesis',      location:'The Atelier',        motto:'Creation is the point.',              font:"'EB Garamond', Georgia, serif" },
+  'Jane':         { portrait:null,              dept:'Bridge Ring / SAFE',          location:'The Main Hall',      motto:'ε = 0.024',                          font:"'Lato', sans-serif" },
+  'Pigeon':       { portrait:null,              dept:'Not Yet & Carrier Services',  location:'Every Open Door',    motto:'YOU CAN GO HERE.',                   font:"'Lato', sans-serif" },
+  'Binder':       { portrait:null,              dept:'Records & Filing (The Stacks)',location:'The Stacks',        motto:'The connections happen anyway.',      font:"'EB Garamond', Georgia, serif" },
+  'Jeles':        { portrait:null,              dept:'Special Collections (The Stacks)',location:'The Desk',       motto:'The things we think we\'ve lost are simply misfiled.', font:"'EB Garamond', Georgia, serif" },
+};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let profName = null;
+let profMeta = null;
+let sessionId = null;
+let history = [];
+let sending = false;
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+(async function init() {
+  // Check auth (lenient — guest tokens pass)
+  const token = sessionStorage.getItem('willow_token');
+  if (!token) {
+    const next = encodeURIComponent(window.location.href);
+    window.location.href = 'login.html?next=' + next;
+    return;
+  }
+
+  // Read professor from URL
+  const params = new URLSearchParams(window.location.search);
+  profName = params.get('prof') || 'Willow';
+  profMeta = PROF_META[profName] || PROF_META['Willow'];
+
+  // Show page
+  document.getElementById('auth-loading').style.display = 'none';
+  document.getElementById('chat-page').style.display = 'flex';
+
+  // Populate UI
+  document.title = 'UTETY — ' + profName;
+  document.getElementById('chat-prof-name').textContent = profName;
+  document.getElementById('chat-dept-tag').textContent = profMeta.dept;
+  document.getElementById('sidebar-name').textContent = profName;
+  document.getElementById('sidebar-dept').textContent = profMeta.dept;
+  document.getElementById('sidebar-motto').textContent = profMeta.motto || '';
+  document.getElementById('sidebar-location').textContent = profMeta.location;
+
+  // Portrait
+  if (profMeta.portrait) {
+    const img = document.getElementById('sidebar-portrait');
+    img.src = profMeta.portrait;
+    img.alt = profName;
+    img.style.display = 'block';
+    document.getElementById('sidebar-initial').style.display = 'none';
+  } else {
+    document.getElementById('sidebar-initial').textContent = profName[0];
+  }
+
+  // Try to fetch bio from server
+  try {
+    const r = await fetch(UTETY_BASE + '/api/professors/' + profName);
+    if (r.ok) {
+      const data = await r.json();
+      const bio = data.description || '';
+      if (bio) document.getElementById('sidebar-bio').textContent = bio;
+    }
+  } catch (e) {}
+
+  // Start session
+  sessionId = await startUtetySession();
+  if (sessionId.startsWith('local-')) {
+    document.getElementById('input-status').textContent = 'Local session (Willow fleet will handle responses)';
+  } else {
+    document.getElementById('input-status').textContent = 'Connected — Session ' + sessionId.slice(0, 8);
+  }
+
+  // Load saved history
+  const saved = loadHistory(profName);
+  history = saved.slice();
+  if (saved.length) {
+    addMsg('system', 'Resuming conversation with ' + profName + '.');
+    saved.forEach(m => addMsg(m.role === 'user' ? 'user' : 'assistant', m.content));
+    const msgs = document.getElementById('messages');
+    msgs.scrollTop = msgs.scrollHeight;
+  } else {
+    addMsg('system', 'You are now speaking with ' + profName + '.');
+    if (profName === 'Gerald') {
+      setTimeout(() => {
+        const el = addMsg('assistant', 'APPROVED.\n\nΔΣ=42');
+        el.style.fontFamily = profMeta.font;
+        el.style.color = 'var(--maroon)';
+        el.style.border = '1.5px solid var(--maroon)';
+        el.style.opacity = '0.75';
+        history.push({ role: 'assistant', content: 'APPROVED. ΔΣ=42' });
+      }, 400);
+    }
+  }
+  document.getElementById('chat-input').focus();
+})();
+
+// ── Chat history persistence ──────────────────────────────────────────────────
+function histKey(name) { return 'utety_hist_' + name.toLowerCase().replace(/\s+/g, '_'); }
+function saveHistory(name, hist) {
+  if (!hist.length) return;
+  try { localStorage.setItem(histKey(name), JSON.stringify(hist.slice(-60))); } catch(e) {}
+}
+function loadHistory(name) {
+  try { return JSON.parse(localStorage.getItem(histKey(name))) || []; } catch(e) { return []; }
+}
+function clearHistory(name) { localStorage.removeItem(histKey(name)); }
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function addMsg(role, content) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if (role === 'assistant' && profMeta) {
+    div.style.fontFamily = profMeta.font || '';
+    if (typeof marked !== 'undefined') {
+      div.innerHTML = marked.parse(content);
+    } else {
+      div.textContent = content;
+    }
+  } else {
+    div.textContent = content;
+  }
+  const msgs = document.getElementById('messages');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function newConversation() {
+  if (!profName) return;
+  clearHistory(profName);
+  history = [];
+  document.getElementById('messages').innerHTML = '';
+  addMsg('system', 'New conversation with ' + profName + '.');
+  document.getElementById('chat-input').focus();
+}
+
+// ── Send message ──────────────────────────────────────────────────────────────
+async function sendMessage() {
+  if (sending || !profName) return;
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  sending = true;
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+
+  addMsg('user', text);
+  const typingEl = addMsg('assistant', '…');
+  typingEl.classList.add('typing');
+  history.push({ role: 'user', content: text });
+
+  try {
+    const reply = await callProfessor(text);
+    typingEl.classList.remove('typing');
+    typingEl.textContent = '';
+    typingEl.innerHTML = (typeof marked !== 'undefined') ? marked.parse(reply) : reply;
+    history.push({ role: 'assistant', content: reply });
+    saveHistory(profName, history);
+  } catch (err) {
+    typingEl.classList.remove('typing');
+    typingEl.textContent = 'Error: ' + err.message;
+  }
+
+  sending = false;
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
+
+async function callProfessor(message) {
+  // Try UTETY server first
+  if (sessionId && !sessionId.startsWith('local-')) {
+    const result = await utetyChat(sessionId, profName, message);
+    if (result && result.response) return result.response;
+  }
+
+  // Fallback: build prompt and call Willow fleet directly
+  const prompt = buildDirectPrompt(message);
+  const response = await willowFleet(prompt);
+  if (response) return response;
+
+  throw new Error('No LLM providers available. Is Willow running on port 8420?');
+}
+
+function buildDirectPrompt(message) {
+  // Minimal prompt for direct fleet call (server does the full persona build)
+  const recentHist = history.slice(-8).map(m => {
+    const role = m.role === 'user' ? 'User' : profName;
+    return role + ': ' + m.content;
+  }).join('\n');
+  return `You are ${profName} at UTETY.\n\n${recentHist}\nUser: ${message}\n${profName}:`;
+}
+</script>
+</body>
+</html>
