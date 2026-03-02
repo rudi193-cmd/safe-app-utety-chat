@@ -1,13 +1,61 @@
 """
 SAFE Framework Integration for UTETY Chat
 ==========================================
-Session hooks and consent management.
+Session hooks, consent management, and Pigeon bus helpers.
+
+Pigeon drop point: POST /api/pigeon/drop
+Topics: ask, query, contribute, connect, status
 """
 
-from typing import Dict, List
+import uuid
+import requests as _requests
+from typing import Dict, List, Optional
 from datetime import datetime
 import json
 from pathlib import Path
+
+# ── Pigeon Bus Helpers ────────────────────────────────────────────────────────
+
+_PIGEON_URL = "http://localhost:8420/api/pigeon/drop"
+_APP_ID = "safe-app-utety-chat"
+_session_id = str(uuid.uuid4())
+
+
+def ask(prompt: str, persona: Optional[str] = None, tier: str = "free") -> str:
+    """Ask Willow a question via the Pigeon bus. Returns the LLM response string."""
+    result = _drop("ask", {"prompt": prompt, "persona": persona, "tier": tier})
+    if result.get("ok"):
+        return result.get("result", "")
+    return f"[Error: {result.get('error', 'unknown')}]"
+
+
+def ask_raw(prompt: str, tier: str = "free") -> dict:
+    """Ask Willow and return full result dict (includes provider info)."""
+    return _drop("ask", {"prompt": prompt, "tier": tier})
+
+
+def query(q: str, limit: int = 5) -> list:
+    """Query Willow's knowledge graph via the Pigeon bus. Returns atom list."""
+    result = _drop("query", {"q": q, "limit": limit})
+    if result.get("ok"):
+        return result.get("result", [])
+    return []
+
+
+def _drop(topic: str, payload: dict) -> dict:
+    """Internal: drop a message onto the Pigeon bus."""
+    try:
+        r = _requests.post(_PIGEON_URL, json={
+            "topic": topic,
+            "app_id": _APP_ID,
+            "session_id": _session_id,
+            "payload": payload,
+        }, timeout=30)
+        return r.json() if r.ok else {"ok": False, "error": r.text}
+    except _requests.ConnectionError:
+        return {"ok": False, "error": "Willow not running (localhost:8420)"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 
 class SAFESession:

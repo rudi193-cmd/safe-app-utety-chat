@@ -9,47 +9,36 @@ from pathlib import Path
 from typing import List, Dict, Optional
 from datetime import datetime
 
-# Willow fleet API — calls Willow server instead of importing core directly
-import requests as _requests
-
-WILLOW_FLEET_URL = "http://localhost:8420/api/fleet/ask"
-WILLOW_SEARCH_URL = "http://localhost:8420/api/knowledge/semantic-search"
+# Willow via Pigeon bus — one drop point for all Willow interactions
+import safe_integration as _willow
 
 
 def _willow_context(query: str, limit: int = 3) -> str:
     """Fetch relevant atoms from Willow's knowledge graph for this query."""
-    try:
-        r = _requests.get(WILLOW_SEARCH_URL, params={"q": query, "limit": limit}, timeout=5)
-        if r.status_code != 200:
-            return ""
-        results = r.json().get("results", [])
-        if not results:
-            return ""
-        lines = ["### Willow Knows:"]
-        for atom in results:
-            title = atom.get("title", "").strip()
-            snippet = atom.get("content_snippet", atom.get("summary", "")).strip()[:200]
-            if title or snippet:
-                lines.append(f"- **{title}**: {snippet}" if title else f"- {snippet}")
-        return "\n".join(lines)
-    except Exception:
+    results = _willow.query(query, limit=limit)
+    if not results:
         return ""
+    lines = ["### Willow Knows:"]
+    for atom in results:
+        title = atom.get("title", "").strip()
+        snippet = atom.get("content_snippet", atom.get("summary", "")).strip()[:200]
+        if title or snippet:
+            lines.append(f"- **{title}**: {snippet}" if title else f"- {snippet}")
+    return "\n".join(lines)
+
 
 def _fleet_ask(prompt: str, tier: str = "free"):
-    """Call Willow's fleet endpoint. Returns object with .content and .provider."""
-    try:
-        r = _requests.post(WILLOW_FLEET_URL, json={"prompt": prompt, "tier": tier, "source": "utety-chat"}, timeout=30)
-        if r.status_code == 200:
-            data = r.json()
-            class _R:
-                content = data.get("response", "")
-                provider = data.get("provider", "unknown")
-            return _R()
-    except Exception:
-        pass
-    return None
+    """Ask Willow via Pigeon bus. Returns object with .content and .provider."""
+    result = _willow.ask_raw(prompt, tier=tier)
 
-LLM_AVAILABLE = True  # Always true — Willow server handles fallbacks
+    class _R:
+        content = result.get("result", "") if result.get("ok") else ""
+        provider = result.get("provider", "unknown")
+
+    return _R() if result.get("ok") else None
+
+
+LLM_AVAILABLE = True  # Always true — Willow handles fallbacks
 
 from personas import PERSONAS, UTETY_CONTEXT
 
