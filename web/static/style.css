@@ -298,6 +298,9 @@ body { font-family: 'EB Garamond', Georgia, serif; background: var(--warm-dark);
 .footer-est { font-size: 0.7rem; color: var(--gold-dim); letter-spacing: 0.1em; }
 .footer-mottos { display: flex; flex-wrap: wrap; gap: 4px 0; margin-bottom: 24px; font-style: italic; font-size: 0.88rem; color: var(--gold-dim); }
 .footer-mottos em { margin-right: 22px; margin-bottom: 4px; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-bottom: 20px; }
+.footer-links a { color: var(--gold-dim); text-decoration: none; font-size: 0.78rem; letter-spacing: 0.04em; transition: color 0.15s; }
+.footer-links a:hover { color: var(--gold-light); }
 .footer-copy { font-size: 0.67rem; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
 
 /* ── Course Catalogue ── */
