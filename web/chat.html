@@ -113,20 +113,15 @@ html, body { height: 100%; overflow: hidden; }
 }
 .send-btn:disabled { opacity: 0.4; cursor: default; }
 
-/* Auth overlay */
-.auth-loading {
-  position: fixed; inset: 0; background: var(--warm-dark);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1000; color: var(--text-dim); font-size: 0.9rem;
+.chat-consent {
+  font-size: 0.68rem; color: var(--text-dim); text-align: center;
+  padding: 5px 0 2px; letter-spacing: 0.03em; font-style: italic;
 }
 </style>
 </head>
 <body>
 
-<!-- Auth loading overlay -->
-<div class="auth-loading" id="auth-loading">Verifying…</div>
-
-<div class="chat-page" id="chat-page" style="display:none">
+<div class="chat-page" id="chat-page">
 
   <!-- Top bar -->
   <div class="chat-topbar">
@@ -134,6 +129,8 @@ html, body { height: 100%; overflow: hidden; }
     <span class="chat-prof-name" id="chat-prof-name">Loading…</span>
     <span class="chat-dept-tag" id="chat-dept-tag"></span>
     <button class="chat-new-btn" onclick="newConversation()">↺ New</button>
+    <button class="chat-new-btn" id="btn-save" title="Download conversation">↓ Save</button>
+    <button class="chat-new-btn" id="btn-forget" title="Forget this conversation">✕ Forget</button>
   </div>
 
   <!-- Body: sidebar + messages -->
@@ -161,6 +158,9 @@ html, body { height: 100%; overflow: hidden; }
                        this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';"
           ></textarea>
           <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+        <div class="chat-consent">
+          Conversation saved locally on your machine. Nothing shared without your permission.
         </div>
       </div>
     </div>
@@ -200,22 +200,13 @@ let sending = false;
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 (async function init() {
-  // Check auth (lenient — guest tokens pass)
+  // No auth gate — anyone can chat. Auth enhances but doesn't block.
   const token = sessionStorage.getItem('willow_token');
-  if (!token) {
-    const next = encodeURIComponent(window.location.href);
-    window.location.href = 'login.html?next=' + next;
-    return;
-  }
 
   // Read professor from URL
   const params = new URLSearchParams(window.location.search);
   profName = params.get('prof') || 'Willow';
   profMeta = PROF_META[profName] || PROF_META['Willow'];
-
-  // Show page
-  document.getElementById('auth-loading').style.display = 'none';
-  document.getElementById('chat-page').style.display = 'flex';
 
   // Populate UI
   document.title = 'UTETY — ' + profName;
@@ -237,23 +228,29 @@ let sending = false;
     document.getElementById('sidebar-initial').textContent = profName[0];
   }
 
-  // Try to fetch bio from server
-  try {
-    const r = await fetch(UTETY_BASE + '/api/professors/' + profName);
-    if (r.ok) {
-      const data = await r.json();
-      const bio = data.description || '';
-      if (bio) document.getElementById('sidebar-bio').textContent = bio;
-    }
-  } catch (e) {}
-
-  // Start session
-  sessionId = await startUtetySession();
-  if (sessionId.startsWith('local-')) {
-    document.getElementById('input-status').textContent = 'Local session (Willow fleet will handle responses)';
-  } else {
-    document.getElementById('input-status').textContent = 'Connected — Session ' + sessionId.slice(0, 8);
+  // Try to fetch bio from server (local dev only)
+  if (IS_LOCAL) {
+    try {
+      const r = await fetch(UTETY_BASE + '/api/professors/' + profName);
+      if (r.ok) {
+        const data = await r.json();
+        const bio = data.description || '';
+        if (bio) document.getElementById('sidebar-bio').textContent = bio;
+      }
+    } catch (e) {}
   }
+
+  // Session — local fallback always works
+  sessionId = 'local-' + Math.random().toString(36).slice(2);
+  if (IS_LOCAL) {
+    try {
+      const sid = await startUtetySession();
+      if (sid) sessionId = sid;
+    } catch (e) {}
+  }
+  document.getElementById('input-status').textContent = token
+    ? 'Connected as ' + (getUsername() || 'guest')
+    : 'Open session — no account required';
 
   // Load saved history
   const saved = loadHistory(profName);
@@ -276,6 +273,33 @@ let sending = false;
       }, 400);
     }
   }
+
+  // Forget button
+  document.getElementById('btn-forget').addEventListener('click', function() {
+    clearHistory(profName);
+    history = [];
+    document.getElementById('messages').innerHTML = '';
+    addMsg('system', 'Conversation cleared. Nothing saved.');
+  });
+
+  // Save/Download button
+  document.getElementById('btn-save').addEventListener('click', function() {
+    const data = {
+      professor: profName,
+      department: profMeta.dept,
+      exported: new Date().toISOString(),
+      messages: history,
+      source: 'utety-chat'
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'utety-' + profName.toLowerCase() + '-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
   document.getElementById('chat-input').focus();
 })();
 
@@ -354,13 +378,22 @@ async function sendMessage() {
 }
 
 async function callProfessor(message) {
-  // Try UTETY server first
+  // Production path: Pages Function → Gemini (works without local servers)
+  try {
+    const reply = await pageChat(profName, message, history.slice(-12));
+    if (reply) return reply;
+  } catch (e) {
+    console.warn('Pages chat failed:', e.message);
+    if (!IS_LOCAL) throw new Error('Faculty are currently unavailable. Please try again in a moment.');
+  }
+
+  // Local dev: try UTETY server
   if (sessionId && !sessionId.startsWith('local-')) {
     const result = await utetyChat(sessionId, profName, message);
     if (result && result.response) return result.response;
   }
 
-  // Fallback: build prompt and call Willow fleet directly
+  // Local dev: Willow fleet fallback
   const prompt = buildDirectPrompt(message);
   const response = await willowFleet(prompt);
   if (response) return response;

@@ -16,7 +16,9 @@ from pathlib import Path
 
 # ── Pigeon Bus Helpers ────────────────────────────────────────────────────────
 
-_PIGEON_URL = "http://localhost:8420/api/pigeon/drop"
+import os as _os
+_WILLOW_URL = _os.environ.get("WILLOW_URL", "http://localhost:8420")
+_PIGEON_URL = f"{_WILLOW_URL}/api/pigeon/drop"
 _APP_ID = "safe-app-utety-chat"
 _session_id = str(uuid.uuid4())
 
@@ -42,6 +44,11 @@ def query(q: str, limit: int = 5) -> list:
     return []
 
 
+def status() -> dict:
+    """Check if Willow bus is reachable."""
+    return _drop("status", {})
+
+
 def _drop(topic: str, payload: dict) -> dict:
     """Internal: drop a message onto the Pigeon bus."""
     try:
@@ -53,7 +60,12 @@ def _drop(topic: str, payload: dict) -> dict:
         }, timeout=30)
         return r.json() if r.ok else {"ok": False, "error": r.text}
     except _requests.ConnectionError:
-        return {"ok": False, "error": "Willow not running (localhost:8420)"}
+        return {
+            "ok": False,
+            "guest_mode": True,
+            "error": f"Willow not reachable at {_WILLOW_URL}. "
+                     "Set WILLOW_URL env var or run Willow locally."
+        }
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
@@ -243,3 +255,43 @@ if __name__ == "__main__":
     # 4. Session ends
     cleanup = session.on_session_end()
     print("\nCleanup:", json.dumps(cleanup, indent=2))
+
+
+# ── Willow Consent Helpers ────────────────────────────────────────────────────
+
+def get_consent_status(token=None):
+    """Check if this app has consent to contribute to the user's Willow."""
+    try:
+        import requests as _r
+        headers = {"Authorization": f"Bearer {token}"} if token else {}
+        resp = _r.get(f"{WILLOW_URL}/api/apps", headers=headers, timeout=10)
+        apps = resp.json().get("apps", [])
+        return next((a["consented"] for a in apps if a["app_id"] == APP_ID), False)
+    except Exception:
+        return False
+
+
+def request_consent_url():
+    """Return the Willow URL where the user can grant consent to this app."""
+    return f"{WILLOW_URL}/apps?highlight={APP_ID}"
+
+
+
+def send(to_app, subject, body, thread_id=None):
+    """Send a message to another app's Pigeon inbox."""
+    return _drop("send", {"to": to_app, "subject": subject, "body": body, "thread_id": thread_id})
+
+
+def check_inbox(unread_only=True):
+    """Fetch this app's Pigeon inbox from Willow."""
+    try:
+        import requests as _r
+        r = _r.get(
+            f"{WILLOW_URL}/api/pigeon/inbox",
+            params={"app_id": APP_ID, "unread_only": str(unread_only).lower()},
+            timeout=10
+        )
+        return r.json().get("messages", []) if r.ok else []
+    except Exception:
+        return []
+

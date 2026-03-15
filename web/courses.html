@@ -145,7 +145,8 @@ let activeDeptKeys = null;
 
 function openCourseByCode(code) {
   const course = COURSES.find(c => c.code === code);
-  if (course) window.location.href = 'chat.html?prof=' + encodeURIComponent(course.instructor);
+  if (!course) return;
+  window.location.href = 'chat.html?prof=' + encodeURIComponent(course.instructor);
 }
 
 function renderDeptTabs() {

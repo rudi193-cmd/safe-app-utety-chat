@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UTETY — Log In</title>
+<title>UTETY — Join</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="static/style.css">
@@ -19,12 +19,12 @@
   border: 1px solid var(--dark-border);
   border-radius: 8px;
   padding: 40px;
-  width: 100%; max-width: 400px;
+  width: 100%; max-width: 420px;
 }
 .login-seal { text-align: center; margin-bottom: 20px; }
 .login-seal img { width: 52px; opacity: 0.85; }
 .login-title { text-align: center; font-size: 1.2rem; color: var(--gold-light); margin-bottom: 4px; font-weight: 500; }
-.login-sub { text-align: center; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 28px; letter-spacing: 0.03em; }
+.login-sub { text-align: center; font-size: 0.82rem; color: var(--text-dim); margin-bottom: 28px; line-height: 1.7; }
 .login-label { display: block; font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
 .login-input {
   width: 100%; background: var(--warm-dark); color: var(--text-light);
@@ -37,7 +37,7 @@
   width: 100%; background: var(--gold); color: #000;
   border: none; padding: 11px; font-size: 0.88rem; font-weight: 700;
   font-family: inherit; letter-spacing: 0.06em; cursor: pointer;
-  border-radius: 4px; transition: background 0.15s;
+  border-radius: 4px; transition: background 0.15s; margin-top: 4px;
 }
 .login-btn:hover { background: var(--gold-light); }
 .login-btn:disabled { opacity: 0.45; cursor: default; }
@@ -48,16 +48,17 @@
 }
 .login-note { text-align: center; font-size: 0.72rem; color: var(--text-dim); margin-top: 20px; line-height: 1.6; }
 .login-note a { color: var(--gold-dim); }
-.login-divider { text-align: center; color: var(--text-dim); font-size: 0.72rem; margin: 16px 0; position: relative; }
-.login-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--dark-border); }
-.login-divider span { background: var(--dark-surface); padding: 0 12px; position: relative; }
-.guest-btn {
-  width: 100%; background: none; color: var(--text-dim);
-  border: 1px solid var(--dark-border); padding: 10px;
-  font-size: 0.82rem; font-family: inherit; letter-spacing: 0.04em;
-  cursor: pointer; border-radius: 4px; transition: border-color 0.15s, color 0.15s;
+.intro-note {
+  background: rgba(61,42,20,0.4);
+  border: 1px solid var(--dark-border);
+  border-radius: 5px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.65;
 }
-.guest-btn:hover { border-color: var(--gold-dim); color: var(--text-light); }
+.intro-note strong { color: var(--text-light); }
 .visit-block { margin-bottom: 22px; }
 .visit-block .login-label { margin-bottom: 10px; }
 .visit-duration-display {
@@ -72,8 +73,7 @@
 .visit-slider::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
   width: 18px; height: 18px; border-radius: 50%;
-  background: var(--gold); cursor: pointer;
-  border: 2px solid var(--warm-dark);
+  background: var(--gold); cursor: pointer; border: 2px solid var(--warm-dark);
 }
 .visit-slider::-moz-range-thumb {
   width: 18px; height: 18px; border-radius: 50%;
@@ -104,28 +104,41 @@
       <a href="index.html">Home</a>
       <a href="courses.html">Courses</a>
       <a href="research.html">Research</a>
-      <a href="dispatches.html">Dispatches</a>
-      <a href="index.html#admissions">Admissions</a>
+      <a href="faculty.html">Faculty</a>
     </div>
   </div>
 </nav>
 
-<!-- ── Login Form ── -->
+<!-- ── Signup Form ── -->
 <div class="login-wrap">
   <div class="login-card">
     <div class="login-seal">
       <img src="seal.png" alt="UTETY Seal" />
     </div>
-    <div class="login-title">Willow Login</div>
-    <div class="login-sub">Enter your Willow credentials to access faculty chat</div>
+    <div class="login-title">An Introduction</div>
+    <div class="login-sub">
+      This is the moment both sides consent.<br>
+      The machine has not met you yet. You have not met the machine.<br>
+      That changes now.
+    </div>
 
-    <div class="login-err" id="login-err"></div>
+    <div class="intro-note">
+      <strong>What this creates:</strong> a Willow account. Faculty chat becomes persistent. Your conversations can connect to your knowledge graph. The machine begins to learn — because you chose that.
+    </div>
 
-    <label class="login-label" for="username">Username</label>
-    <input class="login-input" type="text" id="username" autocomplete="username" placeholder="your-username" />
+    <div class="login-err" id="signup-err"></div>
 
-    <label class="login-label" for="passphrase">Passphrase</label>
-    <input class="login-input" type="password" id="passphrase" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+    <label class="login-label" for="display_name">What should we call you?</label>
+    <input class="login-input" type="text" id="display_name" placeholder="Your name or preferred handle" />
+
+    <label class="login-label" for="username">Choose a username</label>
+    <input class="login-input" type="text" id="username" autocomplete="username" placeholder="letters, numbers, hyphens" />
+
+    <label class="login-label" for="passphrase">Choose a passphrase</label>
+    <input class="login-input" type="password" id="passphrase" autocomplete="new-password" placeholder="8 characters minimum" />
+
+    <label class="login-label" for="passphrase2">Confirm passphrase</label>
+    <input class="login-input" type="password" id="passphrase2" autocomplete="new-password" placeholder="••••••••" />
 
     <div class="visit-block">
       <label class="login-label">How long are you visiting today?</label>
@@ -136,30 +149,21 @@
       </div>
     </div>
 
-    <button class="login-btn" id="login-btn" onclick="doLogin()">Log In</button>
-
-    <div class="login-divider"><span>or</span></div>
-
-    <button class="guest-btn" onclick="guestAccess()">Continue as guest</button>
+    <button class="login-btn" id="signup-btn" onclick="doSignup()">Complete the Introduction</button>
 
     <p class="login-note">
-      UTETY is part of the Willow ecosystem.<br>
-      New here? <a href="signup.html">Create your account</a> — the introduction.<br>
-      Or <a href="index.html">return to campus</a> — some faculty are accessible without login.
+      Already introduced? <a href="login.html">Log in.</a><br>
+      Not ready? <a href="index.html">Return to campus</a> — some faculty are available now.
     </p>
   </div>
 </div>
 
 <script src="static/shared.js"></script>
 <script>
-// If already logged in, redirect away
+// Already logged in — redirect
 (function() {
   const token = sessionStorage.getItem('willow_token');
-  if (token) {
-    const params = new URLSearchParams(window.location.search);
-    const next = params.get('next');
-    window.location.href = next || 'index.html';
-  }
+  if (token) window.location.href = 'index.html';
 })();
 
 const VISIT_MINUTES = [15, 30, 60, 120, 240, 480, 1440];
@@ -175,44 +179,54 @@ function getVisitEndTime() {
   return minutes === 0 ? '0' : String(Date.now() + minutes * 60000);
 }
 
-async function doLogin() {
-  const username = document.getElementById('username').value.trim();
-  const passphrase = document.getElementById('passphrase').value;
-  const err = document.getElementById('login-err');
-  const btn = document.getElementById('login-btn');
+async function doSignup() {
+  const display_name = document.getElementById('display_name').value.trim();
+  const username     = document.getElementById('username').value.trim();
+  const passphrase   = document.getElementById('passphrase').value;
+  const passphrase2  = document.getElementById('passphrase2').value;
+  const err          = document.getElementById('signup-err');
+  const btn          = document.getElementById('signup-btn');
+
+  err.style.display = 'none';
 
   if (!username || !passphrase) {
-    err.textContent = 'Please enter username and passphrase.';
+    err.textContent = 'Username and passphrase are required.';
+    err.style.display = 'block';
+    return;
+  }
+  if (passphrase !== passphrase2) {
+    err.textContent = 'Passphrases do not match.';
+    err.style.display = 'block';
+    return;
+  }
+  if (passphrase.length < 8) {
+    err.textContent = 'Passphrase must be at least 8 characters.';
     err.style.display = 'block';
     return;
   }
 
   btn.disabled = true;
-  btn.textContent = 'Logging in…';
-  err.style.display = 'none';
+  btn.textContent = 'One moment\u2026';
 
   try {
-    const r = await fetch('http://localhost:8420/api/auth/login', {
+    const r = await fetch('http://localhost:8420/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, passphrase })
+      body: JSON.stringify({ username, passphrase, display_name: display_name || username })
     });
 
     if (r.ok) {
       const data = await r.json();
-      const token = data.token || data.access_token;
-      if (token) {
-        sessionStorage.setItem('willow_token', token);
-        sessionStorage.setItem('willow_user', data.display_name || username);
-        sessionStorage.setItem('willow_session_end', getVisitEndTime());
-        const params = new URLSearchParams(window.location.search);
-        window.location.href = params.get('next') || 'index.html';
-        return;
-      }
+      sessionStorage.setItem('willow_token', data.token);
+      sessionStorage.setItem('willow_user', data.display_name || username);
+      sessionStorage.setItem('willow_session_end', getVisitEndTime());
+      const params = new URLSearchParams(window.location.search);
+      window.location.href = params.get('next') || 'index.html';
+      return;
     }
 
     const errData = await r.json().catch(() => ({}));
-    err.textContent = errData.detail || errData.error || 'Login failed. Check your credentials.';
+    err.textContent = errData.detail || 'Something went wrong. Try a different username.';
     err.style.display = 'block';
   } catch (e) {
     err.textContent = 'Cannot reach Willow server (localhost:8420). Is Willow running?';
@@ -220,15 +234,7 @@ async function doLogin() {
   }
 
   btn.disabled = false;
-  btn.textContent = 'Log In';
-}
-
-function guestAccess() {
-  sessionStorage.setItem('willow_token', 'guest-trial-' + Date.now());
-  sessionStorage.setItem('willow_user', 'guest');
-  sessionStorage.setItem('willow_session_end', getVisitEndTime());
-  const params = new URLSearchParams(window.location.search);
-  window.location.href = params.get('next') || 'index.html';
+  btn.textContent = 'Complete the Introduction';
 }
 </script>
 </body>

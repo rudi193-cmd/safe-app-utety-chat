@@ -1,9 +1,10 @@
-name = "utety-worker"
-main = "worker/index.js"
+name = "utety"
+pages_build_output_dir = "web"
 compatibility_date = "2024-01-01"
 
-# Set GEMINI_API_KEY via: wrangler secret put GEMINI_API_KEY
-# Or in the Cloudflare dashboard under Workers > Settings > Variables
+# Secrets (set via dashboard or: wrangler pages secret put GEMINI_API_KEY)
+#   GEMINI_API_KEY
+#   GROQ_API_KEY
 
 [[kv_namespaces]]
 binding = "UTETY_COUNTER"

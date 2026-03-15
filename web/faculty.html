@@ -70,6 +70,7 @@
     <div class="admissions-cta">
       <p>Ready to begin? Choose your faculty advisor above.</p>
       <a href="#faculty" class="btn-primary">Browse Faculty</a>
+      <a href="signup.html" class="btn-primary" style="margin-left:12px;background:var(--gold);color:#000;border-color:var(--gold);">Enroll</a>
     </div>
   </div>
 </section>
@@ -293,14 +294,19 @@ FACULTY.forEach((f) => {
       ${isGerald ? `<div><span class="gerald-stamp">APPROVED</span></div>` : ''}
     </div>`;
 
-  card.onclick = () => { window.location.href = 'chat.html?prof=' + encodeURIComponent(f.name); };
+  card.onclick = () => {
+    window.location.href = 'chat.html?prof=' + encodeURIComponent(f.name);
+  };
   grid.appendChild(card);
 
   if (f.name === 'Steve') {
     const hint = document.createElement('div');
     hint.className = 'sss-hint';
     hint.textContent = '\u00b7\u00b7\u00b7';
-    hint.onclick = (e) => { e.stopPropagation(); window.location.href = 'chat.html?prof=Steve'; };
+    hint.onclick = (e) => {
+      e.stopPropagation();
+      window.location.href = 'chat.html?prof=Steve';
+    };
     card.querySelector('.card-body').appendChild(hint);
   }
 });

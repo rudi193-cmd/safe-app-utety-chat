@@ -41,6 +41,11 @@ async def login_page():
     return FileResponse("web/login.html")
 
 
+@app.get("/signup.html")
+async def signup_page():
+    return FileResponse("web/signup.html")
+
+
 @app.get("/chat.html")
 async def chat_page():
     return FileResponse("web/chat.html")
