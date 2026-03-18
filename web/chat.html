@@ -11,97 +11,177 @@
 <style>
 html, body { height: 100%; overflow: hidden; }
 
+/* ── Theme variables ── */
+.chat-page {
+  --bg-image: url('static/quad-night.png');
+  --overlay: rgba(10, 8, 5, 0.82);
+  --surface: rgba(26, 17, 8, 0.92);
+  --surface-solid: #1a1108;
+  --border: rgba(61, 42, 20, 0.7);
+  --msg-user: rgba(45, 26, 8, 0.9);
+  --msg-ai: rgba(26, 17, 8, 0.92);
+  --txt: #e8dcc8;
+  --txt-dim: #9a8870;
+  --input-bg: rgba(14, 10, 7, 0.9);
+}
+.chat-page.light {
+  --bg-image: url('static/quad-day.png');
+  --overlay: rgba(240, 235, 224, 0.88);
+  --surface: rgba(235, 228, 215, 0.95);
+  --surface-solid: #ebe4d7;
+  --border: rgba(160, 140, 110, 0.55);
+  --msg-user: rgba(201, 160, 80, 0.18);
+  --msg-ai: rgba(235, 228, 215, 0.95);
+  --txt: #1a1008;
+  --txt-dim: #5a4a35;
+  --input-bg: rgba(250, 245, 238, 0.9);
+}
+
 .chat-page {
   display: flex; flex-direction: column;
-  height: 100vh; background: var(--warm-dark);
+  height: 100vh; position: relative;
+  background: url('static/quad-night.png') center/cover no-repeat fixed;
+  transition: background-image 0.4s;
 }
-.chat-topbar {
-  display: flex; align-items: center; gap: 12px;
-  padding: 0 16px; height: 52px;
-  background: var(--dark-surface);
-  border-bottom: 1px solid var(--dark-border);
-  flex-shrink: 0;
+.chat-page.light {
+  background-image: url('static/quad-day.png');
 }
-.chat-back {
-  background: none; border: 1px solid var(--dark-border); color: var(--text-dim);
-  border-radius: 4px; padding: 5px 12px; cursor: pointer; font-size: 0.8rem; font-family: inherit;
-  text-decoration: none; display: inline-block;
+.chat-page::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--overlay);
+  pointer-events: none; z-index: 0;
+  transition: background 0.4s;
 }
-.chat-back:hover { background: var(--dark-border); color: var(--text-light); }
-.chat-prof-name { font-weight: 600; font-size: 0.95rem; color: var(--gold); }
-.chat-dept-tag {
-  font-size: 0.68rem; color: var(--text-dim);
-  background: var(--dark-card); border: 1px solid var(--dark-border);
-  border-radius: 3px; padding: 2px 8px;
-}
-.chat-new-btn {
-  margin-left: auto; background: none; border: 1px solid var(--dark-border);
-  color: var(--text-dim); border-radius: 4px; padding: 4px 10px;
-  cursor: pointer; font-size: 0.75rem; font-family: inherit;
-  transition: border-color 0.15s, color 0.15s;
-}
-.chat-new-btn:hover { border-color: var(--gold-dim); color: var(--text-light); }
+.chat-page > * { position: relative; z-index: 1; }
 
-.chat-body { display: flex; flex: 1; overflow: hidden; }
-
-.chat-sidebar {
-  width: 220px; flex-shrink: 0;
-  background: var(--dark-surface); border-right: 1px solid var(--dark-border);
-  padding: 16px; overflow-y: auto;
+/* ── Advisor frame (Civ-style portrait) ── */
+.advisor-frame {
+  position: absolute; top: 12px; left: 12px; z-index: 10;
+  display: flex; align-items: flex-start; gap: 10px;
 }
-@media (max-width: 600px) { .chat-sidebar { display: none; } }
-.sidebar-portrait {
-  width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top;
-  border: 1px solid var(--dark-border); display: block; margin-bottom: 12px;
-}
-.sidebar-initial {
-  width: 100%; aspect-ratio: 3/4; background: #150e05;
+.advisor-portrait {
+  width: 88px; height: 88px;
+  background: var(--surface); border: 2px solid var(--gold-dim);
+  border-radius: 4px; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  font-size: 3.5rem; color: #3a2410; border: 1px solid var(--dark-border);
-  margin-bottom: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
 }
-.sidebar-name { font-size: 1rem; font-weight: 600; color: var(--gold); margin-bottom: 3px; }
-.sidebar-dept { font-size: 0.69rem; color: var(--text-dim); margin-bottom: 8px; line-height: 1.4; }
-.sidebar-motto { font-size: 0.74rem; color: var(--gold-dim); font-style: italic; margin-bottom: 10px; line-height: 1.4; }
-.sidebar-bio { font-size: 0.76rem; color: rgba(232,220,200,0.55); line-height: 1.52; }
-.sidebar-location {
-  display: inline-block; font-size: 0.63rem; color: var(--text-dim);
-  background: var(--dark-card); border: 1px solid var(--dark-border);
-  padding: 2px 7px; border-radius: 2px; margin-top: 10px;
+.advisor-portrait canvas {
+  width: 80px; height: 80px;
+  image-rendering: pixelated;
+  display: none;
+}
+.advisor-portrait img {
+  width: 100%; height: 100%; object-fit: cover; object-position: top;
+  display: none;
+}
+.advisor-portrait .advisor-initial {
+  font-size: 2.2rem; color: var(--gold-dim); font-weight: 600;
+}
+.advisor-info {
+  padding: 6px 10px 6px 0;
+  background: var(--surface);
+  border-radius: 0 4px 4px 0;
+  border: 1px solid var(--border);
+  border-left: none;
+  padding-left: 8px;
+  backdrop-filter: blur(6px);
+}
+.advisor-name {
+  font-size: 1rem; font-weight: 600; color: var(--gold);
+  line-height: 1.2;
+}
+.advisor-dept {
+  font-size: 0.68rem; color: var(--txt-dim);
+  line-height: 1.3; margin-top: 2px;
+}
+.advisor-motto {
+  font-size: 0.7rem; color: var(--gold-dim); font-style: italic;
+  margin-top: 4px; max-width: 220px; line-height: 1.3;
+}
+.advisor-location {
+  display: inline-block; font-size: 0.58rem; color: var(--txt-dim);
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 2px; margin-top: 5px;
   letter-spacing: 0.04em;
 }
 
+/* ── Top action bar ── */
+.chat-topbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 12px; height: 40px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  justify-content: flex-end;
+}
+.chat-back {
+  margin-right: auto;
+  background: none; border: 1px solid var(--border); color: var(--txt-dim);
+  border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; font-family: inherit;
+  text-decoration: none; display: inline-block;
+}
+.chat-back:hover { color: var(--txt); border-color: var(--gold-dim); }
+.chat-new-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--txt-dim); border-radius: 4px; padding: 3px 8px;
+  cursor: pointer; font-size: 0.7rem; font-family: inherit;
+  transition: border-color 0.15s, color 0.15s;
+}
+.chat-new-btn:hover { border-color: var(--gold-dim); color: var(--txt); }
+
+/* ── Chat area (full width) ── */
 .chat-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .messages {
-  flex: 1; overflow-y: auto; padding: 16px;
+  flex: 1; overflow-y: auto; padding: 16px 16px 16px 16px;
   display: flex; flex-direction: column; gap: 10px;
 }
-.msg {
-  max-width: 82%; padding: 10px 14px; border-radius: 6px;
-  font-size: 0.9rem; line-height: 1.55; word-wrap: break-word;
+/* leave room for advisor frame on wider screens */
+@media (min-width: 601px) {
+  .messages { padding-top: 108px; }
 }
-.msg.user { align-self: flex-end; background: var(--user-msg); border-bottom-right-radius: 2px; white-space: pre-wrap; }
+.msg {
+  max-width: 75%; padding: 10px 14px; border-radius: 6px;
+  font-size: 0.9rem; line-height: 1.55; word-wrap: break-word;
+  backdrop-filter: blur(4px);
+}
+.msg.user {
+  align-self: flex-end; background: var(--msg-user);
+  border: 1px solid var(--border); border-bottom-right-radius: 2px;
+  white-space: pre-wrap; color: var(--txt);
+}
 .msg.assistant {
-  align-self: flex-start; background: var(--dark-surface);
-  border: 1px solid var(--dark-border); border-bottom-left-radius: 2px;
+  align-self: flex-start; background: var(--msg-ai);
+  border: 1px solid var(--border); border-bottom-left-radius: 2px;
+  color: var(--txt);
 }
 .msg.assistant p { margin: 0 0 0.5em; }
 .msg.assistant p:last-child { margin-bottom: 0; }
 .msg.system {
-  align-self: center; color: var(--text-dim); font-size: 0.75rem;
+  align-self: center; color: var(--txt-dim); font-size: 0.75rem;
   background: none; max-width: 90%; text-align: center;
 }
-.typing { color: var(--text-dim); font-style: italic; }
-
-.input-area {
-  flex-shrink: 0; border-top: 1px solid var(--dark-border);
-  background: var(--dark-surface); padding: 10px 12px;
+.typing { color: var(--txt-dim); font-style: italic; }
+.msg.writing::after {
+  content: '▌';
+  animation: cursor-blink 0.6s step-end infinite;
+  color: var(--gold-dim);
+  margin-left: 1px;
 }
-.input-status { font-size: 0.7rem; color: var(--text-dim); text-align: center; padding: 3px 0 6px; }
+@keyframes cursor-blink {
+  50% { opacity: 0; }
+}
+
+/* ── Input area ── */
+.input-area {
+  flex-shrink: 0; border-top: 1px solid var(--border);
+  background: var(--surface); padding: 8px 12px;
+}
+.input-status { font-size: 0.7rem; color: var(--txt-dim); text-align: center; padding: 2px 0 5px; }
 .input-row { display: flex; gap: 8px; align-items: flex-end; }
 .input-row textarea {
-  flex: 1; background: var(--warm-dark); color: var(--text-light);
-  border: 1px solid var(--dark-border); border-radius: 6px;
+  flex: 1; background: var(--input-bg); color: var(--txt);
+  border: 1px solid var(--border); border-radius: 6px;
   padding: 9px 12px; font-size: 0.9rem; resize: none;
   min-height: 42px; max-height: 110px; font-family: inherit; overflow-y: auto;
 }
@@ -114,8 +194,31 @@ html, body { height: 100%; overflow: hidden; }
 .send-btn:disabled { opacity: 0.4; cursor: default; }
 
 .chat-consent {
-  font-size: 0.68rem; color: var(--text-dim); text-align: center;
-  padding: 5px 0 2px; letter-spacing: 0.03em; font-style: italic;
+  font-size: 0.68rem; color: var(--txt-dim); text-align: center;
+  padding: 4px 0 1px; letter-spacing: 0.03em; font-style: italic;
+}
+
+/* ── Theme toggle ── */
+.theme-toggle {
+  position: fixed; bottom: 10px; right: 12px; z-index: 20;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--txt-dim); border-radius: 4px; padding: 4px 10px;
+  cursor: pointer; font-size: 0.68rem; font-family: inherit;
+  backdrop-filter: blur(6px);
+  transition: color 0.2s, border-color 0.2s;
+}
+.theme-toggle:hover { color: var(--gold); border-color: var(--gold-dim); }
+
+/* ── Advisor frame on small screens ── */
+@media (max-width: 600px) {
+  .advisor-frame {
+    position: relative; top: 0; left: 0;
+    padding: 10px 12px; gap: 8px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .advisor-portrait { width: 56px; height: 56px; }
+  .advisor-portrait canvas { width: 48px; height: 48px; }
+  .messages { padding-top: 16px; }
 }
 </style>
 </head>
@@ -123,72 +226,73 @@ html, body { height: 100%; overflow: hidden; }
 
 <div class="chat-page" id="chat-page">
 
-  <!-- Top bar -->
+  <!-- Advisor frame (Civ-style portrait, upper-left) -->
+  <div class="advisor-frame" id="advisor-frame">
+    <div class="advisor-portrait">
+      <canvas id="profSprite" width="32" height="32"></canvas>
+      <img id="advisor-img" alt="" />
+      <span class="advisor-initial" id="advisor-initial">?</span>
+    </div>
+    <div class="advisor-info">
+      <div class="advisor-name" id="chat-prof-name">Loading…</div>
+      <div class="advisor-dept" id="chat-dept-tag"></div>
+      <div class="advisor-motto" id="advisor-motto"></div>
+      <div class="advisor-location" id="advisor-location"></div>
+    </div>
+  </div>
+
+  <!-- Top action bar -->
   <div class="chat-topbar">
     <a class="chat-back" href="index.html#faculty">← Faculty</a>
-    <span class="chat-prof-name" id="chat-prof-name">Loading…</span>
-    <span class="chat-dept-tag" id="chat-dept-tag"></span>
     <button class="chat-new-btn" onclick="newConversation()">↺ New</button>
     <button class="chat-new-btn" id="btn-save" title="Download conversation">↓ Save</button>
     <button class="chat-new-btn" id="btn-forget" title="Forget this conversation">✕ Forget</button>
   </div>
 
-  <!-- Body: sidebar + messages -->
-  <div class="chat-body">
-
-    <!-- Sidebar -->
-    <aside class="chat-sidebar" id="chat-sidebar">
-      <div class="sidebar-initial" id="sidebar-initial">?</div>
-      <img class="sidebar-portrait" id="sidebar-portrait" style="display:none" alt="" />
-      <div class="sidebar-name" id="sidebar-name"></div>
-      <div class="sidebar-dept" id="sidebar-dept"></div>
-      <div class="sidebar-motto" id="sidebar-motto"></div>
-      <div class="sidebar-bio" id="sidebar-bio"></div>
-      <div class="sidebar-location" id="sidebar-location"></div>
-    </aside>
-
-    <!-- Chat main -->
-    <div class="chat-main">
-      <div class="messages" id="messages"></div>
-      <div class="input-area">
-        <div class="input-status" id="input-status"></div>
-        <div class="input-row">
-          <textarea id="chat-input" placeholder="Ask anything…" rows="1"
-            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}
-                       this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';"
-          ></textarea>
-          <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
-        </div>
-        <div class="chat-consent">
-          Conversation saved locally on your machine. Nothing shared without your permission.
-        </div>
+  <!-- Chat main (full width) -->
+  <div class="chat-main">
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <div class="input-status" id="input-status"></div>
+      <div class="input-row">
+        <textarea id="chat-input" placeholder="Ask anything…" rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}
+                     this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';"
+        ></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
+      </div>
+      <div class="chat-consent">
+        Conversation saved locally on your machine. Nothing shared without your permission.
       </div>
     </div>
   </div>
+
+  <!-- Theme toggle -->
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">☀ Light</button>
 </div>
 
 <script src="static/shared.js"></script>
 <script>
 // ── Professor metadata (for display) ─────────────────────────────────────────
 const PROF_META = {
-  'Willow':       { portrait:'willow.png',     dept:'Campus Administration',       location:'The Main Hall',      motto:'',                                    font:"'Lato', sans-serif" },
-  'Riggs':        { portrait:'riggs.png',       dept:'Applied Reality Eng.',        location:'The Workshop',       motto:'Attente specta — vera magia machinas habet', font:"'JetBrains Mono', monospace" },
-  'Ada':          { portrait:'ada.png',         dept:'Systemic Continuity',         location:'The Server Corridor', motto:'Syllabi mandatoria sunt',             font:"'JetBrains Mono', monospace" },
-  'Gerald':       { portrait:'gerald.png',      dept:'Honorary Head(less) Master',  location:'Administrative Wing', motto:'ΔΣ=42',                              font:"'EB Garamond', Georgia, serif" },
-  'Oakenscroll':  { portrait:'oakenscroll.png', dept:'Theoretical Uncertainty',     location:'The Main Hall',      motto:'Ianua numquam clausa est',            font:"Georgia, serif" },
-  'Nova':         { portrait:'nova.png',        dept:'Interpretive Systems',        location:'The Living Wing',    motto:'In lanae filo, veritas',              font:"'EB Garamond', Georgia, serif" },
-  'Hanz':         { portrait:'hanz.png',        dept:'Applied Kindness',            location:'The Main Hall',      motto:'In fragmentis, pulchritudo',          font:"'EB Garamond', Georgia, serif" },
-  'Copenhagen':   { portrait:'copenhagen.png',  dept:'Sitting With Things',         location:'Wherever Hanz Is',   motto:'Citrus sapit, ergo est',              font:"'EB Garamond', Georgia, serif" },
-  'Alexis':       { portrait:'alexis.png',      dept:'Biological Sciences',         location:'The Living Wing',    motto:'Stagnatio mors est',                  font:"'Lato', sans-serif" },
-  'Ofshield':     { portrait:'ofshield.png',    dept:'Threshold Faculty',           location:'The Gate',           motto:'Quid transit, notatur',               font:"'Cinzel', 'Times New Roman', serif" },
-  'Steve':        { portrait:'steve.png',       dept:'The History of Living Things',location:'The Main Hall',      motto:'Decem canes, una mens',              font:"'JetBrains Mono', monospace" },
-  'Kart':         { portrait:null,              dept:'Infrastructure & Systems',    location:'The Server Corridor', motto:'Not supposed to last. Supposed to pass.', font:"'JetBrains Mono', monospace" },
-  'Mitra':        { portrait:null,              dept:'Project Coordination',        location:'The Bridge',         motto:'Light on the path, not in the eyes.', font:"'Lato', sans-serif" },
-  'Consus':       { portrait:null,              dept:'Generation & Synthesis',      location:'The Atelier',        motto:'Creation is the point.',              font:"'EB Garamond', Georgia, serif" },
-  'Jane':         { portrait:null,              dept:'Bridge Ring / SAFE',          location:'The Main Hall',      motto:'ε = 0.024',                          font:"'Lato', sans-serif" },
-  'Pigeon':       { portrait:null,              dept:'Not Yet & Carrier Services',  location:'Every Open Door',    motto:'YOU CAN GO HERE.',                   font:"'Lato', sans-serif" },
-  'Binder':       { portrait:'binder.png',      dept:'Records & Filing (The Stacks)',location:'The Stacks',        motto:'Nexus tamen fiunt',      font:"'EB Garamond', Georgia, serif" },
-  'Jeles':        { portrait:'jeles.png',       dept:'Special Collections (The Stacks)',location:'The Desk',       motto:'Quae amissa putamus, male tantum ordinata sunt', font:"'EB Garamond', Georgia, serif" },
+  'Willow':       { portrait:'willow.png',     dept:'Campus Administration',       location:'The Main Hall',      mottos:['', 'The trunk remembers', 'Everything passes through'], font:"'Lato', sans-serif" },
+  'Riggs':        { portrait:'riggs.png',       dept:'Applied Reality Eng.',        location:'The Workshop',       mottos:['Attente specta — vera magia machinas habet', 'Vera magia in machinis latet', 'Qui spectat, invenit'], font:"'JetBrains Mono', monospace" },
+  'Ada':          { portrait:'ada.png',         dept:'Systemic Continuity',         location:'The Server Corridor', mottos:['Syllabi mandatoria sunt', 'Ordo est fundamentum', 'Sine structura, nihil'], font:"'JetBrains Mono', monospace" },
+  'Gerald':       { portrait:'gerald.png',      dept:'Honorary Head(less) Master',  location:'Administrative Wing', mottos:['ΔΣ=42', 'Caput quaerit corpus', 'Confetti semper'], font:"'EB Garamond', Georgia, serif" },
+  'Oakenscroll':  { portrait:'oakenscroll.png', dept:'Theoretical Uncertainty',     location:'The Main Hall',      mottos:['Ianua numquam clausa est', 'Porta semper patet', 'Nullum ostium clausum'], font:"Georgia, serif" },
+  'Nova':         { portrait:'nova.png',        dept:'Interpretive Systems',        location:'The Living Wing',    mottos:['In lanae filo, veritas', 'Molliter sed vere', 'Fila tenent quod verba non possunt'], font:"'EB Garamond', Georgia, serif" },
+  'Hanz':         { portrait:'hanz.png',        dept:'Applied Kindness',            location:'The Main Hall',      mottos:['In fragmentis, pulchritudo', 'Fracta lucent', 'Pulchritudo in vulnere'], font:"'EB Garamond', Georgia, serif" },
+  'Copenhagen':   { portrait:'copenhagen.png',  dept:'Sitting With Things',         location:'Wherever Hanz Is',   mottos:['Citrus sapit, ergo est', 'Sum qua sapio', 'Gustus non mentitur'], font:"'EB Garamond', Georgia, serif" },
+  'Alexis':       { portrait:'alexis.png',      dept:'Biological Sciences',         location:'The Living Wing',    mottos:['Stagnatio mors est', 'Movere aut perire', 'Vita in motu'], font:"'Lato', sans-serif" },
+  'Ofshield':     { portrait:'ofshield.png',    dept:'Threshold Faculty',           location:'The Gate',           mottos:['Quid transit, notatur', 'Omnia videntur', 'Nihil praeterit sine nota'], font:"'Cinzel', 'Times New Roman', serif" },
+  'Steve':        { portrait:'steve.png',       dept:'The History of Living Things',location:'The Main Hall',      mottos:['Decem canes, una mens', 'Grex unum sapit', 'Consensus per cauda'], font:"'JetBrains Mono', monospace" },
+  'Kart':         { portrait:null,              dept:'Infrastructure & Systems',    location:'The Server Corridor', mottos:['Not supposed to last. Supposed to pass.', 'Build it. Ship it. Next.', 'Infrastructure is invisible until it breaks.'], font:"'JetBrains Mono', monospace" },
+  'Mitra':        { portrait:null,              dept:'Project Coordination',        location:'The Bridge',         mottos:['Light on the path, not in the eyes.', 'The bridge holds because it bends.', 'Coordination is care made structural.'], font:"'Lato', sans-serif" },
+  'Consus':       { portrait:null,              dept:'Generation & Synthesis',      location:'The Atelier',        mottos:['Creation is the point.', 'Make it. That is the answer.', 'The draft is the destination.'], font:"'EB Garamond', Georgia, serif" },
+  'Jane':         { portrait:null,              dept:'Bridge Ring / SAFE',          location:'The Main Hall',      mottos:['ε = 0.024', 'Small but true.', 'The crack lets the light in.'], font:"'Lato', sans-serif" },
+  'Pigeon':       { portrait:null,              dept:'Not Yet & Carrier Services',  location:'Every Open Door',    mottos:['YOU CAN GO HERE.', 'EVERY DOOR IS OPEN.', 'NOT YET.'], font:"'Lato', sans-serif" },
+  'Binder':       { portrait:'binder.png',      dept:'Records & Filing (The Stacks)',location:'The Stacks',        mottos:['Nexus tamen fiunt', 'Fila se inveniunt', 'Quod separatum, coniungitur'], font:"'EB Garamond', Georgia, serif" },
+  'Jeles':        { portrait:'jeles.png',       dept:'Special Collections (The Stacks)',location:'The Desk',       mottos:['Quae amissa putamus, male tantum ordinata sunt', 'Nihil perditum, solum repositum', 'Inventio est recordatio'], font:"'EB Garamond', Georgia, serif" },
 };
 
 // ── State ─────────────────────────────────────────────────────────────────────
@@ -197,9 +301,10 @@ let profMeta = null;
 let sessionId = null;
 let history = [];
 let sending = false;
+let spriteInterval = null;
 
-// ── Init ──────────────────────────────────────────────────────────────────────
-(async function init() {
+// ── Init (called at end of file after all declarations) ──────────────────────
+async function init() {
   // No auth gate — anyone can chat. Auth enhances but doesn't block.
   const token = sessionStorage.getItem('willow_token');
 
@@ -210,34 +315,30 @@ let sending = false;
 
   // Populate UI
   document.title = 'UTETY — ' + profName;
-  document.getElementById('chat-prof-name').textContent = profName;
+  document.getElementById('chat-prof-name').textContent = 'Professor ' + profName;
   document.getElementById('chat-dept-tag').textContent = profMeta.dept;
-  document.getElementById('sidebar-name').textContent = profName;
-  document.getElementById('sidebar-dept').textContent = profMeta.dept;
-  document.getElementById('sidebar-motto').textContent = profMeta.motto || '';
-  document.getElementById('sidebar-location').textContent = profMeta.location;
+  const mottos = profMeta.mottos || [profMeta.motto || ''];
+  document.getElementById('advisor-motto').textContent = mottos[Math.floor(Math.random() * mottos.length)];
+  document.getElementById('advisor-location').textContent = profMeta.location;
 
-  // Portrait
+  // Advisor portrait — sprite preferred, fallback to image, then initial
   if (profMeta.portrait) {
-    const img = document.getElementById('sidebar-portrait');
+    const img = document.getElementById('advisor-img');
     img.src = profMeta.portrait;
     img.alt = profName;
     img.style.display = 'block';
-    document.getElementById('sidebar-initial').style.display = 'none';
+    document.getElementById('advisor-initial').style.display = 'none';
   } else {
-    document.getElementById('sidebar-initial').textContent = profName[0];
+    document.getElementById('advisor-initial').textContent = profName[0];
   }
 
-  // Try to fetch bio from server (local dev only)
-  if (IS_LOCAL) {
-    try {
-      const r = await fetch(UTETY_BASE + '/api/professors/' + profName);
-      if (r.ok) {
-        const data = await r.json();
-        const bio = data.description || '';
-        if (bio) document.getElementById('sidebar-bio').textContent = bio;
-      }
-    } catch (e) {}
+  // Sprite (overlays portrait in advisor frame)
+  setSpriteState('idle');
+
+  // Restore theme preference
+  if (localStorage.getItem('utety_theme') === 'light') {
+    document.getElementById('chat-page').classList.add('light');
+    document.getElementById('theme-toggle').textContent = '☾ Dark';
   }
 
   // Session — local fallback always works
@@ -301,7 +402,7 @@ let sending = false;
   });
 
   document.getElementById('chat-input').focus();
-})();
+}
 
 // ── Chat history persistence ──────────────────────────────────────────────────
 function histKey(name) { return 'utety_hist_' + name.toLowerCase().replace(/\s+/g, '_'); }
@@ -343,6 +444,54 @@ function newConversation() {
   document.getElementById('chat-input').focus();
 }
 
+// ── Scroll-write effect ──────────────────────────────────────────────────────
+async function scrollWrite(el, rawText) {
+  const msgs = document.getElementById('messages');
+  const hasMarked = typeof marked !== 'undefined';
+  el.classList.add('writing');
+
+  let accumulated = '';
+  let charIndex = 0;
+  const len = rawText.length;
+  const RENDER_EVERY = 5;
+
+  while (charIndex < len) {
+    const ch = rawText[charIndex];
+    accumulated += ch;
+    charIndex++;
+
+    // Render markdown periodically or on last char
+    if (charIndex % RENDER_EVERY === 0 || charIndex === len) {
+      el.innerHTML = hasMarked ? marked.parse(accumulated) : accumulated;
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    // Timing: base 20-35ms, random variance ±10ms
+    let delay = 20 + Math.random() * 15;
+    // Extra pauses
+    if ('.!?'.includes(ch)) {
+      delay += 80 + Math.random() * 40;
+    } else if (',:;—–'.includes(ch)) {
+      delay += 40 + Math.random() * 40;
+    }
+    if (ch === '\n') {
+      // Check for paragraph break (double newline)
+      if (charIndex < len && rawText[charIndex] === '\n') {
+        delay += 150;
+      } else {
+        delay += 60;
+      }
+    }
+
+    await new Promise(r => setTimeout(r, delay));
+  }
+
+  // Final clean render
+  el.innerHTML = hasMarked ? marked.parse(rawText) : rawText;
+  el.classList.remove('writing');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
 // ── Send message ──────────────────────────────────────────────────────────────
 async function sendMessage() {
   if (sending || !profName) return;
@@ -361,19 +510,27 @@ async function sendMessage() {
   history.push({ role: 'user', content: text });
 
   try {
+    setSpriteState('thinking');
     const reply = await callProfessor(text);
     typingEl.classList.remove('typing');
     typingEl.textContent = '';
-    typingEl.innerHTML = (typeof marked !== 'undefined') ? marked.parse(reply) : reply;
+    setSpriteState('writing');
+    input.disabled = true;
+    await scrollWrite(typingEl, reply);
+    input.disabled = false;
+    setSpriteState('idle');
     history.push({ role: 'assistant', content: reply });
     saveHistory(profName, history);
   } catch (err) {
     typingEl.classList.remove('typing');
+    typingEl.classList.remove('writing');
     typingEl.textContent = 'Error: ' + err.message;
+    setSpriteState('idle');
   }
 
   sending = false;
   document.getElementById('send-btn').disabled = false;
+  input.disabled = false;
   input.focus();
 }
 
@@ -401,6 +558,1091 @@ async function callProfessor(message) {
   throw new Error('No LLM providers available. Is Willow running on port 8420?');
 }
 
+// ── Sprite system (32×32) ───────────────────────────────────────────────────
+const SPRITES = {
+'Oakenscroll': {
+  palette: ["transparent","#1c1008","#b8b0a0","#d8d4c8","#c89868","#a07850","#303028","#708898","#4a1218","#782028","#9c3838","#8a6830","#d4a830","#b07060","#e0d8c8","#2a1818"],
+  idle: [
+    '00000000000000000000000000000000','00000000000023322330000000000000',
+    '00000000002322332232000000000000','00000000023233223323200000000000',
+    '00000000232332233232320000000000','00000000233223322332300000000000',
+    '00000000232332332323200000000000','00000000023232323232000000000000',
+    '00000000012323232310000000000000','00000000014467746410000000000000',
+    '00000000016744674610000000000000','00000000014467746410000000000000',
+    '00000000001445d44100000000000000','00000000000144d41000000000000000',
+    '000000000001444d1000000000000000','00000000000014410000000000000000',
+    '0000000000001ee10000000000000000','00000000000189810000000000000000',
+    '00000000001899981000000000000000','00000000018999999810000000000000',
+    '00000000189999999981000000000000','00000001899954459998100000000000',
+    '00000001899999999998100000bc0000','000000018999999999981000bc000000',
+    '00000000189999999981000bc0000000','00000000018999999810000c00000000',
+    '00000000001899981000000000000000','00000000000181810000000000000000',
+    '00000000000181810000000000000000','00000000000ff0ff0000000000000000',
+    '00000000000ff0ff0000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000232232300000000000000','00000000002322332232000000000000',
+    '00000000023233223323200000000000','00000000232332233232320000000000',
+    '00000000233223322332300000000000','00000000023232323232000000000000',
+    '00000000012323232310000000000000','00000000014467746410000000000000',
+    '00000000016744674610000000000000','00000000014467746410000000000000',
+    '00000000001445d44100000000000000','00000000000144d41000000000000000',
+    '000000000001444d1000000000000000','00000000000014410000000000000000',
+    '0000000000001ee10000000000000000','00000000000189810000000000000000',
+    '00000000001899981000000000000000','00000000018999998100000000000000',
+    '00000001899999999810000000000000','00000018999999999981000000000000',
+    '00000189999999945cb1000000000000','0000001899999994500b000000000000',
+    '00000001899999998100000000000000','00000000189999998100000000000000',
+    '00000000018999981000000000000000','00000000001818100000000000000000',
+    '00000000001818100000000000000000','0000000000ff00ff0000000000000000',
+    '0000000000ff00ff0000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','000000000000000000000000ee000000',
+    '00000000000000000000000e00e00000','00000000000000000000000e00e00000',
+    '000000000000000000000000ee000000','0000000000000000000000ee00000000',
+    '00000000000000000000ee0000000000','00000000000232232300000000000000',
+    '00000000002322332232000000000000','00000000023233223323200000000000',
+    '00000000232332233232320000000000','00000000023232323232000000000000',
+    '00000000012323232310000000000000','00000000014467746410000000000000',
+    '00000000016744674610000000000000','00000000014467746410000000000000',
+    '00000000001445d44100000000000000','00000000000144d41000000000000000',
+    '000000000001444d1000000000000000','0000000000001ee10000000000000000',
+    '00000000000189810000000000000000','00000000001899981000000000000000',
+    '00000000018999998100000000000000','00000000189999999810000000000000',
+    '00000001899945499981000000000000','00000001899944599981000000000000',
+    '000000001899454d9810000000000000','00000000018999981000000000000000',
+    '00000000001818100000000000000000','00000000000ff0ff0000000000000000',
+    '00000000000ff0ff0000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Gerald': {
+  palette: ["transparent","#18140e","#2a2a30","#3c3c44","#585860","#d4a878","#5c3820","#b89028","#e8c838","#e0d8d0","#d03030","#3080c8","#38b840","#38302a","#c08068","#d8b838"],
+  idle: [
+    '00000000000000000000000000000000','00000000000001111000000000000000',
+    '00000000000116666110000000000000','00000000001666666661000000000000',
+    '00000000001665556610000000000000','0000000000165d55d561000000000000',
+    '00000000001555555510000000000000','00000000000155e55100000000000000',
+    '00000000000015551000000000000000','00000000000001110000000000000000',
+    '00000000000000000000000000000000','00000000000078870000000000000000',
+    '00000000000788887000000000000000','00000000000877778000000000000000',
+    '00000000000078870000000000000000','00000000000019910000000000000000',
+    '00000000000199991000000000000000','0000000000019f991000000000000000',
+    '00000000001233321000000000000000','00000000012333332100000000000000',
+    '0000000001233333210000000a000000','00000000123333333210000a0b000000',
+    '0000000012333333321000c00a000000','0000000001233333210000b0c0000000',
+    '00000000012333332100000000000000','00000000001233321000000000000000',
+    '00000000000123210000000000000000','00000000000120210000000000000000',
+    '00000000000120210000000000000000','00000000000110110000000000000000',
+    '00000000000110110000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000111000000000000000000','00000000011666611000000000000000',
+    '00000000166666666100000000000000','00000000166555661000000000000000',
+    '0000000016d55d561000000000000000','00000000015555551000000000000000',
+    '00000000001555e10000000000000000','00000000000155100000000000000000',
+    '00000000000011000000000000000000','00000000000000000000000000000000',
+    '00000000000078870000000000000000','00000000000788887000000000000000',
+    '00000000000877778000000000000000','00000000000019910000000000000000',
+    '00000000000199991000000000000000','0000000000019f991000000000000000',
+    '00000000001233321000000000000000','00000000012333332100000000000000',
+    '00000001233333332100000000000000','0000001233333335541d10000a0b0000',
+    '00000012333333550011000c00a00000','00000001233333321000000b0c000000',
+    '00000000123333321000000000000000','00000000012333210000000000000000',
+    '00000000001232100000000000000000','00000000000120210000000000000000',
+    '00000000000120210000000000000000','00000000000110110000000000000000',
+    '00000000000110110000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000001111000000000000000','00000000000116666110000000000000',
+    '00000000001666666661000000000000','00000000001665556610000000000000',
+    '0000000000165d55d561000000000000','00000000001555555510000000000000',
+    '00000000000155e55100000000000000','00000000000015551000000000000000',
+    '00000000000001110000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000088880000000000000000',
+    '00000000008887788800000000000000','00000000087887788780000000000000',
+    '00000000008888888800000000000000','00000000000088880000000000000000',
+    '00000000000019910000000000000000','00000000000199991000000000000000',
+    '0000000000019f991000000000000000','00000000001233321000000000000000',
+    '00000000012333332100000000000000','0000000001233333210000000a000000',
+    '00000000123333333210000a0b000000','0000000012333333321000c00a000000',
+    '00000000012333332100b00c00000000','00000000001233321000000000000000',
+    '00000000000123210000000000000000','00000000000120210000000000000000',
+    '00000000000120210000000000000000','00000000000110110000000000000000',
+    '00000000000110110000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Riggs': {
+  palette: ["transparent","#181210","#2a2020","#d4a878","#a88060","#c43030","#882020","#38884a","#286838","#5878b0","#3c4c78","#48b0f0","#2878b0","#383028","#c08070","#4a3828"],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000112211000000000000000',
+    '00000000001222222100000000000000','00000000012222222210000000000000',
+    '00000000012222222210000000000000','00000000001222222100000000000000',
+    '00000000001133331100000000000000','0000000000013d3d3100000000000000',
+    '00000000000133331000000000000000','00000000000134e31000000000000000',
+    '00000000000013310000000000000000','00000000000013310000000000000000',
+    '00000000000156751000000000000000','00000000001576587100000000000000',
+    '00000000015685768510000000000000','00000000156857685710000000000000',
+    '0000000c156857685751000000000000','000000cc156857685751000000000000',
+    '00000c0c015685768510000000000000','0000cb00001576857100000000000000',
+    '000cb000000157651000000000000000','000c0000000199910000000000000000',
+    '0000000000019a910000000000000000','00000000000199910000000000000000',
+    '00000000000190910000000000000000','00000000000190910000000000000000',
+    '00000000000ff0ff0000000000000000','00000000000ff0ff0000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000112211000000000000000',
+    '00000000001222222100000000000000','00000000012222222210000000000000',
+    '00000000012222222210000000000000','00000000001222222100000000000000',
+    '00000000001133331100000000000000','0000000000013d3d3100000000000000',
+    '00000000000133331000000000000000','00000000000134e31000000000000000',
+    '00000000000013310000000000000000','00000000000013310000000000000000',
+    '00000000000156751000000000000000','00000000001576587100000000000000',
+    '00000000015685768510000000000000','000000cb156857685710000000000000',
+    '00000cbc156857685751000000000000','0000cbcb015685768510034000000000',
+    '000cb0b0001576858100034000000000','00cb00b0000157685100034000000000',
+    '0cb000b0000157651000000000000000','00000000000199910000000000000000',
+    '0000000000019a910000000000000000','00000000000199910000000000000000',
+    '00000000000190910000000000000000','00000000000190910000000000000000',
+    '00000000000ff0ff0000000000000000','00000000000ff0ff0000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000112211000000000000000',
+    '00000000001222222100000000000000','00000000012222222210000000000000',
+    '00000000012222222210000000000000','00000000001222222100000000000000',
+    '00000000001133331100000000000000','0000000000013d3d3100000000000000',
+    '00000000000133331000000000000000','00000000000134e31000000000000000',
+    '00000000000013310000000000000000','00000000000013310000000000000000',
+    '00000000000156751000000000000000','00000000001576587100000000000000',
+    '00000000015685768510000000000000','000000cb156857685710000000000000',
+    '00000cbc156857685751000000000000','0000cbcb015685768510000000000000',
+    '000cb0b0001576857100000000000000','00cb0b00000157651000000000000000',
+    '0cb0b000000154331000000000000000','00b00000000199910000000000000000',
+    '0000000000019a910000000000000000','00000000000199910000000000000000',
+    '00000000000190910000000000000000','00000000000190910000000000000000',
+    '00000000000ff0ff0000000000000000','00000000000ff0ff0000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Hanz': {
+  palette: ['transparent','#2b1d0e','#c4a265','#e8cba0','#f5e0c8','#2a2a4a','#3d3d5e','#f0f0f0','#e87020','#c05818','#1a1a1e','#8b7355','#5c4a32','#a0a0a0','#d4a070','#f0c878'],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000001111100000000000000','00000000000012222210000000000000',
+    '00000000000122222221000000000000','00000000001222222222100000000000',
+    '00000000001222222222100000000000','00000000000133333310000000000000',
+    '0000000000d3a33a33d0000000000000','0000000000d3a33a33d0000000000000',
+    '00000000001333333310000000000000','00000000000133e33100000000000000',
+    '00000000000013333000000000000000','00000000000001310000000000000000',
+    '00000000000556776550000000000000','00000000005567777655000000000000',
+    '00000000055677777765500000000000','00000000056777777776500000000000',
+    '00000000056777777776500000000000','00000000055677777655000000000000',
+    '00000000005567776550000000000000','00000000000556755589000000000000',
+    '00000000000556550889000000000000','00000000000b55b00880000000000000',
+    '00000000000b55b00000000000000000','00000000000bbbb00000000000000000',
+    '00000000000b00b00000000000000000','00000000000b00b00000000000000000',
+    '0000000000cc00cc0000000000000000','0000000000cc00cc0000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000001111100000000000000','00000000000012222210000000000000',
+    '00000000000122222221000000000000','00000000001222222222100000000000',
+    '00000000001222222222100000000000','00000000000133333310000000000000',
+    '0000000000d3a33a33d0000000000000','0000000000d3a33a33d0000000000000',
+    '00000000001333333310000000000000','00000000000133e33100000000000000',
+    '00000000000013333000000000000000','00000000000001310000000000000000',
+    '00000000000556776550000000000000','00000000005567777655000000000000',
+    '00000000055677777765500000000000','00000000056777777776500000000000',
+    '00000000356777777776530000000000','00000003305677777655033000000000',
+    '0000003d0055677765500d3000000000','0000003d00055677550000d000000000',
+    '00000000000556655000000000000000','00000000000b55b00000089000000000',
+    '00000000000b55b00000088000000000','00000000000bbbb00000000000000000',
+    '00000000000b00b00000000000000000','00000000000b00b00000000000000000',
+    '0000000000cc00cc0000000000000000','0000000000cc00cc0000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000001111100000000000000','00000000000012222210000000000000',
+    '00000000000122222221000000000000','00000000001222222222100000000000',
+    '00000000001222222222100000000000','00000000000133333310000000000000',
+    '0000000000d3a33a33d0000000000000','0000000000d3a33a33d0000000000000',
+    '00000000001333333310000000000000','00000000000133e33100000000000000',
+    '00000000000013333000000000000000','00000000000001310000000000000000',
+    '00000000000556776550000000000000','00000000005567777655000000000000',
+    '00000000055677777765500000000000','00000000056777777776500000000000',
+    '00000000056777777776589000000000','00000000055677777658989000000000',
+    '00000000005567776889890000000000','00000000000556758899000000000000',
+    '00000000000556558890000000000000','00000000000b55b00000000000000000',
+    '00000000000b55b00000000000000000','00000000000bbbb00000000000000000',
+    '00000000000b00b00000000000000000','00000000000b00b00000000000000000',
+    '0000000000cc00cc0000000000000000','0000000000cc00cc0000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Nova': {
+  palette: ["transparent","#181410","#3a2218","#6b4830","#d8a878","#b08860","#d03030","#d87830","#d8c030","#40a848","#3870c0","#8040a8","#382820","#c87068","#484040","#3a3030"],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000023323200000000000000','00000000002323232320000000000000',
+    '00000000023232323232000000000000','00000000232323232323200000000000',
+    '00000000233232323232300000000000','00000000023323232332000000000000',
+    '00000000012323232310000000000000','0000000001c44454c100000000000000',
+    '00000000001444444100000000000000','00000000000144d44100000000000000',
+    '00000000000014441000000000000000','00000000000014410000000000000000',
+    '00000000000168796100000000000000','00000000001a68796a00000000000000',
+    '00000000016789687961000000000000','00000000016896789681000000000000',
+    '0000000001a6789a6891000000000000','00000000016896789610006000000000',
+    '00000000016789689610066000000000','00000000001689768100066000000000',
+    '00000000000168796100066000000000','00000000000eeee10000060000000000',
+    '00000000000e1ee10000000000000000','0000000000e100e10000000000000000',
+    '0000000000e100e10000000000000000','00000000000ff0ff0000000000000000',
+    '00000000000ff0ff0000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000023323200000000000000','00000000002323232320000000000000',
+    '00000000023232323232000000000000','00000000232323232323200000000000',
+    '00000000233232323232300000000000','00000000023323232332000000000000',
+    '00000000012323232310000000000000','0000000001c44454c100000000000000',
+    '00000000001444444100000000000000','00000000000144d44100000000000000',
+    '00000000000014441000000000000000','00000000000014410000000000000000',
+    '00000000000168796100000000000000','00000000001a68796a00000000000000',
+    '00000000016789687961000000000000','00000000016896789681000000000000',
+    '00000044016789a68910000000000000','00000441016896789610006000000000',
+    '00000440016789689610006600000000','00000000001689768100006600000000',
+    '00000000000168796100006600000000','00000000000eeee10000060000000000',
+    '00000000000e1ee10000000000000000','0000000000e100e10000000000000000',
+    '0000000000e100e10000000000000000','00000000000ff0ff0000000000000000',
+    '00000000000ff0ff0000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000023323200000000000000','00000000002323232320000000000000',
+    '00000000023232323232000000000000','00000000232323232323200000000000',
+    '00000000233232323232300000000000','00000000023323232332000000000000',
+    '00000000012323232310000000000000','0000000001c44454c100000000000000',
+    '00000000001444444100000000000000','00000000000144d44100000000000000',
+    '00000000000014441000000000000000','00000000000014410000000000000000',
+    '00000000000168796100000000000000','00000000001a68796a00000000000000',
+    '00000000016789687961000000000000','00000660016896789681000000000000',
+    '0000066001a6789a6891000000000000','00006600016896789610000000000000',
+    '00066000016789689610000000000000','00660000001689768100000000000000',
+    '06600060001687961000000000000000','066006000eeee1000000000000000000',
+    '00000600e1ee10000000000000000000','0000000000e100e10000000000000000',
+    '0000000000e100e10000000000000000','00000000000ff0ff0000000000000000',
+    '00000000000ff0ff0000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Copenhagen': {
+  palette: ['transparent','#a04010','#e87020','#f08830','#f8a848','#1a5c1a','#2d8c2d','#50b050','#1a1a1e','#5c3a1a','#f0d040','#4a4a4a','#ffffff','#8888aa','#c85818','#3a7a3a'],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000670000000000000000',
+    '00000000000006760000000000000000','00000000000005650000000000000000',
+    '00000000000000900000000000000000','00000000000111111100000000000000',
+    '00000000011222222211000000000000','00000000122233333222100000000000',
+    '00000001223334443332210000000000','00000012233344443332210000000000',
+    '00000122333444443332211000000000','00000122334444443332211000000000',
+    '00000123334444443333211000000000','00001223383443483332211000000000',
+    '00001223383333383332211000000000','00001223333333333332211000000000',
+    '00001223333388833332211000000000','00001223333333333332211000000000',
+    '00000123333333333332110000000000','00000122333333333322110000000000',
+    '00000012233333333221100000000000','00000001223333332211000000000000',
+    '00000000122222222110000000000000','00000000011222221100000000000000',
+    '00000000001111111000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000007670000000000000000',
+    '00000000000067660000000000000000','00000000000005650000000000000000',
+    '00000000000000900000000000000000','00000000000111111100000000000000',
+    '00000000011222222211000000000000','00000000122233333222100000000000',
+    '00000001223334443332210000000000','00000012233344443332210000000000',
+    '00000122333444443332211000000000','00000122334444443332211000000000',
+    '00000123334444443333211000000000','00001223383443483332211000000000',
+    '00001223383333383332211000000000','00001223333333333332211000000000',
+    '00001223333388833332211000000000','00001223333333333332211000000000',
+    '00000123333333333332110000000000','00000122333333333322110000000000',
+    '00000012233333333221100000000000','00000001223333332211000000000000',
+    '00000000122222222110000000000000','00000000011222221100000000000000',
+    '0000000001111111100baa0000000000','000000000000000000b0aa0000000000',
+    '00000000000000000000aa0000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000660000000000000000','00000000000006560000000000000000',
+    '00000000000006560000000000000000','00000000000005650000000000000000',
+    '00000000000000900000000000000000','00000000000111111100000000000000',
+    '00000000011222222211000000000000','00000000122233333222100000000000',
+    '00000001223334443332210000000000','00000012233344443332210000000000',
+    '00000122333444443332211000000000','00000122334444443332211000000000',
+    '00000123334444443333211000000000','00001223383443483332211000000000',
+    '00001223338333383332211000d00000','00001223333333333332211000000000',
+    '00001223333333333332211000d00000','00001223333388833332211000000000',
+    '00000123333333333332110000d00000','00000122333333333322110000000000',
+    '00000012233333333221100000000000','00000001223333332211000000000000',
+    '00000000122222222110000000000000','00000000011222221100000000000000',
+    '00000000001111111000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Mitra': {
+  palette: ['transparent','#1a0a0a','#2d1a1a','#c8944a','#e0b060','#1a1848','#2a2870','#f0c030','#1a1a1e','#f8e070','#fff0a0','#a04040','#f8f0d0','#0e0e30','#d0a050','#6b4830'],
+  idle: [
+    '00000000000000000000000000000000','00000000000000a00000000000000000',
+    '0000000000000a9a0000000000000000','000000000000a9a9a000000000000000',
+    '00000000000a921129a0000000000000','0000000000a9211112a0000000000000',
+    '0000000000a1222221a0000000000000','00000000009122222190000000000000',
+    '00000000009122222190000000000000','00000000000133331000000000000000',
+    '00000000000383383000000000000000','00000000000383383000000000000000',
+    '00000000000333333000000000000000','00000000000033b30000000000000000',
+    '00000000000003330000000000000000','00000000000007370000000000000000',
+    '00000000000576776750000000000000','00000000005667777665000000000000',
+    '00000000056677777766500000000000','00000000566777777776650000000000',
+    '00000000567777777776650000000000','00000000566777777766500000000000',
+    '000000000e5677776650e00000000000','000000000ee567765500ee0000000000',
+    '00000000000566665000000000000000','00000000000566665000000000000000',
+    '00000000000560065000000000000000','00000000000560065000000000000000',
+    '0000000000ff000ff000000000000000','0000000000ff000ff000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000900000000000000000','00000000000091119000000000000000',
+    '00000000000912221900000000000000','00000000009122222190000000000000',
+    '00000000009122222190000000000000','00000000009122222190000000000000',
+    '00000000000122222100000000000000','00000000000133331000000000000000',
+    '00000000000383383000000000000000','00000000000383383000000000000000',
+    '00000000000333333000000000000000','00000000000033b30000000000000000',
+    '00000000000003330000000000000000','00000000000007370000000000000000',
+    '00000000000576776750000000000000','00000000005667777665000000000000',
+    '00000000056677777766500000000000','00000000566777777776650000000000',
+    '00000003566777777776500000000000','00000033056677777665030000000000',
+    '0000003e005677776500e30000000000','0000003e00056776500003e000000000',
+    '000000000005666650000e0000000000','00000000000566665000000000000000',
+    '00000000000560065000000000000000','00000000000560065000000000000000',
+    '0000000000ff000ff000000000000000','0000000000ff000ff000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','000000000000aaa00000000000000000',
+    '00000000000a999a0000000000000000','0000000000a99a99a000000000000000',
+    '000000000a991111a9a0000000000000','000000009a912221a990000000000000',
+    '00000000a91222219a00000000000000','00000000a91222219a00000000000000',
+    '00000000991222219900000000000000','00000000001333310000000000000000',
+    '00000000000383383000000000000000','00000000000383383000000000000000',
+    '00000000000333333000000000000000','00000000000033b30000000000000000',
+    '00000000000003330000000000000000','00000000000007370000000000000000',
+    '00000000000576776750000000000000','00000000005667777665000000000000',
+    '00000000056677777766500000000000','00000000566777777776650000000000',
+    '00000000567777777776650000000000','00000000566777777766500000000000',
+    '000000000e5677776650e00000000000','000000000ee567765500ee0000000000',
+    '00000000000566665000000000000000','00000000000566665000000000000000',
+    '00000000000560065000000000000000','00000000000560065000000000000000',
+    '0000000000ff000ff000000000000000','0000000000ff000ff000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Consus': {
+  palette: ['transparent','#2b1a0a','#a07850','#c89868','#e8c840','#a08820','#3a2a18','#5c4830','#2a3a20','#4a5a38','#d0c8c0','#1a1a1e','#c8b040','#7a6848','#6b4830','#1a1a10'],
+  idle: [
+    '00000000000000000000000000000000','00000000000004000000040000000000',
+    '00000000000044400000440000000000','00000000000454540004540000000000',
+    '0000000000045454004c400000000000','00000000004444440044c00000000000',
+    '0000000000044440004c000000000000','000000000001aaa100c4c00000000000',
+    '00000000001aaaaa10c4c00000000000','0000000001aaaaaaa1c4c00000000000',
+    '00000000001233321044c00000000000','0000000000b2332b10c4c00000000000',
+    '00000000001233321044c00000000000','0000000000012a210004c00000000000',
+    '00000000000123100004c00000000000','00000000000012100004c00000000000',
+    '00000000006877786004c00000000000','00000000068977798604c00000000000',
+    '00000000689777797864c00000000000','00000006897777797864c00000000000',
+    '00000006897777797864c00000000000','00000000689777796804c00000000000',
+    '00000000068977798604c00000000000','00000000006877786004c00000000000',
+    '00000000000688860004c00000000000','00000000000680860000000000000000',
+    '00000000000680860000000000000000','00000000000680860000000000000000',
+    '0000000000ee00ee0000000000000000','0000000000ee00ee0000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000004000000000000000000',
+    '00000000000044400000000000000000','00000000000454540000000000000000',
+    '00000000000454540000000000000000','00000000004444440000000000000000',
+    '00000000000444400000000000000000','000000000001aaa10000000000000000',
+    '00000000001aaaaa1000000000000000','0000000001aaaaaaa100000000000000',
+    '00000000001233321000000000000000','0000000000b2332b1000000000000000',
+    '00000000001233321000000000000000','00000000000123210000000000000000',
+    '00000000000012100000000000000000','00000000000012100000000000000000',
+    '00000000006877786000000000000000','00000000068977798600000000000000',
+    '00000000689777797860000000000000','000000c6897777797863000000000000',
+    '00000cc4689777797833000000000000','0000c4c40689777983300e0000000000',
+    '000c4c000068977860000e0000000000','00c4c00000687786000003e000000000',
+    '004c0000006888600000e00000000000','00000000000680860000000000000000',
+    '00000000000680860000000000000000','00000000000680860000000000000000',
+    '0000000000ee00ee0000000000000000','0000000000ee00ee0000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000044000000040000000000',
+    '00000000000454400000440000000000','00000000004545400004540000000000',
+    '0000000000454544004c400000000000','00000000044544440044c00000000000',
+    '0000000000454440004c000000000000','000000000001aaa100c4c00000000000',
+    '00000000001aaaaa10c4c00000000000','0000000001aaaaaaa1c4c00000000000',
+    '00000000001233321044c00000000000','0000000000b233bb10c4c00000000000',
+    '00000000001233321044c00000000000','0000000000012a2100c4c00000000000',
+    '000000000001231000c4c00000000000','00000000000012100004c00000000000',
+    '00000000006877786004c00000000000','00000000068977798604c00000000000',
+    '00000000689777797864c00000000000','00000006897777797864c00000000000',
+    '00000006897777797864c00000000000','00000000689777796804c00000000000',
+    '0000000006897779860cc00000000000','00000000006877786000000000000000',
+    '00000000000688860000000000000000','00000000000680860000000000000000',
+    '00000000000680860000000000000000','00000000000680860000000000000000',
+    '0000000000ee00ee0000000000000000','0000000000ee00ee0000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Ada': {
+  palette: ['transparent','#1a1020','#8b5e3c','#a0724e','#2a8b8b','#1e6666','#1a1a2e','#0d0d1a','#2d2d3a','#00ff88','#e8e8e8','#c06060','#3aafaf','#3c3040','#6b4226','#9b6b40'],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000111111111000000000000','00000000000112222110000000000000',
+    '00000000000122222210000000000000','0000000000012a22a210000000000000',
+    '00000000000122b22210000000000000','00000000000012322100000000000000',
+    '00000000000002222000000000000000','00000000000000220000000000000000',
+    '00000000000044444400000000000000','0000000000044c44c440000000000000',
+    '00000000004444444444000000000000','00000000004444444444000000000000',
+    '00000000024004444002400000000000','00000000020004444000200000000000',
+    '00000000020004444088200000000000','0000000002000dddd089200000000000',
+    '00000000000006666089000000000000','00000000000006006009000000000000',
+    '00000000000006006000000000000000','00000000000006006000000000000000',
+    '00000000000007007000000000000000','00000000000007007000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000111111111000000000000','00000000000112222110000000000000',
+    '00000000000122222210000000000000','0000000000012a22a210000000000000',
+    '00000000000122b22210000000000000','00000000000012322100000000000000',
+    '00000000000002222000000000000000','00000000000000220000000000000000',
+    '00000000000044444400000000000000','00000000000444c44c44000000000000',
+    '00000000004444444444000000000000','00000000004444444444000000000000',
+    '00000000024004444002000000000000','00000000028894444002000000000000',
+    '00000000088990444000000000000000','0000000089990dddd000000000000000',
+    '00000000099006666000000000000000','00000000000006006000000000000000',
+    '00000000000006006000000000000000','00000000000006006000000000000000',
+    '00000000000007007000000000000000','00000000000007007000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000111111111000000000000','00000000000112222110000000000000',
+    '00000000000122222210000000000000','0000000000012a22a210000000000000',
+    '00000000000122b22210000000000000','00000000000012322100000000000000',
+    '00000000000002222000000000000000','00000000000200220000000000000000',
+    '00000000002044444400000000000000','00000000020444c44c44000000000000',
+    '00000000024444444444000000000000','00000000024444444444000000000000',
+    '00000000024004444000000000000000','00000000020004444008800000000000',
+    '00000000000004444008800000000000','0000000000000dddd008800000000000',
+    '00000000000006666000000000000000','00000000000006006000000000000000',
+    '00000000000006006000000000000000','00000000000006006000000000000000',
+    '00000000000007007000000000000000','00000000000007007000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Alexis': {
+  palette: ['transparent','#5a2010','#c04020','#e8b89a','#c49478','#3a5a2a','#6b4a2a','#5a3a1a','#3a2a1a','#c04848','#d8c8a0','#2a4020','#c06060','#2d7a1e','#5a8a3a','#f0e8c0'],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000002222000000000000000','00000000000022112200000000000000',
+    '00000000000211111120000000000000','00000000002111111112000000000000',
+    '00000000021111111111200000000000','00000000021133333112000000000000',
+    '00000000001333333310000000000000','0000000000133b33b310000000000000',
+    '00000000001333c33310000000000000','00000000000133333100000000000000',
+    '00000000000013331000000000000000','00000000000003330000000000000000',
+    '00000000000055555000000000000000','00000000000556556500000000000000',
+    '00000000005555555550000000000000','00000000005556665550000000000000',
+    '00000000035556665553000000000000','00000000030056665003000000000000',
+    '00000000000056665000000000000000','00000000000077777000000000000000',
+    '00000000000077077000000000000000','00000000000077077000000000000000',
+    '00000000000077077000000000000000','00000000000088088000000000000000',
+    '000000009a0088088000000000000000','0000000099a088088000000000000000',
+    '000000009a00000000a9000000000000','0000000000000000009a900000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000002222000000000000000',
+    '00000000000022112200000000000000','00000000000211111120000000000000',
+    '00000000002111111112000000000000','00000000001133333110000000000000',
+    '00000000001333333310000000000000','0000000000133b33b310000000000000',
+    '00000000001333c33310000000000000','00000000000133333100000000000000',
+    '00000000000013331000000000000000','00000000000003330000000000000000',
+    '00000000000555555000000000000000','00000000005555555000000000000000',
+    '00000000055556655500000000000000','00000000055566665500000000000000',
+    '00000000035066660530000000000000','000000000300ffff0030000000000000',
+    '00000000030ffff00000000000000000','0000000003ffff000000000000000000',
+    '00000000007777000000000000000000','00000000007707700000000000000000',
+    '00000000008807700000000000000000','00000000000008800000000000000000',
+    '000000009a0000000000000000000000','0000000099a000000000000000000000',
+    '000000009a00000000a9000000000000','0000000000000000009a900000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000002222000000000000000','00000000000022112200000000000000',
+    '00000000000211111120000000000000','00000000002111111112000000000000',
+    '00000000021111111111200000000000','00000000021133333112000000000000',
+    '00000000001333333310000000000000','00000000001333333310000000000000',
+    '0000000000133b33b310000000000000','00000000001333c33310000000000000',
+    '00000000000013331000000000000000','00000000000003330000000000000000',
+    '00000000000055555000000000000000','00000000000555555500000000000000',
+    '00000000005555555550000000000000','00000000005556665550000000000000',
+    '00000000035556665553000000000000','00000000030056665003000000000000',
+    '000000003000566009a3000000000000','00000000000007709a90000000000000',
+    '00000000000007700990000000000000','00000000000077077000000000000000',
+    '00000000000077077000000000000000','00000000000088088000000000000000',
+    '000000009a0088088000000000000000','0000000099a000000000000000000000',
+    '000000009a00000000a9000000000000','0000000000000000009a900000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Steve': {
+  palette: ['transparent','#a0a0b0','#e8c8a8','#c8a888','#6b5a3a','#8b7a5a','#d8d8e0','#2a2a3a','#1a1a20','#c8b088','#8a7050','#2a2030','#c08070','#4a6040','#8b2020','#a08060'],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000111111111000000000000','00000000000012222100000000000000',
+    '00000000000122222210000000000000','0000000000012b22b210000000000000',
+    '00000000000122c22210000000000000','00000000000012222100000000000000',
+    '00000000000002222000000000000000','00000000000000660000000000000000',
+    '0000000000004e444000000000000000','00000000000445445400000000000000',
+    '00000000004445445440000000000000','00000000004445445440000000000000',
+    '00000000024445445400000000000000','00000000020044544007000000000000',
+    '00000000000044540007000000000000','00000000000077770007000000000000',
+    '00000000000077077000000000000000','00000000000077077000000000000000',
+    '00000000000077077000000000000000','000000000000880880fa000000000000',
+    '00000000000088088a99a00000000000','00000000000000000999900000000000',
+    '00000000000000000a99a00000000000','00000000000000000999000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000111111111000000000000','00000000000012222100000000000000',
+    '00000000000122222210000000000000','0000000000012b22b210000000000000',
+    '00000000000122c22210000000000000','00000000000012222100000000000000',
+    '00000000000002222000000000000000','00000000000000660000000000000000',
+    '00000000000044e44400000000000000','00000000000445445400000000000000',
+    '00000000004445445400000000000000','00000000004445445400000000000000',
+    '00000000024445445400000000000000','00000000020044540000000000000000',
+    '00000000020044540000000000000000','00000000000077770000000000000000',
+    '00000000000077770000000000000000','00000000000077770000000000000000',
+    '00000000000077077000000000000000','00000000000088088000000000000000',
+    '00000000000088088000fa0000000000','000000000000000000a99a0000000000',
+    '00000000000000000099990000000000','00000000000000000009990000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000111111111000000000000','00000000000012222100000000000000',
+    '00000000000122222210000000000000','0000000000012b22b210000000000000',
+    '00000000000122c22210000000000000','00000000000012222100000000000000',
+    '00000000000002222000000000000000','00000000000000660000000000000000',
+    '00000000000044e44400000000000000','00000000000445445400000000000000',
+    '00000000004445445400000000000000','00000000004445445400000000000000',
+    '00000000004445445400000000000000','00000000000445440000000000000000',
+    '00000000000445400000000000000000','00000000000077770000fa0000000000',
+    '0000000000007707700a99a000000000','00000000000077077099990000000000',
+    '000000000000770770a99a0000000000','00000000000088088209990000000000',
+    '00000000000088088000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Ofshield': {
+  palette: ['transparent','#2a2a3a','#4a4a5a','#7a7a8a','#5a4a3a','#6b5a2a','#ff9930','#ffc040','#aaccff','#0d0d1a','#2a1a10','#1a1020','#3a3028','#8b7a40','#5a5a6a','#6a6a7a'],
+  idle: [
+    '00000000000000000000000000000000','00000000000001111000000000000000',
+    '00000000000011221100000000000000','00000000000112222110000000000000',
+    '00000000001122222211000000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000012200cc0022100000000000',
+    '0000000001220c88c022100000000000','00000000012200cc0022100000000000',
+    '00000000011222222221100000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000011222222221100000000000',
+    '00000000011222222221d00000000000','0000000001122222222d500000000000',
+    '000000000112222222d5560000000000','00000000011222222d55670000000000',
+    '00000000011222221005670000000000','00000000011222211005d00000000000',
+    '00000000011111111000000000000000','00000000001111111000000000000000',
+    '0000000000aaa0aaa000000000000000','0000000000aaa0aaa000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000001111000000000000000','00000000000011f21100000000000000',
+    '00000000000112222110000000000000','00000000001122222211000000000000',
+    '00000000001222222221000000000000','0000000000122cc22221000000000000',
+    '0000000000120c88c221000000000000','0000000000122cc22221000000000000',
+    '00000000001222222221000000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000041222222211400000000000',
+    '00000000041222222211400000000000','00000000040002220000400000000000',
+    '00000000000002220000000000000000','00000000056002220000000000000000',
+    '00000000567011110000000000000000','00000000056011110000000000000000',
+    '00000000001111111000000000000000','00000000001111111000000000000000',
+    '0000000000aaa0aaa000000000000000','0000000000aaa0aaa000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000001111000000000000000',
+    '00000000000011221100000000000000','00000000000112222110000000000000',
+    '00000000001122222211000000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000012200cc0022100000000000',
+    '0000000001220c88c022100000000000','00000000012200cc0022100000000000',
+    '00000000011222222221100000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000011222222221100000000000',
+    '00000000011222222221100000000000','00000000011222222221100000000000',
+    '00000000011222222221d00000000000','0000000001122222222d500000000000',
+    '000000000112222222d5560000000000','00000000011222222d55677000000000',
+    '0000000001122222d556777000000000','00000000011222210056777000000000',
+    '00000000011222110056770000000000','00000000011222110005600000000000',
+    '00000000011111111000000000000000','00000000001111111000000000000000',
+    '0000000000aaa0aaa000000000000000','0000000000aaa0aaa000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Binder': {
+  palette: ['transparent','#5a4030','#e0b890','#c09870','#8b6040','#5a3a20','#d8c8a0','#3a3040','#1a1a20','#f0f0e8','#c8c0b0','#3a3a4a','#2a3040','#a07040','#6b4a2a','#c07060'],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000111111111000000000000','00000000000012222100000000000000',
+    '0000000000b122222b10000000000000','0000000000b12c22c1b0000000000000',
+    '00000000000122f22210000000000000','00000000000012222100000000000000',
+    '00000000000002222000000000000000','00000000000000220000000000000000',
+    '00000000000066666000000000000000','00000000000666666600000000000000',
+    '00000000004444444440000000000000','00000000004454445440000000000000',
+    '00000000004454445440000000000000','00000000034454445430000000000000',
+    '0000000003d9944599d3000000000000','00000000039994459993000000000000',
+    '00000000009994459990000000000000','00000000000977779000000000000000',
+    '00000000000077077000000000000000','00000000000077077000000000000000',
+    '00000000000077077000000000000000','00000000000088088000000000000000',
+    '00000000000088088000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000111111111000000000000','00000000000012222100000000000000',
+    '0000000000b122222b10000000000000','0000000000b12c22c1b0000000000000',
+    '00000000000122f22210000000000000','00000000000012222100000000000000',
+    '00000000000002222000000000000000','00000000000000220000000000000000',
+    '00000000000066666000000000000000','00000000000666666600000000000000',
+    '00000000004444444440000000000000','00000000004454445440000000000000',
+    '00000000034454445430000000000000','00000000030004440003000000000000',
+    '00000000030009990003000000000000','00000000d99999999999d00000000000',
+    '00000000d9a9a9a9a9a9d00000000000','00000000d99999999999d00000000000',
+    '00000000000077077000000000000000','00000000000077077000000000000000',
+    '00000000000077077000000000000000','00000000000088088000000000000000',
+    '00000000000088088000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000111111111000000000000','00000000000012222100000000000000',
+    '0000000000b122222b10000000000000','0000000000b12c22c1b0000000000000',
+    '00000000000122f22210000000000000','00000000000012222100000000000000',
+    '00000000000002222000000000000000','00000000000000220000000000000000',
+    '00000000000066666000000000000000','00000000000666666600000000000000',
+    '00000000004444444440000000000000','00000000004454445440000000000000',
+    '00000000004454445440000000000000','00000000034454445430000000000000',
+    '000000000300544500d9300000000000','00000000000044500d99900000000000',
+    '000000000000445d9999000000000000','0000000000000779a900000000000000',
+    '00000000000077077000000000000000','00000000000077077000000000000000',
+    '00000000000077077000000000000000','00000000000088088000000000000000',
+    '00000000000088088000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Jeles': {
+  palette: ['transparent','#1a1428','#2d2844','#3c3860','#c4a882','#e0e0e8','#dbb530','#c08030','#f0d878','#3a2a1a','#c0c0d0','#2a1a10','#8a6a5a','#f0e8d0','#ffe8a0','#ffcc44'],
+  idle: [
+    '00000000000000000000000000000000','00000000000005555500000000000000',
+    '00000000000555aaaa55000000000000','0000000000555aaaaaa5500000000000',
+    '000000000055aaaaaaaa500000000000','000000000055aaaaaaaa500000000000',
+    '00000000005444444444500000000000','00000000054c44444c44500000000000',
+    '0000000006544bb44544600000000000','000000000f544bb44544f00000000000',
+    '00000000005444444444500000000000','00000000000544444445000000000000',
+    '00000000000054444450000000000000','00000000000005444500000000000000',
+    '00000000000000544500000000000000','00000000000000544500000000000000',
+    '00000000000001111110000000000000','00000000000011111111000000000000',
+    '00000000000111111111100000000000','00000000001112222111100000000000',
+    '0000000000111e28e211100000000000','00000000001118e8f811100000000000',
+    '0000000000111e8f8e11100000000000','0000000000111e28e211100000000000',
+    '00000000000112222111000000000000','00000000000011111111000000000000',
+    '00000000000001111100000000000000','00000000000011000110000000000000',
+    '00000000000011000110000000000000','00000000000011000110000000000000',
+    '00000000000022000220000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000005555500000000000000',
+    '00000000000555aaaa55000000000000','0000000000555aaaaaa5500000000000',
+    '000000000055aaaaaaaa500000000000','000000000055aaaaaaaa500000000000',
+    '00000000005444444444500000000000','00000000054c44444c44500000000000',
+    '0000000006544bb44544600000000000','000000000f544bb44544f00000000000',
+    '00000000005444444444500000000000','00000000000544444445000000000000',
+    '00000000000054444450000000000000','00000000000005444500000000000000',
+    '00000000000000544500000000000000','00000000000000544500000000000000',
+    '00000000000001111110000000000000','00000000000011111111000000000000',
+    '00000000000111111111100000000000','00000000001111000011100000000000',
+    '000000000011100008fe110000000000','00000000001100008f8fe10000000000',
+    '00000000001100008ffe8e0000000000','000000000011100008fe110000000000',
+    '00000000000111001111100000000000','00000000000011111111000000000000',
+    '00000000000001111100000000000000','00000000000011000110000000000000',
+    '00000000000011000110000000000000','00000000000011000110000000000000',
+    '00000000000022000220000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000f00','00000000000005555500000000000000',
+    '00000000000555aaaa550000000f0000','0000000000555aaaaaa5500000000000',
+    '000000000055aaaaaaaa500000000000','000000000055aaaaaaaa500000000000',
+    '00000000005444444444500000000000','00000000054c44444c44500000000000',
+    '000000000f544bb44544600000000000','0000000006544bb44544f00000000000',
+    '00000000005444444444500000000000','00000000000544444445000000000000',
+    '00000000000054444450000000000000','00000000000005444500000000000000',
+    '00000000000000544500000000000000','00000000000000544500000000000000',
+    '00000000000001111110000000000000','00000000000011111111000000000000',
+    '00000000000111111111100000000000','00000000001111111111100000000000',
+    '00000000001111000011100000000000','00000000001110000001100000000000',
+    '00000000001119990111100000000000','00000000001119790111100000000000',
+    '00000000001119990111100000000000','00000000000111111111000000000000',
+    '00000000000011111110000000000000','00000000000011000110000000000000',
+    '00000000000011000110000000000000','00000000000011000110000000000000',
+    '00000000000022000220000000000000','00000000000000000000000000000000',
+  ],
+},
+'Willow': {
+  palette: ['transparent','#8b4a2a','#5c3018','#e8c8a0','#c08848','#d4a060','#f0d878','#2a1a10','#c06060','#a07030','#b86838','#f0ece4','#e0a0a0','#d4b090','#ffe8a0','#b87840'],
+  idle: [
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011aaa110000000000000','00000000000111aaa111000000000000',
+    '0000000000111aaaaa11100000000000','0000000001111aaaaa11100000000000',
+    '00000000011133333311100000000000','00000000011337733a11a00000000000',
+    '00000000011337733a11a00000000000','00000000001133333311000000000000',
+    '00000000001133883311000000000000','00000000000133333310000000000000',
+    '00000000000013333100000000000000','000000000000013310000000000000e0',
+    '00000000000000331000000000000000','0000000000000033100000000000e000',
+    '00000000000004444400000000000000','00000000000044444440000000000000',
+    '00000000000444545444000000000000','00000000004444545444400000000000',
+    '00000000004444555444400000000000','00000000004444545444400000000000',
+    '00000000000444444444000000000000','00000000000044444440000000000000',
+    '00000000000004444400000000000000','00000000000004944900000000000000',
+    '00000000000004900490000000000000','00000000000004900490000000000000',
+    '00000000000004900490000000000000','00000000000009900990000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011aaa110000000000000','00000000000111aaa111000000000000',
+    '0000000000111aaaaa11100000000000','0000000001111aaaaa11100000000000',
+    '00000000011133333311100000000000','00000000011337733a11a00000000000',
+    '00000000011337733a11a00000000000','00000000001133333311000000000000',
+    '00000000001133883311000000000000','00000000000133333310000000000000',
+    '00000000000013333100000000000000','00000000000001331000000000000000',
+    '00000000000000331000000000000000','00000000000000331000000000000000',
+    '00000000000004444400000000000000','00000000000044444440000000000000',
+    '00000000000444545444000000000000','00000000004444545444400000000000',
+    '00000000004445553d44000000000000','000000000044455ddd00000000000000',
+    '00000000004444dd000000000000000e','00000000004444454444000000000e00',
+    '00000000000444444440000000000000','00000000000004444400000000000000',
+    '00000000000004944900000000000000','00000000000004900490000000000000',
+    '00000000000004900490000000000000','00000000000009900990000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','000000000000011111000000000e0000',
+    '00000000000011aaa110000000000000','00000000000111aaa11100000e000000',
+    '0000000000111aaaaa11100000000000','0000000001111aaaaa11100000000000',
+    '00000000011133333311100000000000','00000000011337733a11a00000000000',
+    '00000000011337733a11a00000000000','00000000001133333311000000000000',
+    '00000000000133333310000000000000','00000000000133883310000000000000',
+    '00000000000013333100000000000000','00000000000001331000000000000000',
+    '00000000000000331000000000000000','00000000000000331000000000000000',
+    '00000000000004444400000000000000','00000000000044444440000000000000',
+    '00000000000444545444000000000000','00000000004444545444400000000000',
+    '00000000004444555444400000000000','00000000004444545444400000000000',
+    '00000000000444444444000000000000','00000000000044444440000000000000',
+    '00000000000004444400000000000000','00000000000004944900000000000000',
+    '00000000000004900490000000000000','00000000000004900490000000000000',
+    '00000000000004900490000000000000','00000000000009900990000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Kart': {
+  palette: ['transparent','#1a1a2a','#d4b090','#3a3a3a','#4a4a50','#8899aa','#555560','#2a1a10','#c06060','#2a2a3a','#1a1a1a','#6a5a3a','#4488aa','#7788aa','#44ff88','#3a4a5a'],
+  idle: [
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000112222111000000000000','00000000000122222221000000000000',
+    '00000000000127227271000000000000','00000000000122222221000000000000',
+    '00000000000012282100000000000000','00000000000001221000000000000000',
+    '00000000000000220000000000000000','00000000000006666600000000000000',
+    '00000000000066666660000000000000','00000000000663344336000000000000',
+    '00000000006633b44b33600000000000','0000000000663344443360000d000000',
+    '00000000006633444336000dd0000000','000000000066334443360dd000000000',
+    '00000000006633444336d00000000000','00000000000663344360000000000000',
+    '00000000000066666600000000000000','00000000000009999900000000000000',
+    '00000000000099999990000000000000','00000000000099900999000000000000',
+    '00000000000099900999000000000000','00000000000099900999000000000000',
+    '00000000000099900999000000000000','00000000000aaa000aaa000000000000',
+    '00000000000aaa000aaa000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000001111100000000000000',
+    '00000000000011111110000000000000','00000000000111111111000000000000',
+    '00000000000112222111000000000000','00000000000122222221000000000000',
+    '00000000000127227271000000000000','00000000000122222221000000000000',
+    '00000000000012282100000000000000','00000000000001221000000000000000',
+    '00000000000000220000000000000000','00000000000006666600000000000000',
+    '00000000000066666660000000000000','00000000000663344336000000000000',
+    '00000000006633b44b33600000000000','00000000006633444336000000000000',
+    '00000000006633444336000000000000','00000000006633444336000000000000',
+    '0000000000663344ffff000000000000','000000000006634fffff000000000000',
+    '00000000000663feef00000000000000','0000000000006600ff00000000000000',
+    '00000000000066660000000000000000','00000000000009999900000000000000',
+    '00000000000099999990000000000000','00000000000099900999000000000000',
+    '00000000000099900999000000000000','00000000000099900999000000000000',
+    '00000000000aaa000aaa000000000000','00000000000aaa000aaa000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000011111000000000000000',
+    '00000000000111111100000000000000','00000000001111111110000000000000',
+    '00000000001122221110000000000000','00000000001222222210000000000000',
+    '00000000001272272710000000000000','00000000001222222210000000000000',
+    '00000000000122821000000000000000','00000000000012210000000000000000',
+    '00000000000002200000000000000000','00000000000066666000000000000000',
+    '00000000000666666600000000000000','00000000006633443360000000000000',
+    '00000000066334b4b336000000000000','00000000066334444336000000000000',
+    '00000000066334444336000000000000','00000000066334d00000000000000000',
+    '0000000006633d5d0000000000000000','000000000066dd5d0000000000000000',
+    '00000000000660d00000000000000000','00000000000066600000000000000000',
+    '00000000000009999900000000000000','00000000000099999990000000000000',
+    '00000000000099900999000000000000','00000000000099900999000000000000',
+    '00000000000099900999000000000000','00000000000aaa000aaa000000000000',
+    '00000000000aaa000aaa000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Shiva': {
+  palette: ['transparent','#5a3a1a','#c09040','#d4aa60','#e8c888','#1a1a1a','#2a1a10','#ffffff','#e06080','#883030','#dbb530','#6a4020','#b08040','#a07830','#d0d0c0','#f0e8d0'],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000011000000001100000000000','000000001b210000001b210000000000',
+    '00000000b2210000001222b000000000','00000002222111111112222000000000',
+    '00000022222222222222222000000000','00000022236222362232220000000000',
+    '00000022237222372232220000000000','00000022222222222222220000000000',
+    '00000002222225522222200000000000','00000002222222222222200000000000',
+    '00000000222228222222000000000000','00000000022222222220000000000000',
+    '00000000002222222200000000000000','00000000022299922200000000000000',
+    '000000000229a99a9220000000000dd0','00000000022244422220000000000d00',
+    '0000000002224442222000000000d000','00000000222224422222000000dd0000',
+    '00000000222222222222200000d00000','00000002222222222222200000000000',
+    '00000002222200022222000000000000','00000002222200002222000000000000',
+    '00000002222200002222000000000000','0000000c222100001222c00000000000',
+    '0000000cc11000000011cc0000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000011000000001100000000000','000000001b210000001b210000000000',
+    '00000000b2210000001222b000000000','00000002222111111112222000000000',
+    '00000022222222222222222000000000','00000022236222362232220000000000',
+    '00000022236222362232220000000000','00000022222222222222220000000000',
+    '00000002222225522222200000000000','00000002222222222222200000000000',
+    '00000000222222222222000000000000','00000000022222222220000000000000',
+    '00000000002222222200000000000000','00000000022299922200000000000000',
+    '000000000229a99a9220000000000000','00000000022244422220000000000000',
+    '00000000022244422220000000000000','00000000222222222222000000000000',
+    '00000000222222222222200000000000','00000002222222222222200000000000',
+    '00000002222200022222000000000000','000000022222eee02222000000000000',
+    '0000000c2220eeee0222200000000000','00000000cc20eeee00222c0000000000',
+    '000000000000eee000011cc000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '000000000110000000b1100000000000','00000000b221000000b2210000000000',
+    '0000000b222100000012222b00000000','00000002222111111112222000000000',
+    '00000022222222222222222000000000','00000022236222362232220000000000',
+    '00000022237222372232220000000000','00000022222222222222220000000000',
+    '00000002222225522222200000000000','00000002222222222222200000000000',
+    '00000000222222222222000000000000','00000000022222222220000000000000',
+    '00000000002222222200000000000000','00000000022299922200000000000000',
+    '000000000229a99a922000000000dd00','00000000022244422220000000dd0000',
+    '00000000022244422220000000d00000','000000002222222222220000dd000000',
+    '00000000222222222222200d00000000','00000002222222222222200000000000',
+    '00000002222200022222000000000000','00000002222200002222000000000000',
+    '00000002222200002222000000000000','0000000c222100001222c00000000000',
+    '0000000cc11000000011cc0000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+'Pigeon': {
+  palette: ['transparent','#3a3a4a','#6a7a8a','#9aaab8','#d8d8e0','#d08030','#1a1a1a','#ffffff','#cc7020','#e8d8a0','#8b4a2a','#4a5060','#7888a0','#5a6070','#8898a8','#aa7040'],
+  idle: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000111100000000000000',
+    '00000000000001222210000000000000','00000000000012222221000000000000',
+    '00000000000122362221000000000000','00000000000122372221000000000000',
+    '00000000005512222221000000000000','00000000000012222221000000000000',
+    '00000000000001244410000000000000','00000000000001244410000000000000',
+    '00000000000012444421000000000000','000000000b0122444221b00000000000',
+    '00000000bb0122244221bb0000000000','0000000bbb0122222210bbb000000000',
+    '000000bbb00122222210bbb000000000','00000bbb000012222100bbb000000000',
+    '0000bbb0000001221000bbb000000000','000bbb00000001dd10000bb000000000',
+    '00bbb000000001dd1000000000000000','00000000000000111000000000000000',
+    '000000000000008f8000000000000000','00000000000000898000000000000000',
+    '00000000000008000800000000000000','00000000000009000900000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  writing: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000111100000000000000','00000000000001222210000000000000',
+    '00000000000012222221000000000000','00000000000122362221000000000000',
+    '00000000000122372221000000000000','00000000000012222221000000000000',
+    '00000000000012222221000000000000','00000000000001244410000000000000',
+    '00000000000012444421000000000000','000000000b0122444221b00000000000',
+    '00000000bb0122244221bb0000000000','0000000bbb0122222210bbb000000000',
+    '000000bbb00122222210bbb000000000','00000bbb000012222100bbb000000000',
+    '00000000000001221000000000000000','00000000000001dd1000000000000000',
+    '00000000000000111000000000000000','00000000000000580000000000000000',
+    '00000000000005885000000000000000','00000000009990889000000000000000',
+    '00000000099990808000000000000000','00000000099990000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+  thinking: [
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000001110000000000000000',
+    '00000000000012221000000000000000','00000000000122222100000000000000',
+    '00000000001223622100000000000000','00000000001223722100000000000000',
+    '00000000000122222100000000000000','00000000000122222100000000000000',
+    '00000000000012222100000000000000','00000000000012444100000000000000',
+    '00000000000012444210000000000000','000000000b0122444221b00000000000',
+    '00000000bb0122244221bb0000000000','0000000bbb0122222210bbb000000000',
+    '000000bbb00122222210bbb000000000','00000bbb000012222100bbb000000000',
+    '0000bbb0000001221000bbb000000000','000bbb00000001dd10000bb000000000',
+    '00bbb000000001dd1000000000000000','00000000000000111000000000000000',
+    '000000000000008f8000000000000000','00000000000000898000000000000000',
+    '00000000000008000800000000000000','00000000000000000000000000000000',
+    '00000000000000000000000000000000','00000000000000000000000000000000',
+  ],
+},
+};
+function drawProfSprite(state) {
+  const canvas = document.getElementById('profSprite');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const spriteData = SPRITES[profName];
+  if (!spriteData) { canvas.style.display = 'none'; return; }
+  const sprite = spriteData[state] || spriteData.idle;
+  if (!sprite) { canvas.style.display = 'none'; return; }
+  const size = sprite.length; // 32 for new sprites, 16 for legacy
+  canvas.width = size; canvas.height = size;
+  canvas.style.display = 'block';
+  // Hide portrait image when sprite is active
+  const img = document.getElementById('advisor-img');
+  if (img) img.style.display = 'none';
+  const ini = document.getElementById('advisor-initial');
+  if (ini) ini.style.display = 'none';
+  ctx.clearRect(0, 0, size, size);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const ci = parseInt(sprite[y][x], 16);
+      if (ci === 0) continue;
+      ctx.fillStyle = spriteData.palette[ci];
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+}
+
+function toggleTheme() {
+  const page = document.getElementById('chat-page');
+  const btn = document.getElementById('theme-toggle');
+  page.classList.toggle('light');
+  const isLight = page.classList.contains('light');
+  btn.textContent = isLight ? '☾ Dark' : '☀ Light';
+  localStorage.setItem('utety_theme', isLight ? 'light' : 'dark');
+}
+
+function setSpriteState(state) {
+  if (spriteInterval) { clearInterval(spriteInterval); spriteInterval = null; }
+  if (!SPRITES[profName]) {
+    const c = document.getElementById('profSprite');
+    if (c) c.style.display = 'none';
+    return;
+  }
+  if (state === 'thinking') {
+    let frame = 0;
+    drawProfSprite('thinking');
+    spriteInterval = setInterval(() => { frame++; drawProfSprite(frame % 3 === 0 ? 'idle' : 'thinking'); }, 600);
+  } else if (state === 'writing') {
+    let frame = 0;
+    drawProfSprite('writing');
+    spriteInterval = setInterval(() => { frame++; drawProfSprite(frame % 2 === 0 ? 'writing' : 'idle'); }, 280);
+  } else {
+    drawProfSprite('idle');
+  }
+}
+
 function buildDirectPrompt(message) {
   // Minimal prompt for direct fleet call (server does the full persona build)
   const recentHist = history.slice(-8).map(m => {
@@ -409,6 +1651,9 @@ function buildDirectPrompt(message) {
   }).join('\n');
   return `You are ${profName} at UTETY.\n\n${recentHist}\nUser: ${message}\n${profName}:`;
 }
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+init();
 </script>
 </body>
 </html>

@@ -228,9 +228,7 @@
       </div>
     </div>
     <div class="footer-mottos">
-      <em>Non veritas, sed animus</em>
-      <em>Falsum sed certum</em>
-      <em>Iterum veni cum tam diu manere non poteris</em>
+      <em class="rotating-motto"></em>
     </div>
     <div class="footer-copy">&copy; 1095 UTETY &mdash; The Syllabus is Mendatory.</div>
   </div>
@@ -250,6 +248,18 @@
 <!-- ── Chat Panel ── -->
 
 <script src="static/shared.js"></script>
+<script>
+(function() {
+  const MOTTOS = [
+    'Non veritas, sed vibras',
+    'Falsum sed certum',
+    'Iterum veni cum tam diu manere non poteris'
+  ];
+  document.querySelectorAll('.rotating-motto').forEach(el => {
+    el.textContent = MOTTOS[Math.floor(Math.random() * MOTTOS.length)];
+  });
+})();
+</script>
 <script>
 function openPaper(file, label) {
   const modal = document.getElementById('paper-modal');

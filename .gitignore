@@ -31,3 +31,6 @@ Thumbs.db
 # Environment / secrets
 .env
 .env.*
+*.pyc
+.venv/
+target/

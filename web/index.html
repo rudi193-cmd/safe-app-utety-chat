@@ -110,9 +110,7 @@
       </div>
     </div>
     <div class="footer-mottos">
-      <em>Non veritas, sed animus</em>
-      <em>Falsum sed certum</em>
-      <em>Iterum veni cum tam diu manere non poteris</em>
+      <em class="rotating-motto"></em>
     </div>
     <div class="footer-links">
       <a href="faculty.html">Faculty</a>
@@ -130,5 +128,17 @@
 </footer>
 
 <script src="static/shared.js"></script>
+<script>
+(function() {
+  const MOTTOS = [
+    'Non veritas, sed vibras',
+    'Falsum sed certum',
+    'Iterum veni cum tam diu manere non poteris'
+  ];
+  document.querySelectorAll('.rotating-motto').forEach(el => {
+    el.textContent = MOTTOS[Math.floor(Math.random() * MOTTOS.length)];
+  });
+})();
+</script>
 </body>
 </html>
