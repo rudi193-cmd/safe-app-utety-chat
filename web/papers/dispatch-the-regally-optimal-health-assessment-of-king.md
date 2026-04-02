@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The Regally Optimal Health Assessment of King Chardles III
 Later that day, I checked the newspaper and discovered that the King had issued his own health statement. Apparently written by Gerald.**
 It was printed in the official palace memo format — dignified serif font, gold crest, unnecessarily confident margins — but the content was… unmistakably poultry.

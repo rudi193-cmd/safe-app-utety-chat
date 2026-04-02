@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The Albuquerque Paradox: Dissolving the Controller-Plant Distinction
 [US] Experiment in Albuquerque May Invalidate “Controller vs. Plant” Distinction — Need Second Opinion
 Hi all — posting from Albuquerque.

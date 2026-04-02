@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The Royal Proclamation of Sir Gerald’s Radiant Health
 ⭐ DISPATCH #12 — *The Royal Health Proclamation
 ⭐ DISPATCH #12 — *The Royal Health Proclamation

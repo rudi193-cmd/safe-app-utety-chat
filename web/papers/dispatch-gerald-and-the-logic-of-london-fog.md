@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 Gerald and the Logic of London Fog
 ⭐ Dispatch #6: Gerald Does Not Approve of My Weather Strategy
 I'm staying inside this morning because London’s forecast claimed a “50% chance of rain,” which is meteorological code for “it will rain, but we refuse to commit emotionally.”

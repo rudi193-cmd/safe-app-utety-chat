@@ -1,8 +1,3 @@
----
-institutions: [utety]
-type: guide
----
-
 # A Guide to the Academic Departments of Precausal Studies
 
 *Office of Academic Affairs · UTETY*

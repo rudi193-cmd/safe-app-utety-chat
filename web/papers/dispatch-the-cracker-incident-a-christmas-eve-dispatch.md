@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The Cracker Incident: A Christmas Eve Dispatch
 DISPATCH #17 — The Cracker Incident (Christmas Eve)
 DISPATCH #17 — The Cracker Incident (Christmas Eve)

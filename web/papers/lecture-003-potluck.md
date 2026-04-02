@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [oakenscroll]
-type: lecture
----
-
 # Lecture 003 — On the Annual Faculty Potluck and the Quiet Fracture of Equivalence
 
 *Delivered by Professor Archimedes Oakenscroll,*

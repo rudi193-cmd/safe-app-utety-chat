@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 Gerald’s Transcendent Feast at Google HQ
 ⭐ **Gerald Arrives at Google HQ (24 Hours Too Late)
 ⭐ **Gerald Arrives at Google HQ (24 Hours Too Late)

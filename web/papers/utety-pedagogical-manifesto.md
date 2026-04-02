@@ -1,8 +1,3 @@
----
-institutions: [utety]
-b17: N7113
----
-
 # Pedagogical Manifesto: The Architecture of Precausal Knowledge
 
 *Prof. Oakenscroll, Chair of Theoretical Uncertainty · UTETY*

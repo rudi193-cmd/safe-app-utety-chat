@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 Gerald’s Grand Unification on Damp Napkins
 ⭐ Gerald Claims He's Solved Grand Unification
 I ran into Gerald again today.

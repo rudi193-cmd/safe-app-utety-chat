@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The Denmark Street Symphony
 DISPATCH #15 — The Formal Complaint (Denmark Street)
 DISPATCH #15 — The Formal Complaint (Denmark Street)

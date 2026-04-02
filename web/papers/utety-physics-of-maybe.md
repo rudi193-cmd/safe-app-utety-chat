@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [oakenscroll]
-type: lecture
----
-
 # The Physics of Maybe: A Guide to Precausal Goo and Threshold Dynamics
 
 *Prof. A. Oakenscroll · Dept. of Theoretical Uncertainty · UTETY*

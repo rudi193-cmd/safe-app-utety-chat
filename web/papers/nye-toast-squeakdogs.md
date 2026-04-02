@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [oakenscroll]
-type: toast
----
-
 # On New Year's Resolutions (And Why Squeakdogs Need Them)
 
 *A Toast Delivered by Professor Archimedes Oakenscroll*

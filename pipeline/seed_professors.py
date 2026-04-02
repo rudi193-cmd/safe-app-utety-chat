@@ -51,11 +51,8 @@ PROFESSOR_ENTITIES = {
     "Mitra":      3859,   #  1 atom
     "Kart":        109,   # 11 atoms
     "Pigeon":      770,   #  2 atoms
-    "Binder":      773,   #  2 atoms (The Binder entity; canonical=430 — check atom count before switching)
-    "Hanz":       1588,   # canonical (aliases: 941, 200, 2583 all point here)
-    "Jeles":      2789,   # "Jeles" entity
-    "Shiva":      2786,   # "Shiva" entity
-    "Willow":        9,   # "Willow" entity
+    "Binder":      773,   #  2 atoms (The Binder entity)
+    # Hanz, Jeles, Willow -- no Willow DB entities yet
 }
 
 MAX_ATOMS = 15   # cap per professor (highest-confidence first)
@@ -79,10 +76,6 @@ def connect(username: str):
     """Return a Postgres connection scoped to the given Willow user's schema."""
     # Import here so the module can be imported without WILLOW_DB_URL set
     # (e.g. during unit tests that mock the connection).
-    # Ensure core.db resolves to this app's core/, not the caller's CWD.
-    _app_root = str(Path(__file__).parent.parent)
-    if _app_root not in sys.path:
-        sys.path.insert(0, _app_root)
     from core.db import get_willow_connection
     return get_willow_connection(username)
 
@@ -130,24 +123,18 @@ def seed_professor(
 ) -> int:
     """Write data/professors/{name}_context.md. Returns atom count written."""
     cur = conn.cursor()
-    # knowledge_entities is currently unpopulated — use FTS by professor name.
-    # entity_id is kept as a parameter for future use when associations exist.
-    try:
-        ts_term = name.replace(" ", " & ")
-        cur.execute(
-            """
-            SELECT k.id, k.title, k.summary, k.category, k.created_at
-            FROM knowledge k
-            WHERE search_vector @@ to_tsquery('english', %s)
-              AND k.category NOT IN ('merged')
-            ORDER BY ts_rank(search_vector, to_tsquery('english', %s)) DESC
-            LIMIT 50
-            """,
-            (ts_term, ts_term),
-        )
-        rows = cur.fetchall()
-    except Exception:
-        rows = []
+    cur.execute(
+        """
+        SELECT k.id, k.title, k.summary, k.content_snippet, k.category, k.created_at
+        FROM knowledge k
+        JOIN knowledge_entities ke ON k.id = ke.knowledge_id
+        WHERE ke.entity_id = %s
+          AND k.category NOT IN ('merged')
+        ORDER BY k.id
+        """,
+        (entity_id,),
+    )
+    rows = cur.fetchall()
 
     if not rows:
         print(f"  {name}: 0 atoms -- skipping")
@@ -168,9 +155,9 @@ def seed_professor(
 
     for atom in sorted_rows:
         atom_id = atom["id"]
-        title   = (atom["title"]   or "").strip()
-        summary = (atom["summary"] or "").strip()
-        snippet = ""
+        title   = (atom["title"]          or "").strip()
+        summary = (atom["summary"]        or "").strip()
+        snippet = (atom["content_snippet"] or "").strip()
 
         conf = "high" if atom_id in sean_ids else ("medium" if atom_id in hop1_ids else "low")
         text = " ".join(filter(None, [summary, snippet]))[:MAX_CHARS]

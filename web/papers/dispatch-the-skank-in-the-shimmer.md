@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The Skank in the Shimmer
 DISPATCH #16 — Friday Night, Saturday Morning
 DISPATCH #16 — Friday Night, Saturday Morning

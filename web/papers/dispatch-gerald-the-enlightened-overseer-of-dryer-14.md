@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 Gerald: The Enlightened Overseer of Dryer 14
 DISPATCH #4 — Gerald at the Laundromat
 There are a lot of places you expect to encounter a rotisserie chicken.

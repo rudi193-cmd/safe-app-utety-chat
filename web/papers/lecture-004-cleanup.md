@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [oakenscroll]
-type: lecture
----
-
 # Lecture 004 — On Cleanup Committees and the Myth of Shared Responsibility
 
 *Delivered by Professor Archimedes Oakenscroll,*

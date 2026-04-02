@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 Gerald’s Grand Unified Hotdog Framework
 ⭐ Gerald’s Grand Unified Theory of Everything (Hotdog Edition)
 ⭐ Gerald’s Grand Unified Theory of Everything (Hotdog Edition)

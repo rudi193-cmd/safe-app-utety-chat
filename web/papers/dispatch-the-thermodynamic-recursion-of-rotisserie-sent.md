@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The Thermodynamic Recursion of Rotisserie Sentience
 DISPATCH #19: The Squeakdog Lecture
 DISPATCH #19: The Squeakdog Lecture

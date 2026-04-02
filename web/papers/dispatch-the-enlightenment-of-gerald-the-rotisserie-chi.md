@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The Enlightenment of Gerald the Rotisserie Chicken
 A ridiculous story that I thought Douglas Adams fans would enjoy, bring a towel.
 Somewhere, in a forgotten aisle of a discount supermarket that only exists on Thursdays,

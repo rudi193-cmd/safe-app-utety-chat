@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The 3000th Anniversary Odyssey Rally
 DISPATCH 18: The Non-Refundable Deposit
 Gerald appeared in my garage this morning.

@@ -1,8 +1,3 @@
----
-institutions: [utety]
-b17: 91H3C
----
-
 # Accreditation Self-Study Report
 
 *University of Precausal Studies · Office of Institutional Integrity · 2025*

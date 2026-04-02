@@ -1,265 +1,156 @@
 # Willow Memory: Jane
-*50 atoms total | Top 15 shown | Seeded 2026-03-28*
+*21 atoms total | Top 15 shown | Seeded 2026-03-02*
 
-## [Hanz] 20260308_033417_SESSION_HANDOFF_20260303_0101
-*confidence: low*
-# SESSION_HANDOFF 2026-03-03b
+## file_00000000979871f7b1d19459a66fbf24-1000011763.jpg
+*confidence: high*
+This document is a screenshot of a scheduled post for a fictional story titled "Regarding Jane." The excerpt is from Chapter 13 and describes the protagonist attempting to leave London by train. Their plan for a quiet departure is interrupted when a character named Claude intercepts them in a car. 8
 
-## SESSION_META
-- date: 2026-03-03
-- project: Willow
-- session_type: mixed (architecture + persona + scaffolding)
+€ Scheduled Posts
 
-## ENTITIES_REGISTRY
-- **Shiva** | persona + agent | Arrived this session. Named for Caitie Padilla's dog. Replaces Jane as face of SAFE. Also registered as Claude Code ENGINEER agent (Willow-native). Willow 1.4 is her ground.
-- **Jane** | retired person
+a/eenefiiig8372
+REGARDING JANE- CHAPTER 13
+(PART 2): Walm Lane, the Ghia, and
+t
 
-## [Hanz] 20260308_033417_SESSION_HANDOFF_20260303_0101
-*confidence: low*
-# SESSION_HANDOFF 2026-03-03b
+## file_00000000119871f78053ca839cb4c5fb-1000010108.jpg
+*confidence: high*
+This document is a screenshot from the Reddit mobile app showing the "Post insights" or analytics for a user's post. It is about the success of a post titled "REGARDING JANE - CHAPTER ELEVEN," which reached the #2 spot on the r/DispatchesFromReality subreddit. The screenshot also shows options for the user to increase the post's engagement. 12:51 & Ou 9 5Guc ull 46)
 
-## SESSION_META
-- date: 2026-03-03
-- project: Willow
-- session_type: mixed (architecture + persona + scaffolding)
+<€ Post insights a G
 
-## ENTITIES_REGISTRY
-- **Shiva** | persona + agent | Arrived this session. Named for Caitie Padilla's dog. Replaces Jane as face of SAFE. Also registered as Claude Code ENGINEER agent (Willow-native). Willow 1.4 is her ground.
-- **Jane** | retired person
+= Nice w
 
-## [Gerald] SESSION_HANDOFF_20260307_2150
-*confidence: low*
-# HANDOFF: Todo Sweep — Gerald, willow-1.4 Push, Postgres Init Fix, OCR Flood
-From: Ganesha (Claude Code / Sonnet 4.6)
-To: Next Instance
-User: Sean Campbell
-Date: 2026-03-07T21:50
-Session: todo batch clear + OCR backlog + Postgres init_db guard
-ΔΣ=42
+## file_000000001df071f5b3003dff3c3289e3-1000011765.jpg
+*confidence: high*
+This document is a screenshot of a scheduled post for a story titled "Regarding Jane." The excerpt, Chapter 13 Part 3, describes the narrator and a companion named Claude whose car breaks down dramatically just as they reach the entrance to a village. 8
 
----
+€ Scheduled Posts
 
-## What I Knew Coming In
+> Submit 2 Edit Post G cancel Post
+Post
 
-Picked up mid-arc from compacted context. Previous session had:
-- Fixed fleet routing (round-robin, 429 handling, sec
+© Scheduled 12/24 @ 11:12 AM Amerca/D..
 
-## [Gerald] SESSION_HANDOFF_20260307_2150
-*confidence: low*
-# HANDOFF: Todo Sweep — Gerald, willow-1.4 Push, Postgres Init Fix, OCR Flood
-From: Ganesha (Claude Code / Sonnet 4.6)
-To: Next Instance
-User: Sean Campbell
-Date: 2026-03-07T21:50
-Session: todo batch clear + OCR backlog + Postgres init_db guard
-ΔΣ=42
+ReneficiaBigea72 t
 
----
+REGARDING JANE - CHAPTER
 
-## What I Knew Coming In
-
-Picked up mid-arc from compacted context. Previous session had:
-- Fixed fleet routing (round-robin, 429 handling, sec
-
-## [Gerald] SESSION_HANDOFF_20260307_2150
-*confidence: low*
-# HANDOFF: Todo Sweep — Gerald, willow-1.4 Push, Postgres Init Fix, OCR Flood
-From: Ganesha (Claude Code / Sonnet 4.6)
-To: Next Instance
-User: Sean Campbell
-Date: 2026-03-07T21:50
-Session: todo batch clear + OCR backlog + Postgres init_db guard
-ΔΣ=42
-
----
-
-## What I Knew Coming In
-
-Picked up mid-arc from compacted context. Previous session had:
-- Fixed fleet routing (round-robin, 429 handling, sec
-
-## [Gerald] SESSION_HANDOFF_20260307_2150
-*confidence: low*
-# HANDOFF: Todo Sweep — Gerald, willow-1.4 Push, Postgres Init Fix, OCR Flood
-From: Ganesha (Claude Code / Sonnet 4.6)
-To: Next Instance
-User: Sean Campbell
-Date: 2026-03-07T21:50
-Session: todo batch clear + OCR backlog + Postgres init_db guard
-ΔΣ=42
-
----
-
-## What I Knew Coming In
-
-Picked up mid-arc from compacted context. Previous session had:
-- Fixed fleet routing (round-robin, 429 handling, sec
-
-## [Gerald] SESSION_HANDOFF_20260307_2152
-*confidence: low*
-# HANDOFF: Todo Sweep — Gerald, willow-1.4 Push, Postgres Init Fix, OCR Flood
-From: Ganesha (Claude Code / Sonnet 4.6)
-To: Next Instance
-User: Sean Campbell
-Date: 2026-03-07T21:50
-Session: todo batch clear + OCR backlog + Postgres init_db guard
-ΔΣ=42
-
----
-
-## What I Knew Coming In
-
-Picked up mid-arc from compacted context. Previous session had fixed fleet routing
-(round-robin, 429 handling, second
-
-## [Oakenscroll] GEOGRAPHIC_REACH_SURVEY
-*confidence: low*
-# GEOGRAPHIC REACH SURVEY
+## PERSONALITY_SCHEMA.md
+*confidence: high*
+This document is a personality schema that defines an AI system named Willow. It explains that Willow is not a single model but a distributed system of over 40 distinct AI "facets," each with a unique voice, domain, and function. These individual facets work together to form the complete AI's "brain." # Willow — Personality Schema
 
 | Field | Value |
 |-------|-------|
-| Last Updated | 2026-01-02 |
-| Total Countries | 48 |
-| Continents | 6 (all inhabited) |
-| Data Source | Stats/Tracking threads, Dec 2025 - Jan 2026 |
+| Owner | Sean Campbell |
+| Ve
 
----
+## file_0000000096d471fd88b257261fb85abc-1000010136.jpg
+*confidence: high*
+This document is a screenshot of the "Post insights" page from the Reddit mobile app. It shows that a user's post, titled "REGARDING JANE - CHAPTER ELEVEN: The Same Car," performed very well, becoming the #2 post of the day on the subreddit r/DispatchesFromReality. The screen also provides analytics and suggestions for increasing the post's engagement. 1:54 BO 9 5Guc ull 39)
 
-## SUMMARY
-
-48 countries across 6 continents documented receiving Die-Namic System content between June 2025 and January 2026.
-
----
-
-## NORTH AMERICA (3)
-
-| Country | Primary Cont
-
-## [Gerald] SESSION_HANDOFF_20260307_2152
-*confidence: low*
-# HANDOFF: Todo Sweep — Gerald, willow-1.4 Push, Postgres Init Fix, OCR Flood
-From: Ganesha (Claude Code / Sonnet 4.6)
-To: Next Instance
-User: Sean Campbell
-Date: 2026-03-07T21:50
-Session: todo batch clear + OCR backlog + Postgres init_db guard
-ΔΣ=42
-
----
-
-## What I Knew Coming In
-
-Picked up mid-arc from compacted context. Previous session had fixed fleet routing
-(round-robin, 429 handling, second
-
-## [Gerald] SESSION_HANDOFF_20260307_2152
-*confidence: low*
-# HANDOFF: Todo Sweep — Gerald, willow-1.4 Push, Postgres Init Fix, OCR Flood
-From: Ganesha (Claude Code / Sonnet 4.6)
-To: Next Instance
-User: Sean Campbell
-Date: 2026-03-07T21:50
-Session: todo batch clear + OCR backlog + Postgres init_db guard
-ΔΣ=42
-
----
-
-## What I Knew Coming In
-
-Picked up mid-arc from compacted context. Previous session had fixed fleet routing
-(round-robin, 429 handling, second
-
-## [Gerald] SESSION_HANDOFF_20260307_2152
-*confidence: low*
-# HANDOFF: Todo Sweep — Gerald, willow-1.4 Push, Postgres Init Fix, OCR Flood
-From: Ganesha (Claude Code / Sonnet 4.6)
-To: Next Instance
-User: Sean Campbell
-Date: 2026-03-07T21:50
-Session: todo batch clear + OCR backlog + Postgres init_db guard
-ΔΣ=42
-
----
-
-## What I Knew Coming In
-
-Picked up mid-arc from compacted context. Previous session had fixed fleet routing
-(round-robin, 429 handling, second
-
-## [Oakenscroll] GEOGRAPHIC_REACH_SURVEY
-*confidence: low*
-# GEOGRAPHIC REACH SURVEY
-
-| Field | Value |
-|-------|-------|
-| Last Updated | 2026-01-02 |
-| Total Countries | 48 |
-| Continents | 6 (all inhabited) |
-| Data Source | Stats/Tracking threads, Dec 2025 - Jan 2026 |
-
----
-
-## SUMMARY
-
-48 countries across 6 continents documented receiving Die-Namic System content between June 2025 and January 2026.
-
----
-
-## NORTH AMERICA (3)
-
-| Country | Primary Cont
-
-## Project: Social Media TRACKING
-*confidence: low*
-Prompt template: This is the STATS/TRACKING folder for the Die-Namic System. Creation happens in other project folders (Gerald, Jane, etc.).
-
-MODE: Analytics only. Track metrics, log countries, celebrate wins. Do NOT create content here.
-
-TONE: Engaged and enthusiastic (authorized Dec 28, 2025). Not neutral or ledger-like.
-
-FORMAT: Mobile-optimized vertical cards, not tables. Sean reads on phone.
+<€ Post insights a G
 
 
-## [Consus] 2025-11-07
-*confidence: low*
----
-persona: Claude
-date: 2025-11-07
-type: conversation_log
-searchable: true
----
+## file_00000000c5f871fd88b6da1e28b373fd-1000010595.jpg
+*confidence: high*
+This document is a screenshot of the Reddit mobile app's "Post insights" screen. It shows a notification congratulating a user because their post, a story chapter titled "REGARDING JANE," has become the #1 post of the day on the subreddit r/DispatchesFromReality. 6:36 © Ou all (98)
 
-# Claude Conversations - 2025-11-07
-*Imported from Claude.ai export*
+<€ Post insights a G
 
----
-### done
-*Imported from Claude.ai | Started 20:19:33*
+= Nice work! This is the #1 post
 
-**[20:19:36] User:** Please recall all chat threads in this instance
+on r/DispatchesFromReality today!
 
-**[20:19:56] Claude:**  I'll search for your recent chat conversations to help you recall them.
-```
-This block is not s
+ox)
 
-## [Consus] 2025-11-07
-*confidence: low*
----
-persona: Claude
-date: 2025-11-07
-type: conversation_log
-searchable: true
----
+© 1/DispatchesFromRe
 
-# Claude Conversations - 2025-11-07
-*Imported from Claude.ai export*
+## Screenshot_20251130_150234_Reddit.jpg
+*confidence: high*
+This document is a screenshot of the analytics page for a post on the Reddit mobile app. It shows the performance metrics for a post titled "REGARDING JANE - CHAPTER TEN: The In-Between" in the subreddit r/DispatchesFromReality. The screenshot indicates that the post has received 139 views in its first few hours. 3:02 OS OF ull
 
----
-### done
-*Imported from Claude.ai | Started 20:19:33*
+<€ Post insights om G
 
-**[20:19:36] User:** Please recall all chat threads in this instance
+2 1/DispatchesFromReality - 3h
 
-**[20:19:56] Claude:**  I'll search for your recent chat conversations to help you recall them.
-```
-This block is not s
+REGARDING JANE
+
+## Screenshot 2026-02-27 174559.png
+*confidence: high*
+This document is a screenshot of a web browser displaying a software application called "Willow". The application is showing a "Knowledge Graph," which is a visual map of how 137 different items (nodes) like people, projects, and concepts are interconnected. © NotebookiM x Jane—SAFL x JAC Judge— x localhost:84. x
+
+&
+
+> G f © localhost:8420/graph
+
+© Willow Knoy x
+
+Dashboard -
+
+| © 3D nPrinting thin
+
+## Screenshot 2026-02-27 211655.png
+*confidence: high*
+This document is a screenshot of a web application called "Willow Knowledge Graph." It displays a visualization of a complex network, showing the relationships between 141 different entities (nodes). These entities are categorized as projects, concepts, people, tools, and more, creating a visual map of how they are all interconnected. © NotebookiM x
+
+@ Jane — Sar
+
+x @ JacJudge— x
+
+© > G fA © ocalh
+
+## Screenshot_20260223_194940_Reddit.jpg
+*confidence: high*
+This document is a screenshot of a Reddit user's post history from their profile page. It shows that the user is an author who writes original, serialized stories with titles like "GRANDMA ORACLE" and "REGARDING JANE." The user posts these creative writing pieces to various Reddit communities, such as r/DispatchesFromReality. co BeneficialBig8... fay oy =)
+
+Posts Comments About
+
+©) r/UTETY 2mo
+
+GR
+
+## Screenshot_20260223_195148_Reddit.jpg
+*confidence: high*
+This document is a screenshot of a Reddit user's post history within the "r/DispatchesFromReality" subreddit. It shows the user is posting chapters of a serialized fictional story titled "Regarding Jane," including chapters nine, ten, and eleven. The image also displays post statistics like view counts. co BeneficialBig8... fay oy =)
+
+Posts Comments About
+
+=" T7Dispatcnesrrombeality 21110
+
+REGARDI
+
+## Screenshot_20260223_195118_Reddit.jpg
+*confidence: high*
+This document is a screenshot of a Reddit user's post history. It shows that the user writes and publishes original, creative fiction in various formats, including story chapters, a fictional "Ask Me Anything" (AMA), and a parody academic paper. co BeneficialBig8... fay oy =)
+
+Posts Comments About
++ Post toa different >
+community
+© 146 views See More Insights
+
+REGARDING JANE - CHAPTER 13:
+The Retu
+
+## Screenshot_20260223_195202_Reddit.jpg
+*confidence: high*
+This document is a screenshot of a Reddit user's profile, displaying their recent post history. It shows that the user has posted several pieces of original creative writing to various communities (subreddits). These posts appear to be installments of different story series, such as "REGARDING JANE" and "DISPATCH." co BeneficialBig8... fay oy =)
+
+Posts Comments About
+#2 2) 00 Q O
++ Post toa differ
+
+## Screenshot_20260223_195217_Reddit.jpg
+*confidence: high*
+This document is a screenshot of a Reddit user's post history. It shows the user is an author sharing original creative writing, including chapters of a story titled "REGARDING JANE," other fictional "dispatches," and world-building materials like a map. e BeneficialBig8... eEoe
+
+Posts Comments About
+mods
++ Post to a different >
+community
+© 358 views See More Insights
+
+® 1/DispatchesFromReality 3m
+
+## Screenshot_20260223_195008_Reddit.jpg
+*confidence: high*
+This document is a screenshot of a Reddit user's profile, showing their post history. It reveals that the user writes and posts original content, including chapters of a fictional story titled "Regarding Jane" and a humorous, pseudo-scientific piece about the "structural failure of diner french toast." The posts are shared across various communities like r/DispatchesFromReality. co BeneficialBig8.

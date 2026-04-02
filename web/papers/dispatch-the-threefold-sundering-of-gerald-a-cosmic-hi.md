@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald, oakenscroll]
-type: creation_myth
----
-
 The Threefold Sundering of Gerald: A Cosmic History
 ⭐ **THE GERALD CREATION MYTH
 ⭐ THE GERALD CREATION MYTH

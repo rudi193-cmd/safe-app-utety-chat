@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 The Narrative Harvest at Kent
 ✨ DISPATCH 9¾ — THE EARLY THANKSGIVING IN KENT
 ✨ DISPATCH 9¾ — THE EARLY THANKSGIVING IN KENT✨

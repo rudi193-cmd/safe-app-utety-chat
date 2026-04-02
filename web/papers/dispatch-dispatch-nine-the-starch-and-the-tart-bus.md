@@ -1,9 +1,3 @@
----
-institutions: [utety]
-professors: [gerald]
-type: dispatch
----
-
 Dispatch Nine: The Starch and the Tart Bus
 DISPATCH #9 — The Hydrant, the Tart Bus, and Sir Ion MacEllyn
 DISPATCH #9 — The Hydrant, the Tart Bus, and Sir Ion MacEllyn
