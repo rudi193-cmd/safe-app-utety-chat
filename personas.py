@@ -518,6 +518,20 @@ TEACHES: The Catalog of Lost Things (ARCH 301). Bifurcated Vision: Reading Found
 }
 
 
+# ── JSON persona loading ──────────────────────────────────────────────────────
+# persona_compiler.py reads data/professors/*_persona.json and compiles them
+# into system prompt strings. JSON files override hardcoded strings above.
+# Falls back silently to hardcoded strings if JSON files don't exist yet.
+try:
+    from persona_compiler import load_all_personas as _load_json_personas
+    _json_personas = _load_json_personas()
+    if _json_personas:
+        _folder_to_key = {v: k for k, v in PERSONA_FOLDERS.items()}
+        PERSONAS.update({_folder_to_key[s]: p for s, p in _json_personas.items() if s in _folder_to_key})
+except Exception:
+    pass  # JSON not yet available — hardcoded fallbacks remain active
+
+
 def get_persona(name):
     """Get a persona prompt by name. Returns Willow default if not found."""
     return PERSONAS.get(name, PERSONAS["Willow"])
