@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [gerald]
+type: dispatch
+---
+
 The Cosmic Complaint and the Poultry Mandate
 Dispatch 9B-S½ — The Cosmic Complaint Form
 Dispatch 9B-S½ — The Cosmic Complaint Form

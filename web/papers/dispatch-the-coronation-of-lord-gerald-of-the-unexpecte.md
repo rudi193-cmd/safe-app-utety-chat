@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [gerald]
+type: dispatch
+---
+
 The Coronation of Lord Gerald of the Unexpected
 Dispatch #7: “GOOD HEAVENS, HE’S SMOULDERING! AGAIN??”
 > I only went into the church because Gerald was smoking. Not metaphorically — literally.

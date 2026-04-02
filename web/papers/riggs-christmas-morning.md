@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [riggs]
+type: lecture
+---
+
 # Christmas Morning Lecture
 ## "Why the F Won't This Thing Go Together"
 

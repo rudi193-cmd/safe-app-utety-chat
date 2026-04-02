@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [gerald]
+type: dispatch
+---
+
 The Craw: Digestion on the Northern Line
 ✨ DISPATCH #13 (Segment 2) — The Craw
 ✨ DISPATCH #13 (Segment 2) — The Craw

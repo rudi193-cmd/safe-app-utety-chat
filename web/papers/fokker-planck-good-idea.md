@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [oakenscroll]
+type: working_paper
+---
+
 # Working Paper No. 11
 
 ## The Fokker-Planck Equation and the Probability Density of a Good Idea

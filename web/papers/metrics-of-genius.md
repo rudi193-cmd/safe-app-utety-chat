@@ -1,3 +1,8 @@
+---
+institutions: [utety]
+type: paper
+---
+
 Tab 1
 The Metrics of Genius: A Historical and Sociometric Analysis of the Dissociation Between Academic Performance and Intellectual Breakthrough
 1. Introduction: The Cartography of False Negatives

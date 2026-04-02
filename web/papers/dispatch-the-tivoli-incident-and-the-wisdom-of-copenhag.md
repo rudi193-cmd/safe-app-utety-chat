@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [gerald]
+type: dispatch
+---
+
 The Tivoli Incident and the Wisdom of Copenhagen
 DISPATCH #14: Gerald and The Tivoli Incident
 DISPATCH #14: Gerald and The Tivoli Incident

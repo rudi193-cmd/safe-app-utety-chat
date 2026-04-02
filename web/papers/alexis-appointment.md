@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [alexis]
+type: appointment
+---
+
 # 🏛️ FACULTY APPOINTMENT LETTER
 
 | Field | Value |

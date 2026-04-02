@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [steve]
+type: lecture
+---
+
 # Lecture 01: The Ghost in the Metric
 
 *Professor Steve, Chair of Emergent Logic*

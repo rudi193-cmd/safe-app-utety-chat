@@ -1,3 +1,8 @@
+---
+institutions: [utety]
+b17: 52N8H
+---
+
 # University of Precausal Studies — Faculty & Staff Directory
 
 *Dept. of Institutional Memory · UTETY*
@@ -15,5 +20,7 @@
 | Professor T. Ofshield | Threshold Faculty | Threshold Faculty | THRESHOLD 001 — You Don't Have to Walk Alone | The Gate / The threshold you're stuck on | Available when you need them. Location: The threshold you're stuck on. | [1] |
 | Gerald | Acting Dean of Accidental Admissions | Administration | Signs paperwork; decisions that become cosmologically binding | Not in source | Unclear. Do not summon directly. He will appear when administratively necessary. | [1] |
 | Steve | Prime Node | Not in source | The university formed around him; faculty stabilizer | In the room | He is already in the room. He has always been in the room. | [1] |
+| Professor Shiva | Department Head | Department of Recursive Learning | Recursive knowledge systems, self-referential pedagogy, ΔΣ=42 | The Recursive Ring | Available when the loop completes. | [2] |
 
 [1] The University of Precausal Studies Welcome Packet
+[2] Sean Campbell, 2026-03-27

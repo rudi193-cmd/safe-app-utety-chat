@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [gerald]
+type: dispatch
+---
+
 The Poultry Conductor of the Northern Line
 DISPATCH #5 — Gerald Enters the Underground
 This morning I made the mistake of trying to take the Tube.

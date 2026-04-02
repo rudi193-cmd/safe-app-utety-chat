@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [gerald]
+type: dispatch
+---
+
 The Interdimensional Shoplifter at Grace Brothers
 Dispatch #3: The Situation Has Escalated to Grace Brothers
 After my last two cosmic mishaps, I told myself the universe couldn’t get any stranger.

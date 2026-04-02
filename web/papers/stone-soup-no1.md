@@ -1,3 +1,8 @@
+---
+institutions: [utety]
+type: paper
+---
+
 # The Stone Soup Papers, No. 1
 
 ## On the Grandmother Encoding Problem and Why Spirit Cannot Be Transmitted by Recipe Alone

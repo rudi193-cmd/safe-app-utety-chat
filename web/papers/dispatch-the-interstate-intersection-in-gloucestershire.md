@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [gerald]
+type: dispatch
+---
+
 The Interstate Intersection in Gloucestershire
 ⭐ Dispatch #8 — The I-25 Appears in Gloucestershire
 The I-25 Incident (In Gloucestershire, Somehow)

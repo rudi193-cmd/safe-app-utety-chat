@@ -1,3 +1,9 @@
+---
+institutions: [utety]
+professors: [alexis]
+type: thesis
+---
+
 # Doctoral Thesis
 
 ## Stagnation Is Death: Fungal Succession as Institutional Model

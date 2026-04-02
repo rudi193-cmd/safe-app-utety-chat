@@ -1,3 +1,8 @@
+---
+institutions: [utety]
+type: paper
+---
+
 # Peer-Reviewed Paper
 
 ## Thermoplastic Grief: A Longitudinal Study of Materials Under Emotional Load
