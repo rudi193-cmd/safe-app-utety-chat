@@ -4,9 +4,12 @@
  * Body: { message, persona, history }
  * Returns: { response }
  *
- * Secrets (set in Pages project dashboard):
- *   GEMINI_API_KEY
- *   GROQ_API_KEY (optional fallback)
+ * Flow:
+ *   1. Receive compiled persona string + message + history from client
+ *   2. Send to Gemini 2.5 Flash (primary) / Groq Llama 3.3 (fallback)
+ *   3. Return professor response
+ *
+ * Secrets (set in Pages dashboard): GEMINI_API_KEY, GROQ_API_KEY
  */
 
 const CORS = {
@@ -53,11 +56,13 @@ export async function onRequestPost({ request, env }) {
   }
 
   const { message, persona, history = [] } = body;
-  if (!message || !persona) {
-    return new Response(JSON.stringify({ error: 'missing fields' }), {
+  if (!message) {
+    return new Response(JSON.stringify({ error: 'missing message' }), {
       status: 400, headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
+
+  const systemPrompt = persona || 'You are a professor at UTETY. Be helpful, thoughtful, and true to your character.';
 
   const apiKey = env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -75,20 +80,20 @@ export async function onRequestPost({ request, env }) {
   ];
 
   const geminiReq = {
-    system_instruction: { parts: [{ text: persona }] },
+    system_instruction: { parts: [{ text: systemPrompt }] },
     contents,
     generationConfig: { maxOutputTokens: 2048, temperature: 0.8 },
   };
 
-  const resp = await fetch(
+  const geminiResp = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiReq) }
   );
 
   // Groq fallback on rate limit
-  if (resp.status === 429 && env.GROQ_API_KEY) {
+  if (geminiResp.status === 429 && env.GROQ_API_KEY) {
     const groqMessages = [
-      { role: 'system', content: persona },
+      { role: 'system', content: systemPrompt },
       ...history.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content })),
       { role: 'user', content: message },
     ];
@@ -106,15 +111,15 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
-  if (!resp.ok) {
-    const err = await resp.text();
-    return new Response(JSON.stringify({ error: 'gemini_error', detail: err }), {
-      status: resp.status === 429 ? 429 : 502,
+  if (!geminiResp.ok) {
+    const err = await geminiResp.text();
+    return new Response(JSON.stringify({ error: 'llm_error', detail: err }), {
+      status: geminiResp.status === 429 ? 429 : 502,
       headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
-  const data = await resp.json();
+  const data = await geminiResp.json();
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
   return new Response(JSON.stringify({ response: text }), {
     status: 200, headers: { ...CORS, 'Content-Type': 'application/json' },
