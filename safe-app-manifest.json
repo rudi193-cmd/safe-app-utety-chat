@@ -3,6 +3,8 @@
   "name": "UTETY Chat",
   "version": "1.0.0",
   "safe_version": ">=2.0.0",
+  "b17": "98LAL",
+  "agent_type": "app",
   "description": "Chat with UTETY professors - privacy-first conversational AI",
   "author": "Sean Campbell",
   "data_streams": [
@@ -33,6 +35,15 @@
   ],
   "privacy_tier": "client_only",
   "local_processing": 0.96,
+  "http_exception": true,
+  "http_port": 8421,
+  "http_note": "Dev server only. Partition build uses CF Pages + SAP + Pigeon. server.py not deployed.",
+  "dev_server": {
+    "env_var": "UTETY_CHAT_DEV_SERVER",
+    "port": 8421,
+    "scope": "localhost",
+    "note": "Local development only. Not started in production."
+  },
   "entry_point": "utety_chat.app:run",
   "license": "MIT",
   "repository": "https://github.com/rudi193-cmd/safe-app-utety-chat",

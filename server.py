@@ -5,6 +5,7 @@ FastAPI server connecting web UI to chat engine.
 """
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -14,7 +15,24 @@ import uuid
 from chat_engine import ChatSession, ProfessorRoster
 from safe_integration import SAFESession
 
+# SAP gate — dev server only
+try:
+    import sys as _sys
+    _sys.path.insert(0, "/home/sean-campbell/github/willow-1.7")
+    from sap.core.gate import authorized as _sap_authorized
+except ImportError:
+    from pathlib import Path as _Path
+    def _sap_authorized(app_id: str) -> bool:
+        return (_Path("/media/willow/SAFE/Applications") / app_id).exists()
+
 app = FastAPI(title="UTETY Chat API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 # Active sessions (in-memory for demo - use DB for production)
 sessions: Dict[str, SAFESession] = {}
@@ -109,6 +127,8 @@ async def get_professor(name: str):
 @app.post("/api/chat/{session_id}/{professor_name}")
 async def send_message(session_id: str, professor_name: str, message: Message):
     """Send message to professor and get response."""
+    if not _sap_authorized("UTETY"):
+        raise HTTPException(403, "SAP gate denied")
     if session_id not in sessions:
         raise HTTPException(404, "Session not found")
 
@@ -203,4 +223,4 @@ if __name__ == "__main__":
     import uvicorn
     print("Starting UTETY Chat server...")
     print("Open http://localhost:8421 in your browser")
-    uvicorn.run(app, host="0.0.0.0", port=8421)
+    uvicorn.run(app, host="127.0.0.1", port=8421)
