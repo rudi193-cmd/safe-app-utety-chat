@@ -7,20 +7,21 @@ Pigeon drop point: POST /api/pigeon/drop
 Topics: ask, query, contribute, connect, status
 """
 
+import json
+import os as _os
 import uuid
 import requests as _requests
-from typing import Dict, List, Optional
-from datetime import datetime
-import json
 from pathlib import Path
+from typing import Dict, List, Optional
+from datetime import datetime, timezone
 
 # ── Pigeon Bus Helpers ────────────────────────────────────────────────────────
 
-import os as _os
 _WILLOW_URL = _os.environ.get("WILLOW_URL", "http://localhost:8420")
 _PIGEON_URL = f"{_WILLOW_URL}/api/pigeon/drop"
 _APP_ID = "safe-app-utety-chat"
 _session_id = str(uuid.uuid4())
+_APP_DATA = Path("/media/willow/Apps/utety-chat")
 
 
 def ask(prompt: str, persona: Optional[str] = None, tier: str = "free") -> str:
@@ -42,6 +43,25 @@ def query(q: str, limit: int = 5) -> list:
     if result.get("ok"):
         return result.get("result", [])
     return []
+
+
+def contribute(content: str, category: str = "note", metadata: Optional[dict] = None) -> dict:
+    """Stage a contribution to the Willow intake queue (filesystem, portless)."""
+    try:
+        intake_dir = _APP_DATA / "intake"
+        intake_dir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+        fname = intake_dir / f"{ts}_{uuid.uuid4().hex[:8]}.json"
+        fname.write_text(json.dumps({
+            "source_app": _APP_ID,
+            "type": category,
+            "content": content,
+            "metadata": metadata or {},
+            "contributed_at": datetime.now(timezone.utc).isoformat(),
+        }, indent=2))
+        return {"ok": True, "staged": str(fname)}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 
 def status() -> dict:
@@ -219,8 +239,8 @@ class SAFESession:
             }
 
         # Save to disk
-        save_dir = Path("saved_conversations")
-        save_dir.mkdir(exist_ok=True)
+        save_dir = _APP_DATA / "saved_conversations"
+        save_dir.mkdir(parents=True, exist_ok=True)
 
         filename = f"{professor_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
         filepath = save_dir / filename
@@ -264,16 +284,16 @@ def get_consent_status(token=None):
     try:
         import requests as _r
         headers = {"Authorization": f"Bearer {token}"} if token else {}
-        resp = _r.get(f"{WILLOW_URL}/api/apps", headers=headers, timeout=10)
+        resp = _r.get(f"{_WILLOW_URL}/api/apps", headers=headers, timeout=10)
         apps = resp.json().get("apps", [])
-        return next((a["consented"] for a in apps if a["app_id"] == APP_ID), False)
+        return next((a["consented"] for a in apps if a["app_id"] == _APP_ID), False)
     except Exception:
         return False
 
 
 def request_consent_url():
     """Return the Willow URL where the user can grant consent to this app."""
-    return f"{WILLOW_URL}/apps?highlight={APP_ID}"
+    return f"{_WILLOW_URL}/apps?highlight={_APP_ID}"
 
 
 
@@ -287,8 +307,8 @@ def check_inbox(unread_only=True):
     try:
         import requests as _r
         r = _r.get(
-            f"{WILLOW_URL}/api/pigeon/inbox",
-            params={"app_id": APP_ID, "unread_only": str(unread_only).lower()},
+            f"{_WILLOW_URL}/api/pigeon/inbox",
+            params={"app_id": _APP_ID, "unread_only": str(unread_only).lower()},
             timeout=10
         )
         return r.json().get("messages", []) if r.ok else []
