@@ -1,9 +1,10 @@
 {
   "mcpServers": {
     "willow": {
-      "command": "uvx",
+      "command": "python3",
       "args": [
-        "willow-mcp"
+        "-m",
+        "willow_mcp"
       ]
     }
   }
