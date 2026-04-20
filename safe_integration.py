@@ -9,40 +9,48 @@ Topics: ask, query, contribute, connect, status
 
 import json
 import os as _os
+import sqlite3 as _sqlite3
+_STORE_ROOT = _os.environ.get(
+    "WILLOW_STORE_ROOT",
+    _os.path.join(_os.path.expanduser("~"), ".willow", "store")
+)
 import uuid
-import requests as _requests
 from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime, timezone
 
 # ── Pigeon Bus Helpers ────────────────────────────────────────────────────────
 
-_WILLOW_URL = _os.environ.get("WILLOW_URL", "http://localhost:8420")
-_PIGEON_URL = f"{_WILLOW_URL}/api/pigeon/drop"
 _APP_ID = "safe-app-utety-chat"
 _session_id = str(uuid.uuid4())
-_APP_DATA = Path("/media/willow/Apps/utety-chat")
+_APP_DATA = Path(_os.path.expanduser("~")) / ".willow" / "apps" / _APP_ID
 
 
-def ask(prompt: str, persona: Optional[str] = None, tier: str = "free") -> str:
-    """Ask Willow a question via the Pigeon bus. Returns the LLM response string."""
-    result = _drop("ask", {"prompt": prompt, "persona": persona, "tier": tier})
-    if result.get("ok"):
-        return result.get("result", "")
-    return f"[Error: {result.get('error', 'unknown')}]"
+def ask(prompt: str, persona: str = None, tier: str = "free") -> str:
+    """LLM routing via Willow — not available in portless mode."""
+    return "[Willow LLM routing not available in portless mode]"
 
 
 def ask_raw(prompt: str, tier: str = "free") -> dict:
-    """Ask Willow and return full result dict (includes provider info)."""
-    return _drop("ask", {"prompt": prompt, "tier": tier})
+    """LLM routing via Willow — not available in portless mode."""
+    return {"ok": False, "error": "LLM routing not available in portless mode"}
 
 
 def query(q: str, limit: int = 5) -> list:
-    """Query Willow's knowledge graph via the Pigeon bus. Returns atom list."""
-    result = _drop("query", {"q": q, "limit": limit})
-    if result.get("ok"):
-        return result.get("result", [])
-    return []
+    """Query Willow's knowledge store directly via SOIL SQLite."""
+    db_path = _os.path.join(_STORE_ROOT, "knowledge", "store.db")
+    if not _os.path.exists(db_path):
+        return []
+    try:
+        conn = _sqlite3.connect(db_path)
+        rows = conn.execute(
+            "SELECT data FROM records WHERE deleted=0 AND data LIKE ? LIMIT ?",
+            (f"%{q}%", limit)
+        ).fetchall()
+        conn.close()
+        return [json.loads(r[0]) for r in rows]
+    except Exception:
+        return []
 
 
 def contribute(content: str, category: str = "note", metadata: Optional[dict] = None) -> dict:
@@ -65,29 +73,14 @@ def contribute(content: str, category: str = "note", metadata: Optional[dict] = 
 
 
 def status() -> dict:
-    """Check if Willow bus is reachable."""
-    return _drop("status", {})
+    """Check if Willow store is reachable."""
+    db_path = _os.path.join(_STORE_ROOT, "knowledge", "store.db")
+    reachable = _os.path.exists(db_path)
+    return {"ok": reachable, "store": _STORE_ROOT, "mode": "portless"}
 
 
 def _drop(topic: str, payload: dict) -> dict:
-    """Internal: drop a message onto the Pigeon bus."""
-    try:
-        r = _requests.post(_PIGEON_URL, json={
-            "topic": topic,
-            "app_id": _APP_ID,
-            "session_id": _session_id,
-            "payload": payload,
-        }, timeout=30)
-        return r.json() if r.ok else {"ok": False, "error": r.text}
-    except _requests.ConnectionError:
-        return {
-            "ok": False,
-            "guest_mode": True,
-            "error": f"Willow not reachable at {_WILLOW_URL}. "
-                     "Set WILLOW_URL env var or run Willow locally."
-        }
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
+    return {"ok": False, "error": "portless mode — porch removed"}
 
 
 class SAFESession:
@@ -280,38 +273,18 @@ if __name__ == "__main__":
 # ── Willow Consent Helpers ────────────────────────────────────────────────────
 
 def get_consent_status(token=None):
-    """Check if this app has consent to contribute to the user's Willow."""
-    try:
-        import requests as _r
-        headers = {"Authorization": f"Bearer {token}"} if token else {}
-        resp = _r.get(f"{_WILLOW_URL}/api/apps", headers=headers, timeout=10)
-        apps = resp.json().get("apps", [])
-        return next((a["consented"] for a in apps if a["app_id"] == _APP_ID), False)
-    except Exception:
-        return False
+    return False
 
 
 def request_consent_url():
-    """Return the Willow URL where the user can grant consent to this app."""
-    return f"{_WILLOW_URL}/apps?highlight={_APP_ID}"
+    return None
 
 
 
 def send(to_app, subject, body, thread_id=None):
-    """Send a message to another app's Pigeon inbox."""
-    return _drop("send", {"to": to_app, "subject": subject, "body": body, "thread_id": thread_id})
+    return {"ok": False, "error": "messaging not available in portless mode"}
 
 
 def check_inbox(unread_only=True):
-    """Fetch this app's Pigeon inbox from Willow."""
-    try:
-        import requests as _r
-        r = _r.get(
-            f"{_WILLOW_URL}/api/pigeon/inbox",
-            params={"app_id": _APP_ID, "unread_only": str(unread_only).lower()},
-            timeout=10
-        )
-        return r.json().get("messages", []) if r.ok else []
-    except Exception:
-        return []
+    return []
 
