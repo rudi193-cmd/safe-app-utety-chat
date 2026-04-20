@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "willow": {
+      "command": "uvx",
+      "args": [
+        "willow-mcp"
+      ]
+    }
+  }
+}
